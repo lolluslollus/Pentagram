@@ -1,0 +1,73 @@
+﻿<Page
+    x:Class="Pentagram.MainPage"
+	xmlns:uctl="using:Utilz.Controlz"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Pentagram"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+		<Grid.RowDefinitions>
+			<RowDefinition/>
+			<RowDefinition/>
+		</Grid.RowDefinitions>
+		<local:Pentagram Grid.Row="1"></local:Pentagram>
+		<uctl:UniversalWrapPanel Orientation="Horizontal">
+			<Button>
+				<Viewbox Height="80" Width="80">
+					<Border Background="White">
+						<SymbolIcon Symbol="Add"/>
+					</Border>
+				</Viewbox>
+			</Button>
+			<Button>
+				<Image Source="ms-appx:///Assets/Symbols/semibreve_g.bmp" Stretch="None"/>
+			</Button>
+			<Button>
+				<Image Source="ms-appx:///Assets/Symbols/minima_g.bmp" Stretch="None"/>
+			</Button>
+			<Button>
+				<Image Source="ms-appx:///Assets/Symbols/semiminima_g.bmp" Stretch="None"/>
+			</Button>
+			<Button>
+				<Image Source="ms-appx:///Assets/Symbols/croma_g.bmp" Stretch="None"/>
+			</Button>
+			<Button>
+				<Image Source="ms-appx:///Assets/Symbols/semicroma_g.bmp" Stretch="None"/>
+			</Button>
+			<Button>
+				<Image Source="ms-appx:///Assets/Symbols/biscroma_g.bmp" Stretch="None"/>
+			</Button>
+			<Button>
+				<Image Source="ms-appx:///Assets/Symbols/semibiscroma_g.bmp" Stretch="None"/>
+			</Button>
+			<Button>
+				<Viewbox Height="80" Width="80" Stretch="Uniform">
+					<Image Source="ms-appx:///Assets/Symbols/semibreve_p.bmp" Stretch="None"/>
+				</Viewbox>
+			</Button>
+			<Button>
+				<Viewbox Height="80" Width="80" Stretch="Uniform">
+					<Image Source="ms-appx:///Assets/Symbols/minima_p.bmp" Stretch="None"/>
+				</Viewbox>
+			</Button>
+			<Button>
+				<Image Source="ms-appx:///Assets/Symbols/semiminima_p.bmp" Stretch="None"/>
+			</Button>
+			<Button>
+				<Image Source="ms-appx:///Assets/Symbols/croma_p.bmp" Stretch="None"/>
+			</Button>
+			<Button>
+				<Image Source="ms-appx:///Assets/Symbols/semicroma_p.bmp" Stretch="None"/>
+			</Button>
+			<Button>
+				<Image Source="ms-appx:///Assets/Symbols/biscroma_p.bmp" Stretch="None"/>
+			</Button>
+			<Button>
+				<Image Source="ms-appx:///Assets/Symbols/semibiscroma_p.bmp" Stretch="None"/>
+			</Button>
+		</uctl:UniversalWrapPanel>
+	</Grid>
+</Page>
