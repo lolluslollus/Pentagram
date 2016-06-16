@@ -40,6 +40,23 @@ namespace Pentagram.PersistentData
 			if (chord == null) return;
 			_chords.Add(chord);
 		}
+		public void AddNoteToChord(Chord chord, Note note)
+		{
+			if (chord == null) return;
+			var selectedChord = _chords.FirstOrDefault(cho => cho == chord);
+			if (selectedChord == null) return;
+			selectedChord.AddNote(note as Note);
+		}
+		/*
+		public void AddToChord(Chord chord, Touch touch)
+		{
+			if (chord == null) return;
+			var selectedChord = _chords.FirstOrDefault(cho => cho == chord);
+			if (selectedChord == null) return;
+			if (touch is Note) selectedChord.AddNote(touch as Note);
+			else selectedChord.AddPause(touch as Pause);
+		}
+		*/
 	}
 	public enum Ritmi { qq, tq, dq }
 	public enum Chiavi { Violino, Basso }
@@ -52,9 +69,14 @@ namespace Pentagram.PersistentData
 		private readonly SwitchableObservableCollection<Touch> _touches = new SwitchableObservableCollection<Touch>();
 		public SwitchableObservableCollection<Touch> Touches { get { return _touches; } }
 
+		public Chord(Note note)
+		{
+			if (note == null) throw new ArgumentOutOfRangeException("Chord ctor wants a note");
+			AddNote(note);
+		}
 		public Chord(IList<Note> notes)
 		{
-			if (notes == null || notes.Count < 1) throw new ArgumentOutOfRangeException("Chord ctor wants some notes");
+			if (notes == null) throw new ArgumentOutOfRangeException("Chord ctor wants some notes");
 			AddNotes(notes);
 		}
 		public Chord(Pause pause)

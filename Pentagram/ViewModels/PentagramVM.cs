@@ -11,11 +11,12 @@ namespace Pentagram.ViewModels
 	public class PentagramVM : OpenableObservableData
 	{
 		private Song _song = null;
-		
+		public Song Song { get { return _song; } }
 
-		public PentagramVM()
+		public PentagramVM(Song song)
 		{
-			
+			if (song == null) throw new ArgumentNullException("PentagramVM needs a song");
+			_song = song;
 		}
 
 		protected override async Task OpenMayOverrideAsync(object args = null)
@@ -29,20 +30,37 @@ namespace Pentagram.ViewModels
 			return _song?.CloseAsync(); // LOLLO TODO check for errors if song is null
 		}
 
-		public void AddNote(Note note)
+		public void AddVoice(Voice voice)
+		{
+			if (voice == null) return;
+			_song.AddVoice(voice);
+		}
+		private void AddNote(Note note)
 		{
 			if (note == null) return;
 		}
-		public void AddNote(Note note, Chord chord)
+		public void AddNote(Voice voice, DurateCanoniche durataCanonica, uint ottava, NoteBianche notaBianca, Accidenti accidente)
 		{
-			if (note == null || chord == null) return;
+			if (_song.Voices.Count == 0 || voice == null) return;
+			var note = new Note(durataCanonica, ottava, notaBianca, accidente);
+			voice.AddChord(new Chord(note));
+		}
+		public void AddNoteToChord(Voice voice, DurateCanoniche durataCanonica, uint ottava, NoteBianche notaBianca, Accidenti accidente, Chord chord)
+		{
+			if (_song.Voices.Count == 0 || voice == null || chord == null) return;
+			var note = new Note(durataCanonica, ottava, notaBianca, accidente);
+			var chordInVoice = voice.Chords.FirstOrDefault(cho => cho == chord);
+			if (chordInVoice == null) return;
+			chordInVoice.AddNote(note);
 		}
 		public void AddPause(Pause pause)
 		{
+			if (_song.Voices.Count == 0) return;
 			if (pause == null) return;
 		}
 		public void AddPause(Pause pause, Chord chord)
 		{
+			if (_song.Voices.Count == 0) return;
 			if (pause == null || chord == null) return;
 		}
 	}
