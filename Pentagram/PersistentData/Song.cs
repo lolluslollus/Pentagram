@@ -111,6 +111,11 @@ namespace Pentagram.PersistentData
 			if (pause == null) return;
 			_touches.Remove(pause);
 		}
+		public void Reset()
+		{
+			if (_touches == null) return;
+			_touches.Clear();
+		}
 	}
 	public class Note : Touch
 	{

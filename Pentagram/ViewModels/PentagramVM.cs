@@ -35,10 +35,6 @@ namespace Pentagram.ViewModels
 			if (voice == null) return;
 			_song.AddVoice(voice);
 		}
-		private void AddNote(Note note)
-		{
-			if (note == null) return;
-		}
 		public void AddNote(Voice voice, DurateCanoniche durataCanonica, uint ottava, NoteBianche notaBianca, Accidenti accidente)
 		{
 			if (_song.Voices.Count == 0 || voice == null) return;
@@ -53,15 +49,16 @@ namespace Pentagram.ViewModels
 			if (chordInVoice == null) return;
 			chordInVoice.AddNote(note);
 		}
-		public void AddPause(Pause pause)
+		public void AddPause(Voice voice, Pause pause)
 		{
-			if (_song.Voices.Count == 0) return;
-			if (pause == null) return;
+			if (_song.Voices.Count == 0 || pause == null) return;
+			var ppause = new Pause(pause.DurataCanonica);
+			voice.AddChord(new Chord(pause));
 		}
-		public void AddPause(Pause pause, Chord chord)
+		public void ResetChord(Voice voice, Chord chord)
 		{
-			if (_song.Voices.Count == 0) return;
-			if (pause == null || chord == null) return;
+			if (_song.Voices.Count == 0 || voice == null || chord == null) return;
+			chord.Reset();
 		}
 	}
 }
