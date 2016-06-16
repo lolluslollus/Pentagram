@@ -35,7 +35,7 @@ namespace Pentagram.ViewModels
 			if (voice == null) return;
 			_song.AddVoice(voice);
 		}
-		public void AddNote(Voice voice, DurateCanoniche durataCanonica, uint ottava, NoteBianche notaBianca, Accidenti accidente)
+		public void AddNoteAndChord(Voice voice, DurateCanoniche durataCanonica, uint ottava, NoteBianche notaBianca, Accidenti accidente)
 		{
 			if (_song.Voices.Count == 0 || voice == null) return;
 			var note = new Note(durataCanonica, ottava, notaBianca, accidente);
