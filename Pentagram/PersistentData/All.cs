@@ -8,13 +8,50 @@ using Utilz.Data;
 
 namespace Pentagram.PersistentData
 {
+	public class All : OpenableObservableData
+	{
+		private readonly SwitchableObservableCollection<Song> _songs = new SwitchableObservableCollection<Song>();
+		public SwitchableObservableCollection<Song> Songs { get { return _songs; } }
+
+		private Song _currentSong = null;
+		public Song CurrentSong { get { return _currentSong; } private set { _currentSong = value; RaisePropertyChanged(); } }
+		public void AddSong(Song song)
+		{
+			if (song == null) return;
+			_songs.Add(song);
+		}
+		public void RemoveSong(Song song)
+		{
+			if (song == null) return;
+			_songs.Remove(song);
+		}
+		public void SetCurrentSong(Song song)
+		{
+			if (song == null || _songs.FirstOrDefault(so => so == song) == null) return;
+			CurrentSong = song;
+		}
+	}
+
 	public class Song : OpenableObservableData
 	{
+		private string _name = "Song";
+		public string Name { get { return _name; } set { _name = value; RaisePropertyChanged(); } }
 		private readonly SwitchableObservableCollection<Voice> _voices = new SwitchableObservableCollection<Voice>();
 		public SwitchableObservableCollection<Voice> Voices { get { return _voices; } }
+
+		public Song(string name)
+		{
+			Name = name;
+		}
 		public void AddVoice(Voice voice)
 		{
-			_voices.Add(voice ?? new Voice(Ritmi.qq, Chiavi.Violino));
+			if (voice == null) return;
+			_voices.Add(voice);
+		}
+		public void RemoveVoice(Voice voice)
+		{
+			if (voice == null) return;
+			_voices.Remove(voice);
 		}
 	}
 

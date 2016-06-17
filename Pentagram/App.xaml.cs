@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Pentagram.PersistentData;
+using Pentagram.Views;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,6 +24,8 @@ namespace Pentagram
     /// </summary>
     sealed partial class App : Application
     {
+		private static All _all = null;
+		public static All All { get { return _all; } }
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -39,6 +43,7 @@ namespace Pentagram
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
+			_all = new All();
 //#if DEBUG
 //            if (System.Diagnostics.Debugger.IsAttached)
 //            {

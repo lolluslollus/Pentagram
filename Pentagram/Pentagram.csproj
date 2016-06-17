@@ -95,14 +95,19 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\PentagramVM.cs" />
-    <Compile Include="Views\Pentagram.xaml.cs">
-      <DependentUpon>Pentagram.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="ViewModels\AllVM.cs" />
+    <Compile Include="ViewModels\SongVM.cs" />
+    <Compile Include="ViewModels\VoiceVM.cs" />
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PersistentData\Song.cs" />
+    <Compile Include="Views\VoiceControl.xaml.cs">
+      <DependentUpon>VoiceControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SongPage.xaml.cs">
+      <DependentUpon>SongPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PersistentData\All.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -112,6 +117,9 @@
     <None Include="Pentagram_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Symbols\dq.png" />
+    <Content Include="Assets\Symbols\tq.png" />
+    <Content Include="Assets\Symbols\qq.png" />
     <Content Include="Assets\Symbols\chiaveDiBasso.png" />
     <Content Include="Assets\Symbols\biscroma_g.bmp" />
     <Content Include="Assets\Symbols\biscroma_p.bmp" />
@@ -144,11 +152,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Views\Pentagram.xaml">
+    <Page Include="Views\MainPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\VoiceControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\MainPage.xaml">
+    <Page Include="Views\SongPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

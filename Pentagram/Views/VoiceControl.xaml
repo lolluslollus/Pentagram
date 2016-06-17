@@ -1,0 +1,50 @@
+﻿<uctl:ObservableControl
+	xmlns:uctl="using:Utilz.Controlz"
+    x:Class="Pentagram.Views.VoiceControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Pentagram.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Height="180">
+		<Canvas Background="White" Tapped="OnPentagram_Tapped">
+			<Viewbox x:Name="ChiaveDiViolino" Visibility="Collapsed" Height="{x:Bind MinY4, Mode=OneWay}" Canvas.Left="10" Canvas.Top="32" Canvas.ZIndex="200">
+				<Image Source="ms-appx:///Assets/Symbols/chiaveDiViolino.png" Stretch="None" />
+			</Viewbox>
+			<Viewbox x:Name="ChiaveDiBasso" Visibility="Collapsed" Height="{x:Bind MinY4, Mode=OneWay}" Canvas.Left="10" Canvas.Top="14" Canvas.ZIndex="200">
+				<Image Source="ms-appx:///Assets/Symbols/chiaveDiBasso.png" Stretch="None" />
+			</Viewbox>
+			<Viewbox x:Name="DueQuarti" Visibility="Collapsed" Height="{x:Bind MinY4, Mode=OneWay}" Canvas.Left="75" Canvas.Top="32" Canvas.ZIndex="200">
+				<Image Source="ms-appx:///Assets/Symbols/dq.png" Stretch="None" />
+			</Viewbox>
+			<Viewbox x:Name="TreQuarti" Visibility="Collapsed" Height="{x:Bind MinY4, Mode=OneWay}" Canvas.Left="75" Canvas.Top="32" Canvas.ZIndex="200">
+				<Image Source="ms-appx:///Assets/Symbols/tq.png" Stretch="None" />
+			</Viewbox>
+			<Viewbox x:Name="QuattroQuarti" Visibility="Collapsed" Height="{x:Bind MinY4, Mode=OneWay}" Canvas.Left="75" Canvas.Top="32" Canvas.ZIndex="200">
+				<Image Source="ms-appx:///Assets/Symbols/qq.png" Stretch="None" />
+			</Viewbox>
+			<Line X1="{x:Bind MinX, Mode=OneWay}" X2="{x:Bind MaxX, Mode=OneWay}" Stroke="Black" Canvas.Top="{x:Bind MinY0, Mode=OneWay}"/>
+			<Line X1="{x:Bind MinX, Mode=OneWay}" X2="{x:Bind MaxX, Mode=OneWay}" Stroke="Black" Canvas.Top="{x:Bind MinY1, Mode=OneWay}"/>
+			<Line X1="{x:Bind MinX, Mode=OneWay}" X2="{x:Bind MaxX, Mode=OneWay}" Stroke="Black" Canvas.Top="{x:Bind MinY2, Mode=OneWay}"/>
+			<Line X1="{x:Bind MinX, Mode=OneWay}" X2="{x:Bind MaxX, Mode=OneWay}" Stroke="Black" Canvas.Top="{x:Bind MinY3, Mode=OneWay}"/>
+			<Line X1="{x:Bind MinX, Mode=OneWay}" X2="{x:Bind MaxX, Mode=OneWay}" Stroke="Black" Canvas.Top="{x:Bind MinY4, Mode=OneWay}"/>
+
+			<ItemsControl
+				Canvas.Left="180"
+				ItemsSource="{x:Bind VM.Voice.Chords, Mode=OneWay}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<ItemsStackPanel Orientation="Horizontal" ItemsUpdatingScrollMode="KeepItemsInView" />
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<Image Source="ms-appx:///Assets/Symbols/croma_g.bmp"/>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</Canvas>
+	</Grid>
+</uctl:ObservableControl>

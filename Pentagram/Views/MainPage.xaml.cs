@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Pentagram.PersistentData;
+using Pentagram.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,18 +15,41 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
+// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace Pentagram
+namespace Pentagram.Views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class MainPage : Page
-    {
-        public MainPage()
-        {
-            this.InitializeComponent();
-        }
-    }
+	/// <summary>
+	/// An empty page that can be used on its own or navigated to within a Frame.
+	/// </summary>
+	public sealed partial class MainPage : Page
+	{
+		private readonly AllVM _vm = null;
+		public AllVM VM { get { return _vm; } }
+
+		public MainPage()
+		{
+			_vm = new AllVM();
+			this.InitializeComponent();
+			
+		}
+
+		private void OnAddSong_Click(object sender, RoutedEventArgs e)
+		{
+			_vm.AddSong("new song");
+		}
+
+		private void OnRemoveSong_Click(object sender, RoutedEventArgs e)
+		{
+			var song = (e.OriginalSource as FrameworkElement).DataContext as Song;
+			_vm.RemoveSong(song);
+		}
+
+		private void OnSetCurrentSong_Click(object sender, RoutedEventArgs e)
+		{
+			var song = (e.OriginalSource as FrameworkElement).DataContext as Song;
+			_vm.SetCurrentSong(song);
+			Frame.Navigate(typeof(SongPage), song);
+		}
+	}
 }
