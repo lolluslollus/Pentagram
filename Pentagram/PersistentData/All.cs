@@ -77,12 +77,85 @@ namespace Pentagram.PersistentData
 			if (chord == null) return;
 			_chords.Add(chord);
 		}
-		public void AddNoteToChord(Chord chord, Note note)
+		public void RemoveChord(Chord chord)
 		{
 			if (chord == null) return;
+			var idx = _chords.IndexOf(chord);
+
+			for (int i = idx - 1; i >= 0; i--)
+			{
+				if (_chords[i].PrevJoinedChords.Contains(chord)) _chords[i].PrevJoinedChords.Remove(chord);
+				else break;
+			}
+			for (int i = idx + 1; i < _chords.Count; i++)
+			{
+				if (_chords[i].NextJoinedChords.Contains(chord)) _chords[i].NextJoinedChords.Remove(chord);
+				else break;
+
+			}
+
+			_chords.Remove(chord);
+		}
+		public void AddNoteToChord(Chord chord, Note note)
+		{
+			if (chord == null || note == null) return;
 			var selectedChord = _chords.FirstOrDefault(cho => cho == chord);
 			if (selectedChord == null) return;
-			selectedChord.AddNote(note as Note);
+			selectedChord.Touches.Add(note);
+		}
+		public void RemoveNoteFromChord(Chord chord, Note note)
+		{
+			if (chord == null || note == null) return;
+			var selectedChord = _chords.FirstOrDefault(cho => cho == chord);
+			if (selectedChord == null) return;
+			selectedChord.Touches.Remove(note);
+			if (selectedChord.Touches.Count < 1) _chords.Remove(selectedChord);
+		}
+		public void AddPauseToChord(Chord chord, Pause pause)
+		{
+			if (chord == null || pause == null) return;
+			var selectedChord = _chords.FirstOrDefault(cho => cho == chord);
+			if (selectedChord == null) return;
+			selectedChord.Touches.Clear();
+			selectedChord.Touches.Add(pause);
+		}
+		public void RemovePauseFromChord(Chord chord, Pause pause)
+		{
+			if (chord == null || pause == null) return;
+			var selectedChord = _chords.FirstOrDefault(cho => cho == chord);
+			if (selectedChord == null) return;
+			selectedChord.Touches.Remove(pause);
+			if (selectedChord.Touches.Count < 1) _chords.Remove(selectedChord);
+		}
+		public void LinkChord1ToChord2(Chord chord1, Chord chord2)
+		{
+			int chord1Idx = _chords.IndexOf(chord1);
+			int chord2Idx = _chords.IndexOf(chord2);
+			if (chord1Idx + 1 == chord2Idx)
+			{
+				if (!chord2.PrevJoinedChords.Contains(chord1)) chord2.PrevJoinedChords.Add(chord1);
+				if (!chord1.NextJoinedChords.Contains(chord2)) chord1.NextJoinedChords.Add(chord2);
+			}
+			else if (chord1Idx - 1 == chord2Idx)
+			{
+				if (!chord2.NextJoinedChords.Contains(chord1)) chord2.NextJoinedChords.Add(chord1);
+				if (!chord1.PrevJoinedChords.Contains(chord2)) chord1.PrevJoinedChords.Add(chord2);
+			}
+		}
+		public void UnlinkChord1FromChord2(Chord chord1, Chord chord2)
+		{
+			int chord1Idx = _chords.IndexOf(chord1);
+			int chord2Idx = _chords.IndexOf(chord2);
+			if (chord1Idx < chord2Idx)
+			{
+				chord2.PrevJoinedChords.Remove(chord1);
+				chord1.NextJoinedChords.Remove(chord2);
+			}
+			else if (chord1Idx > chord2Idx)
+			{
+				chord2.NextJoinedChords.Remove(chord1);
+				chord1.PrevJoinedChords.Remove(chord2);
+			}
 		}
 		/*
 		public void AddToChord(Chord chord, Touch touch)
@@ -105,56 +178,51 @@ namespace Pentagram.PersistentData
 	{
 		private readonly SwitchableObservableCollection<Touch> _touches = new SwitchableObservableCollection<Touch>();
 		public SwitchableObservableCollection<Touch> Touches { get { return _touches; } }
+		private readonly SwitchableObservableCollection<Chord> _prevJoinedChords = new SwitchableObservableCollection<Chord>();
+		public SwitchableObservableCollection<Chord> PrevJoinedChords { get { return _prevJoinedChords; } }
+		private readonly SwitchableObservableCollection<Chord> _nextJoinedChords = new SwitchableObservableCollection<Chord>();
+		public SwitchableObservableCollection<Chord> NextJoinedChords { get { return _nextJoinedChords; } }
 
 		public Chord(Note note)
 		{
 			if (note == null) throw new ArgumentOutOfRangeException("Chord ctor wants a note");
-			AddNote(note);
+			_touches.Add(note);
 		}
 		public Chord(IList<Note> notes)
 		{
 			if (notes == null) throw new ArgumentOutOfRangeException("Chord ctor wants some notes");
-			AddNotes(notes);
+			_touches.AddRange(notes);
+		}
+		public Chord(params Note[] notes)
+		{
+			if (notes == null) throw new ArgumentOutOfRangeException("Chord ctor wants some notes");
+			_touches.AddRange(notes);
 		}
 		public Chord(Pause pause)
 		{
 			if (pause == null) throw new ArgumentOutOfRangeException("Chord ctor wants a pause");
-			AddPause(pause);
-		}
-
-		public void AddNotes(IList<Note> notes)
-		{
-			if (notes == null) return;
-			_touches.AddRange(notes);
-		}
-		public void AddNote(Note note)
-		{
-			if (note == null) return;
-			_touches.Add(note);
-		}
-		public void RemoveNote(Note note)
-		{
-			if (note == null) return;
-			_touches.Remove(note);
-		}
-		public void AddPause(Pause pause)
-		{
-			if (pause == null) return;
-			_touches.Clear();
 			_touches.Add(pause);
 		}
-		public void RemovePause(Pause pause)
+		public Note GetHighestNote()
 		{
-			if (pause == null) return;
-			_touches.Remove(pause);
+			Note result = null;
+			foreach (Note note in _touches.Where(tou => tou is Note))
+			{
+				if (result == null || note.CompareTo(result) > 0) result = note;
+			}
+			return result;
 		}
-		public void Reset()
+		public Note GetLowestNote()
 		{
-			if (_touches == null) return;
-			_touches.Clear();
+			Note result = null;
+			foreach (Note note in _touches.Where(tou => tou is Note))
+			{
+				if (result == null || note.CompareTo(result) < 0) result = note;
+			}
+			return result;
 		}
 	}
-	public class Note : Touch
+	public class Note : Touch, IComparable
 	{
 		private uint _ottava = 3;
 		public uint Ottava { get { return _ottava; } private set { _ottava = value < 10 ? value : 10; RaisePropertyChanged(); } }
@@ -164,13 +232,12 @@ namespace Pentagram.PersistentData
 		public Accidenti Accidente { get { return _accidente; } private set { _accidente = value; RaisePropertyChanged(); } }
 		private SegniSuNote _segno = SegniSuNote.None;
 		public SegniSuNote Segno { get { return _segno; } private set { _segno = value; RaisePropertyChanged(); } }
-		private Touch _prevLinkedTouch = null;
-		public Touch PrevLinkedTouch { get { return _prevLinkedTouch; } private set { _prevLinkedTouch = value; RaisePropertyChanged(); } }
-		private Touch _currLinkedTouch = null;
-		public Touch CurrLinkedTouch { get { return _currLinkedTouch; } private set { _currLinkedTouch = value; RaisePropertyChanged(); } }
-		private Touch _nextLinkedTouch = null;
-		public Touch NextLinkedTouch { get { return _nextLinkedTouch; } private set { _nextLinkedTouch = value; RaisePropertyChanged(); } }
-
+		//private Touch _prevLinkedTouch = null;
+		//public Touch PrevLinkedTouch { get { return _prevLinkedTouch; } private set { _prevLinkedTouch = value; RaisePropertyChanged(); } }
+		//private Touch _currLinkedTouch = null;
+		//public Touch CurrLinkedTouch { get { return _currLinkedTouch; } private set { _currLinkedTouch = value; RaisePropertyChanged(); } }
+		//private Touch _nextLinkedTouch = null;
+		//public Touch NextLinkedTouch { get { return _nextLinkedTouch; } private set { _nextLinkedTouch = value; RaisePropertyChanged(); } }
 
 		public Note(DurateCanoniche durataCanonica, uint ottava, NoteBianche notaBianca, Accidenti accidente) : base(durataCanonica)
 		{
@@ -182,16 +249,27 @@ namespace Pentagram.PersistentData
 		{
 			Segno = segno;
 		}
-		public Note(DurateCanoniche durataCanonica, uint ottava, NoteBianche notaBianca, Accidenti accidente, Touch prevLinkedTouch, Touch currLinkedTouch, Touch nextLinkedTouch) : this(durataCanonica, ottava, notaBianca, accidente)
+
+		public int CompareTo(object obj)
 		{
-			PrevLinkedTouch = prevLinkedTouch;
-			CurrLinkedTouch = currLinkedTouch;
-			NextLinkedTouch = nextLinkedTouch;
+			var otherNote = obj as Note;
+
+			if (Ottava > otherNote.Ottava) return +1;
+			if (Ottava < otherNote.Ottava) return -1;
+			if ((int)NotaBianca > (int)otherNote.NotaBianca) return +1;
+			if ((int)NotaBianca < (int)otherNote.NotaBianca) return -1;
+			return 0;
 		}
-		public Note(DurateCanoniche durataCanonica, uint ottava, NoteBianche notaBianca, Accidenti accidente, SegniSuNote segno, Touch prevLinkedTouch, Touch currLinkedTouch, Touch nextLinkedTouch) : this(durataCanonica, ottava, notaBianca, accidente, prevLinkedTouch, currLinkedTouch, nextLinkedTouch)
-		{
-			Segno = segno;
-		}
+		//public Note(DurateCanoniche durataCanonica, uint ottava, NoteBianche notaBianca, Accidenti accidente, Touch prevLinkedTouch, Touch currLinkedTouch, Touch nextLinkedTouch) : this(durataCanonica, ottava, notaBianca, accidente)
+		//{
+		//	PrevLinkedTouch = prevLinkedTouch;
+		//	CurrLinkedTouch = currLinkedTouch;
+		//	NextLinkedTouch = nextLinkedTouch;
+		//}
+		//public Note(DurateCanoniche durataCanonica, uint ottava, NoteBianche notaBianca, Accidenti accidente, SegniSuNote segno, Touch prevLinkedTouch, Touch currLinkedTouch, Touch nextLinkedTouch) : this(durataCanonica, ottava, notaBianca, accidente, prevLinkedTouch, currLinkedTouch, nextLinkedTouch)
+		//{
+		//	Segno = segno;
+		//}
 	}
 
 	public class Pause : Touch
@@ -199,7 +277,7 @@ namespace Pentagram.PersistentData
 		public Pause(DurateCanoniche durataCanonica) : base(durataCanonica) { }
 	}
 
-	public class Touch : ObservableData
+	public abstract class Touch : ObservableData
 	{
 		public uint Durata64
 		{

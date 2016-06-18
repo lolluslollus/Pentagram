@@ -30,16 +30,16 @@ namespace Pentagram.ViewModels
 			var note = new Note(durataCanonica, ottava, notaBianca, accidente);
 			var chordInVoice = _voice.Chords.FirstOrDefault(cho => cho == chord);
 			if (chordInVoice == null) return;
-			chordInVoice.AddNote(note);
+			_voice.AddNoteToChord(chordInVoice, note);
 		}
 		public void AddPause(Pause pause)
 		{
 			if (pause == null) return;
 			_voice.AddChord(new Chord(pause));
 		}
-		public void ResetChord(Chord chord)
+		public void RemoveChord(Chord chord)
 		{
-			chord?.Reset();
+			_voice.RemoveChord(chord);
 		}
 	}
 }

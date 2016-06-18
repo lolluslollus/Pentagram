@@ -41,7 +41,8 @@
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
-						<Image Source="ms-appx:///Assets/Symbols/croma_g.bmp"/>
+						<local:ChordControl />
+						<!--<Image Source="ms-appx:///Assets/Symbols/croma_g.bmp"/>-->
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>

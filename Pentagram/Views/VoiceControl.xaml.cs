@@ -20,17 +20,21 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Pentagram.Views
 {
-    public sealed partial class VoiceControl : ObservableControl
-    {
-		public readonly int MinY0 = 50;
-		public readonly int MinY1 = 50 + LineGap;
-		public readonly int MinY2 = 50 + LineGap + LineGap;
-		public readonly int MinY3 = 50 + LineGap + LineGap + LineGap;
-		public readonly int MinY4 = 50 + LineGap + LineGap + LineGap + LineGap;
-		public readonly int MinX = 0;
-		public readonly int MaxX = 600;
-		public const int LineGap = 25;
+	public sealed partial class VoiceControl : ObservableControl
+	{
+		public readonly static double LineGap;
+		public readonly double MinY0;
+		public readonly double MinY1;
+		public readonly double MinY2;
+		public readonly double MinY3;
+		public readonly double MinY4;
+		public readonly double MinX;
+		public readonly double MaxX;
 
+		static VoiceControl()
+		{
+			LineGap = (double)App.Current.Resources["LineGap"];
+		}
 		public Voice Voice
 		{
 			get { return (Voice)GetValue(VoiceProperty); }
@@ -50,9 +54,17 @@ namespace Pentagram.Views
 		public VoiceVM VM { get { return _vm; } private set { _vm = value; RaisePropertyChanged_UI(); } }
 
 		public VoiceControl()
-        {
+		{
+			MinY0 = 50.0;
+			MinY1 = 50.0 + LineGap;
+			MinY2 = 50 + LineGap + LineGap;
+			MinY3 = 50 + LineGap + LineGap + LineGap;
+			MinY4 = 50 + LineGap + LineGap + LineGap + LineGap;
+			MinX = 0;
+			MaxX = 600;
+
 			this.InitializeComponent();
-        }
+		}
 		private void UpdateChiave()
 		{
 			ChiaveDiBasso.Visibility = Voice.Chiave == Chiavi.Basso ? Visibility.Visible : Visibility.Collapsed;

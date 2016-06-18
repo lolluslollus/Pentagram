@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{B2BD5575-5610-47AD-A827-F376E0192EB8}</ProjectGuid>
+    <ProjectGuid>{214FE68B-CE41-445E-B33E-656247C85D18}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Pentagram</RootNamespace>
-    <AssemblyName>Pentagram</AssemblyName>
+    <RootNamespace>UnitTestProject1</RootNamespace>
+    <AssemblyName>UnitTestProject1</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
@@ -16,7 +16,8 @@
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>Pentagram_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>UnitTestProject1_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <UnitTestPlatformVersion Condition="'$(UnitTestPlatformVersion)' == ''">14.0</UnitTestPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -88,62 +89,32 @@
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <ItemGroup>
-    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <!--A reference to the entire .Net Framework and Windows SDK are automatically included-->
     <None Include="project.json" />
+    <SDKReference Include="MSTestFramework.Universal, Version=$(UnitTestPlatformVersion)" />
+    <SDKReference Include="TestPlatform.Universal, Version=$(UnitTestPlatformVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ViewModels\AllVM.cs" />
-    <Compile Include="ViewModels\SongVM.cs" />
-    <Compile Include="ViewModels\VoiceVM.cs" />
-    <Compile Include="Views\ChordControl.xaml.cs">
-      <DependentUpon>ChordControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\VoiceControl.xaml.cs">
-      <DependentUpon>VoiceControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SongPage.xaml.cs">
-      <DependentUpon>SongPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PersistentData\All.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnitTestApp.xaml.cs">
+      <DependentUpon>UnitTestApp.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UnitTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="UnitTestApp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="Pentagram_TemporaryKey.pfx" />
+    <None Include="UnitTestProject1_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\Symbols\dq.png" />
-    <Content Include="Assets\Symbols\palla_vuota_100.png" />
-    <Content Include="Assets\Symbols\palla_nera_100.png" />
-    <Content Include="Assets\Symbols\tq.png" />
-    <Content Include="Assets\Symbols\qq.png" />
-    <Content Include="Assets\Symbols\chiaveDiBasso.png" />
-    <Content Include="Assets\Symbols\biscroma_g.bmp" />
-    <Content Include="Assets\Symbols\biscroma_p.bmp" />
-    <Content Include="Assets\Symbols\Centoventottesimo_g.bmp" />
-    <Content Include="Assets\Symbols\Centoventottesimo_p.bmp" />
-    <Content Include="Assets\Symbols\croma_g.bmp" />
-    <Content Include="Assets\Symbols\croma_p.bmp" />
-    <Content Include="Assets\Symbols\minima_g.bmp" />
-    <Content Include="Assets\Symbols\minima_p.bmp" />
-    <Content Include="Assets\Symbols\chiaveDiViolino.png" />
-    <Content Include="Assets\Symbols\semibiscroma_g.bmp" />
-    <Content Include="Assets\Symbols\semibiscroma_p.bmp" />
-    <Content Include="Assets\Symbols\semibreve_g.bmp" />
-    <Content Include="Assets\Symbols\semibreve_p.bmp" />
-    <Content Include="Assets\Symbols\semicroma_g.bmp" />
-    <Content Include="Assets\Symbols\semicroma_p.bmp" />
-    <Content Include="Assets\Symbols\semiminima_g.bmp" />
-    <Content Include="Assets\Symbols\semiminima_p.bmp" />
-    <Content Include="Properties\Default.rd.xml" />
+    <Content Include="Properties\UnitTestApp.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
@@ -153,36 +124,17 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Page Include="Styles\Styles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\ChordControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\MainPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\VoiceControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\SongPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Utilz\Utilz\Utilz.csproj">
       <Project>{06425613-e56b-4c98-a8d2-58900e36e417}</Project>
       <Name>Utilz</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Pentagram\Pentagram.csproj">
+      <Project>{b2bd5575-5610-47ad-a827-f376e0192eb8}</Project>
+      <Name>Pentagram</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

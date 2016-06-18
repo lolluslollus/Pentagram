@@ -1,0 +1,94 @@
+﻿<uctl:ObservableControl
+	xmlns:uctl="using:Utilz.Controlz"
+    x:Class="Pentagram.Views.ChordControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Pentagram.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+	<Canvas Width="70" x:Name="LayoutRoot">
+		<Image x:Name="TopBlackBall"
+			Visibility="Collapsed"
+			Source="ms-appx:///Assets/Symbols/palla_nera_100.png"
+			Height="{StaticResource LineGap}"/>
+		<Image x:Name="TopEmptyBall"
+		
+			Source="ms-appx:///Assets/Symbols/palla_vuota_100.png"
+		    Height="{StaticResource LineGap}"/>
+		<!--<Path Stroke="Black" StrokeThickness="2"
+      Data="M24,12.5 V-80 H50 V-78 H24 V-70 H50 V-68 H24 V-60" />-->
+
+		<Path Stroke="Black" StrokeThickness="2"
+      Data="{x:Bind PathData, Mode=OneWay}"/>
+		
+		<Line x:Name="VerticalMast" 
+			Stroke="Black"
+			StrokeThickness="2"
+			X1="{StaticResource LineGapMinus1}"
+			X2="{StaticResource LineGapMinus1}"
+			Y1="{StaticResource LineGapHalf}"
+			Y2="0.0" 
+			RenderTransformOrigin="0.5,0.5">
+			<!--ScaleY="{x:Bind VerticalMastScale, Mode=OneWay}"-->
+			<Line.RenderTransform>
+				<ScaleTransform ScaleY="5" CenterY="{StaticResource LineGapHalf}"/>
+			</Line.RenderTransform>
+		</Line>
+		<Line x:Name="HorizontalBar1"
+			Stroke="Black"
+			StrokeThickness="4"
+			X1="{StaticResource LineGapMinus2}"
+			X2="{StaticResource LineGapAndBarLength}"
+			Y1="{StaticResource LineGapHalf}"
+			Y2="{StaticResource LineGapHalf}" 
+			RenderTransformOrigin="0.5,0.5">
+			<Line.RenderTransform>
+				<!-- - LineGapHalf * ScaleY -->
+				<TranslateTransform Y="-62.5"/>
+			</Line.RenderTransform>
+		</Line>
+		<Line x:Name="HorizontalBar2"
+			Stroke="Black"
+			StrokeThickness="4"
+			X1="{StaticResource LineGapMinus2}"
+			X2="{StaticResource LineGapAndBarLength}"
+			Y1="{StaticResource LineGapHalf}"
+			Y2="{StaticResource LineGapHalf}" 
+			RenderTransformOrigin="0.5,0.5">
+			<Line.RenderTransform>
+				<!-- - LineGapHalf * ScaleY + BarGapHeight -->
+				<TranslateTransform Y="-52.5"/>
+			</Line.RenderTransform>
+		</Line>
+		<Line x:Name="HorizontalBar3"
+			Stroke="Black"
+			StrokeThickness="4"
+			X1="{StaticResource LineGapMinus2}"
+			X2="{StaticResource LineGapAndBarLength}"
+			Y1="{StaticResource LineGapHalf}"
+			Y2="{StaticResource LineGapHalf}" 
+			RenderTransformOrigin="0.5,0.5">
+			<Line.RenderTransform>
+				<!-- - LineGapHalf * ScaleY + BarGapHeight + BarGapHeight -->
+				<TranslateTransform Y="-42.5"/>
+			</Line.RenderTransform>
+		</Line>
+		<Line x:Name="HorizontalBar4"
+			Stroke="Black"
+			StrokeThickness="4"
+			X1="{StaticResource LineGapMinus2}"
+			X2="{StaticResource LineGapAndBarLength}"
+			Y1="{StaticResource LineGapHalf}"
+			Y2="{StaticResource LineGapHalf}" 
+			RenderTransformOrigin="0.5,0.5">
+			<Line.RenderTransform>
+				<!-- - LineGapHalf * ScaleY + BarGapHeight + BarGapHeight + BarGapHeight -->
+				<TranslateTransform Y="-32.5"/>
+			</Line.RenderTransform>
+		</Line>
+	</Canvas>
+</uctl:ObservableControl>

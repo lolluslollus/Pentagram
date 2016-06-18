@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pentagram", "Pentagram\Pent
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilz", "..\Utilz\Utilz\Utilz.csproj", "{06425613-E56B-4C98-A8D2-58900E36E417}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{214FE68B-CE41-445E-B33E-656247C85D18}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,26 @@ Global
 		{06425613-E56B-4C98-A8D2-58900E36E417}.Release|x64.Build.0 = Release|x64
 		{06425613-E56B-4C98-A8D2-58900E36E417}.Release|x86.ActiveCfg = Release|x86
 		{06425613-E56B-4C98-A8D2-58900E36E417}.Release|x86.Build.0 = Release|x86
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Debug|ARM.ActiveCfg = Debug|ARM
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Debug|ARM.Build.0 = Debug|ARM
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Debug|ARM.Deploy.0 = Debug|ARM
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Debug|x64.ActiveCfg = Debug|x64
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Debug|x64.Build.0 = Debug|x64
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Debug|x64.Deploy.0 = Debug|x64
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Debug|x86.ActiveCfg = Debug|x86
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Debug|x86.Build.0 = Debug|x86
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Debug|x86.Deploy.0 = Debug|x86
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Release|Any CPU.ActiveCfg = Release|x86
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Release|ARM.ActiveCfg = Release|ARM
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Release|ARM.Build.0 = Release|ARM
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Release|ARM.Deploy.0 = Release|ARM
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Release|x64.ActiveCfg = Release|x64
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Release|x64.Build.0 = Release|x64
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Release|x64.Deploy.0 = Release|x64
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Release|x86.ActiveCfg = Release|x86
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Release|x86.Build.0 = Release|x86
+		{214FE68B-CE41-445E-B33E-656247C85D18}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
