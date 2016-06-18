@@ -10,8 +10,8 @@ namespace Pentagram.ViewModels
 {
 	public class SongVM : OpenableObservableData
 	{
-		private readonly Song _song = null;
-		public Song Song { get { return _song; } }
+		private Song _song = null;
+		public Song Song { get { return _song; } private set { _song = value; RaisePropertyChanged_UI(); } }
 
 		private readonly SongHeader _songHeader = null;
 		public SongHeader SongHeader { get { return _songHeader; } }
@@ -20,11 +20,11 @@ namespace Pentagram.ViewModels
 		{
 			if (songHeader == null) throw new ArgumentNullException("SongVM needs a song");
 			_songHeader = songHeader;
-			if (_song?.Id != songHeader.Id) _song = Song.GetCreateInstance(songHeader.Id);
 		}
-		protected override Task OpenMayOverrideAsync(object args = null)
+		protected override async Task OpenMayOverrideAsync(object args = null)
 		{
-			return _song.OpenAsync();
+			Song = await Song.GetCreateInstanceAsync(_songHeader.Id);
+			await _song.OpenAsync().ConfigureAwait(false);
 		}
 		protected override Task CloseMayOverrideAsync()
 		{

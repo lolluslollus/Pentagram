@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Utilz;
 using Utilz.Data;
@@ -94,28 +95,38 @@ namespace Pentagram.PersistentData
 
 		#region ctor
 		private static Song _instance = null;
-		private static readonly object _instanceLocker = new object();
-		internal static Song GetCreateInstance(string id)
+		private static readonly Semaphore _instanceSemaphore = new Semaphore(1, 1);
+		internal static async Task<Song> GetCreateInstanceAsync(string id)
 		{
-			lock (_instanceLocker)
+			try
 			{
+				_instanceSemaphore.WaitOne();
 				if (_instance == null)
 				{
 					_instance = new Song(id);
 				}
 				else if (_instance.Id != id)
 				{
-					Task clo = _instance.CloseAsync();
+					await _instance.CloseAsync().ConfigureAwait(false);
 					_instance = new Song(id);
 				}
 				return _instance;
 			}
+			finally
+			{
+				_instanceSemaphore.TryRelease();
+			}
 		}
 		internal static Song GetInstance()
 		{
-			lock (_instanceLocker)
+			try
 			{
+				_instanceSemaphore.WaitOne();
 				return _instance;
+			}
+			finally
+			{
+				_instanceSemaphore.TryRelease();
 			}
 		}
 

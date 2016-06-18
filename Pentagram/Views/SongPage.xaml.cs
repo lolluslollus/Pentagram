@@ -25,14 +25,6 @@ namespace Pentagram.Views
     /// </summary>
     public sealed partial class SongPage : ObservablePage
     {
-		//public SongHeader Song
-		//{
-		//	get { return (SongHeader)GetValue(SongProperty); }
-		//	set { SetValue(SongProperty, value); }
-		//}
-		//public static readonly DependencyProperty SongProperty =
-		//	DependencyProperty.Register("Song", typeof(SongHeader), typeof(SongPage), new PropertyMetadata(null));
-
 		private SongVM _vm = null;
 		public SongVM VM { get { return _vm; } private set { _vm = value; RaisePropertyChanged_UI(); } }
 

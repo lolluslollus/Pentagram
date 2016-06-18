@@ -90,8 +90,6 @@ namespace Pentagram.PersistentData
 				}
 				else
 				{
-					var song = Song.GetCreateInstance(songHeader.Id);
-
 					await RunInUiThreadAsync(() =>
 					{
 						CurrentSongHeader = songHeader;
