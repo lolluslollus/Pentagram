@@ -95,6 +95,11 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PersistentData\Enums.cs" />
+    <Compile Include="PersistentData\Song.cs" />
+    <Compile Include="PersistentData\Chord.cs" />
+    <Compile Include="PersistentData\Touch.cs" />
+    <Compile Include="PersistentData\Voice.cs" />
     <Compile Include="ViewModels\AllVM.cs" />
     <Compile Include="ViewModels\SongVM.cs" />
     <Compile Include="ViewModels\VoiceVM.cs" />

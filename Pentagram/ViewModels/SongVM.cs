@@ -8,25 +8,36 @@ using Utilz.Data;
 
 namespace Pentagram.ViewModels
 {
-	public class SongVM : ObservableData
+	public class SongVM : OpenableObservableData
 	{
 		private readonly Song _song = null;
 		public Song Song { get { return _song; } }
 
-		public SongVM(Song song)
-		{
-			if (song == null) throw new ArgumentNullException("SongVM needs a song");
-			_song = song;
-		}
+		private readonly SongHeader _songHeader = null;
+		public SongHeader SongHeader { get { return _songHeader; } }
 
-		public void AddVoice(Ritmi ritmo, Chiavi chiave)
+		public SongVM(SongHeader songHeader)
+		{
+			if (songHeader == null) throw new ArgumentNullException("SongVM needs a song");
+			_songHeader = songHeader;
+			if (_song?.Id != songHeader.Id) _song = Song.GetCreateInstance(songHeader.Id);
+		}
+		protected override Task OpenMayOverrideAsync(object args = null)
+		{
+			return _song.OpenAsync();
+		}
+		protected override Task CloseMayOverrideAsync()
+		{
+			return _song.CloseAsync();
+		}
+		public Task<bool> AddVoiceAsync(Ritmi ritmo, Chiavi chiave)
 		{
 			var voice = new Voice(ritmo, chiave);
-			_song.AddVoice(voice);
+			return _song.AddVoiceAsync(voice);
 		}
-		public void RemoveVoice(Voice voice)
+		public Task<bool> RemoveVoiceAsync(Voice voice)
 		{
-			_song.RemoveVoice(voice);
+			return _song.RemoveVoiceAsync(voice);
 		}
 	}
 }

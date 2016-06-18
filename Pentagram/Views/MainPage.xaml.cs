@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -31,25 +32,30 @@ namespace Pentagram.Views
 		{
 			_vm = new AllVM();
 			this.InitializeComponent();
-			
 		}
 
+		protected override void OnNavigatedTo(NavigationEventArgs e)
+		{
+			Task open = _vm.OpenAsync();
+		}
 		private void OnAddSong_Click(object sender, RoutedEventArgs e)
 		{
-			_vm.AddSong("new song");
+			_vm.AddSongAsync("new song");
 		}
 
 		private void OnRemoveSong_Click(object sender, RoutedEventArgs e)
 		{
-			var song = (e.OriginalSource as FrameworkElement).DataContext as Song;
-			_vm.RemoveSong(song);
+			var songHeader = (e.OriginalSource as FrameworkElement).DataContext as SongHeader;
+			_vm.RemoveSongAsync(songHeader);
 		}
 
-		private void OnSetCurrentSong_Click(object sender, RoutedEventArgs e)
+		private async void OnSetCurrentSong_Click(object sender, RoutedEventArgs e)
 		{
-			var song = (e.OriginalSource as FrameworkElement).DataContext as Song;
-			_vm.SetCurrentSong(song);
-			Frame.Navigate(typeof(SongPage), song);
+			var songHeader = (e.OriginalSource as FrameworkElement).DataContext as SongHeader;
+			if (await _vm.TrySetCurrentSongAsync(songHeader))
+			{
+				Frame.Navigate(typeof(SongPage), songHeader);
+			}
 		}
 	}
 }

@@ -25,14 +25,12 @@ namespace Pentagram.Views
 	{
 		public readonly static int HOW_MANY_WHITE_NOTES;
 		public readonly static double LINE_GAP;
-		//public readonly static double LINE_GAP_HALF;
-		//public readonly static double LINE_GAP_TWICE;
 		public readonly static double BAR_GAP;
 		public readonly static double MIN_MAST_HEIGHT;
 		private static Note _defaultNote0 = new Note(DurateCanoniche.Semibiscroma, 3, NoteBianche.@do, Accidenti.Bequadro);
-		private static Note _defaultNote1 = new Note(DurateCanoniche.Semibiscroma, 3, NoteBianche.mi, Accidenti.Bequadro);
-		private static Note _defaultNote2 = new Note(DurateCanoniche.Semibiscroma, 3, NoteBianche.sol, Accidenti.Bequadro);
-		private static Note _defaultNote3 = new Note(DurateCanoniche.Semibiscroma, 4, NoteBianche.@do, Accidenti.Bequadro);
+		private static Note _defaultNote1 = new Note(DurateCanoniche.Semibiscroma, 3, NoteBianche.mi, Accidenti.Diesis);
+		private static Note _defaultNote2 = new Note(DurateCanoniche.Semibiscroma, 3, NoteBianche.sol, Accidenti.Bemolle);
+		private static Note _defaultNote3 = new Note(DurateCanoniche.Minima, 4, NoteBianche.@do, Accidenti.Bequadro);
 		private static Chord _defaultChord = new Chord(_defaultNote0, _defaultNote1, _defaultNote2, _defaultNote3);
 		private static readonly BitmapImage _blackBallImage = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/palla_nera_100.png", UriKind.Absolute) };
 		private static readonly BitmapImage _emptyBallImage = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/palla_vuota_100.png", UriKind.Absolute) };
@@ -40,12 +38,18 @@ namespace Pentagram.Views
 		static ChordControl()
 		{
 			LINE_GAP = (double)App.Current.Resources["LineGap"];
-			//LINE_GAP_HALF = LINE_GAP / 2.0;
-			//LINE_GAP_TWICE = LINE_GAP * 2.0;
-			BAR_GAP = (double)App.Current.Resources["BarGapHeight"];
+			BAR_GAP = (double)App.Current.Resources["BarGap"];
 			MIN_MAST_HEIGHT = (double)App.Current.Resources["MinMastHeight"];
 			HOW_MANY_WHITE_NOTES = Enum.GetValues(typeof(NoteBianche)).GetLength(0);
 		}
+
+		public Chiavi Chiave
+		{
+			get { return (Chiavi)GetValue(ChiaveProperty); }
+			set { SetValue(ChiaveProperty, value); }
+		}
+		public static readonly DependencyProperty ChiaveProperty =
+			DependencyProperty.Register("Chiave", typeof(Chiavi), typeof(ChordControl), new PropertyMetadata(All.DEFAULT_CHIAVE));
 
 		public Chord Chord
 		{
@@ -53,22 +57,21 @@ namespace Pentagram.Views
 			set { SetValue(ChordProperty, value); }
 		}
 		public static readonly DependencyProperty ChordProperty =
-			DependencyProperty.Register("Chord", typeof(Chord), typeof(ChordControl), new PropertyMetadata(_defaultChord, OnChordChanged));
+			DependencyProperty.Register("Chord", typeof(Chord), typeof(ChordControl), new PropertyMetadata(null, OnChordChanged));
 		private static void OnChordChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
 		{
 			var instance = obj as ChordControl;
 			//var oldValue = args.OldValue as Chord;
 			//var newValue = args.NewValue as Chord;
-
 			instance?.Update();
 		}
 
 
-		private double _verticalMastScale = 5.0;
-		public double VerticalMastScale { get { return _verticalMastScale; } private set { _verticalMastScale = value; RaisePropertyChanged_UI(); } }
+		//private double _verticalMastScale = 5.0;
+		//public double VerticalMastScale { get { return _verticalMastScale; } private set { _verticalMastScale = value; RaisePropertyChanged_UI(); } }
 
-		private string _pathData = "M24,12.5 V-80 H50 V-78 H24 V-70 H50 V-68 H24 V-60";
-		public string PathData { get { return _pathData; } private set { _pathData = value; RaisePropertyChanged_UI(); } }
+		//private string _pathData = "M24,12.5 V-80 H50 V-78 H24 V-70 H50 V-68 H24 V-60";
+		//public string PathData { get { return _pathData; } private set { _pathData = value; RaisePropertyChanged_UI(); } }
 
 		public ChordControl()
 		{
@@ -86,11 +89,7 @@ namespace Pentagram.Views
 				if (Chord.NextJoinedChords.Count > 0 || Chord.PrevJoinedChords.Count > 0) LayoutRoot.Width = LINE_GAP * 2.0;
 				else LayoutRoot.Width = LINE_GAP * 3.0;
 
-
-				// var highestNote = Chord.GetHighestNote();
-				// int[] ballYs = new int[Chord.Touches.Count(tou => tou is Note)];
 				var ballYsForMast = new List<double>();
-				// double mastTopY;
 				int howManyBars = 0;
 				bool isNeedsMast = false;
 				bool isNeedsBar = false;
@@ -100,12 +99,15 @@ namespace Pentagram.Views
 				{
 					var newBall = new Image()
 					{
-						Source = note.DurataCanonica == DurateCanoniche.Breve || note.DurataCanonica == DurateCanoniche.Semibreve ? _emptyBallImage : _blackBallImage,
+						Source = note.DurataCanonica == DurateCanoniche.Breve || note.DurataCanonica == DurateCanoniche.Semibreve || note.DurataCanonica == DurateCanoniche.Minima ? _emptyBallImage : _blackBallImage,
 						Height = LINE_GAP
 					};
 					LayoutRoot.Children.Add(newBall);
 
-					double ballY = ((3 - Convert.ToInt32(note.Ottava)) * HOW_MANY_WHITE_NOTES * LINE_GAP / 2.0 + LINE_GAP / 2.0 * (HOW_MANY_WHITE_NOTES - (int)note.NotaBianca));
+					double ballY = ((4.0 - Convert.ToDouble(note.Ottava)) * HOW_MANY_WHITE_NOTES * LINE_GAP / 2.0 + LINE_GAP / 2.0 * (HOW_MANY_WHITE_NOTES - (int)note.NotaBianca));
+					if (Chiave == Chiavi.Violino) ballY -= LINE_GAP / 2.0;
+					else if (Chiave == Chiavi.Basso) ballY -= LINE_GAP * 7.5;
+
 					Canvas.SetTop(newBall, ballY);
 
 					if (note.DurataCanonica == DurateCanoniche.Breve || note.DurataCanonica == DurateCanoniche.Semibreve) continue;
@@ -175,31 +177,27 @@ namespace Pentagram.Views
 				Data = geom
 			};
 			LayoutRoot.Children.Add(newPath);
-			Canvas.SetTop(newPath, ballYs.Min());
 
 			return Tuple.Create(ballYs.Min(), minY);
 		}
 
 		private void AddBar(double barNo, Tuple<double, double> canvasTopAndMastTop, double barWidth)
 		{
-			double barX0 = LINE_GAP - 2.0;
-			double barX1 = barX0 + barWidth;
 			var bar = new PathFigure()
 			{
-				StartPoint = new Point(barX0, canvasTopAndMastTop.Item2 + barNo * BAR_GAP)
+				StartPoint = new Point(LINE_GAP - 2.0, canvasTopAndMastTop.Item2 + barNo * BAR_GAP)
 			};
-			bar.Segments.Add(new LineSegment() { Point = new Point(barX1, canvasTopAndMastTop.Item2 + barNo * BAR_GAP) });
+			bar.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + barWidth, canvasTopAndMastTop.Item2 + barNo * BAR_GAP) });
 			var geom = new PathGeometry();
 			geom.Figures.Add(bar);
 
 			var newPath = new Windows.UI.Xaml.Shapes.Path()
 			{
 				Stroke = new SolidColorBrush(Windows.UI.Colors.Black),
-				StrokeThickness = 4.0,
+				StrokeThickness = 6.0,
 				Data = geom
 			};
 			LayoutRoot.Children.Add(newPath);
-			Canvas.SetTop(newPath, canvasTopAndMastTop.Item1);
 		}
 	}
 }

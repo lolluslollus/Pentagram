@@ -8,27 +8,31 @@ using Utilz.Data;
 
 namespace Pentagram.ViewModels
 {
-	public class AllVM : ObservableData
+	public class AllVM : OpenableObservableData
 	{
 		private readonly All _all = null;
 		public All All { get { return _all; } }
 
 		public AllVM()
 		{
-			_all = App.All;
+			_all = All.GetCreateInstance();
 		}
-
-		public void AddSong(string name)
+		protected override async Task OpenMayOverrideAsync(object args = null)
 		{
-			_all.AddSong(new Song(name));
+			await _all.OpenAsync();
 		}
-		public void RemoveSong(Song song)
+		public Task<bool> AddSongAsync(string name)
 		{
-			_all.RemoveSong(song);
+			return _all.AddSongAsync(new SongHeader(name, true));
 		}
-		public void SetCurrentSong(Song song)
+		public Task<bool> RemoveSongAsync(SongHeader songHeader)
 		{
-			_all.SetCurrentSong(song);
+			return _all.RemoveSongAsync(songHeader);
+		}
+		public async Task<bool> TrySetCurrentSongAsync(SongHeader songHeader)
+		{
+			if (songHeader == null) return false;
+			return await _all.TrySetCurrentSongAsync(songHeader).ConfigureAwait(false);
 		}
 	}
 }

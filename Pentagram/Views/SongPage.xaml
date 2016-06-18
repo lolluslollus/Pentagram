@@ -15,7 +15,7 @@
 			<RowDefinition />
 		</Grid.RowDefinitions>
 
-		<TextBlock Text="{x:Bind VM.Song.Name, Mode=OneWay}" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold"/>
+		<TextBlock Text="{x:Bind VM.SongHeader.Name, Mode=OneWay}" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold"/>
 
 		<uctl:UniversalWrapPanel Grid.Row="1" Orientation="Horizontal">
 			<AppBarButton Click="OnAddVoice_Click" Icon="Add"/>

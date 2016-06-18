@@ -25,13 +25,13 @@ namespace Pentagram.Views
     /// </summary>
     public sealed partial class SongPage : ObservablePage
     {
-		public Song Song
-		{
-			get { return (Song)GetValue(SongProperty); }
-			set { SetValue(SongProperty, value); }
-		}
-		public static readonly DependencyProperty SongProperty =
-			DependencyProperty.Register("Song", typeof(Song), typeof(SongPage), new PropertyMetadata(null));
+		//public SongHeader Song
+		//{
+		//	get { return (SongHeader)GetValue(SongProperty); }
+		//	set { SetValue(SongProperty, value); }
+		//}
+		//public static readonly DependencyProperty SongProperty =
+		//	DependencyProperty.Register("Song", typeof(SongHeader), typeof(SongPage), new PropertyMetadata(null));
 
 		private SongVM _vm = null;
 		public SongVM VM { get { return _vm; } private set { _vm = value; RaisePropertyChanged_UI(); } }
@@ -41,14 +41,19 @@ namespace Pentagram.Views
 			this.InitializeComponent();			
         }
 
-		protected override void OnNavigatedTo(NavigationEventArgs e)
+		protected override async void OnNavigatedTo(NavigationEventArgs e)
 		{
-			VM = new SongVM(e.Parameter as Song);
-			base.OnNavigatedTo(e);
+			VM = new SongVM(e.Parameter as SongHeader);
+			await _vm.OpenAsync().ConfigureAwait(false);
 		}
+		protected override async void OnNavigatedFrom(NavigationEventArgs e)
+		{
+			await _vm.CloseAsync().ConfigureAwait(false);
+		}
+
 		private void OnAddVoice_Click(object sender, RoutedEventArgs e)
 		{
-			_vm.AddVoice(Ritmi.qq, Chiavi.Violino);
+			_vm.AddVoiceAsync(All.DEFAULT_RITMO, All.DEFAULT_CHIAVE);
 		}
 
 		private void OnGotoMain_Click(object sender, RoutedEventArgs e)
