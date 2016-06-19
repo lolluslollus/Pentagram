@@ -13,6 +13,10 @@ namespace Pentagram.PersistentData
 	// [DataContract]
 	public sealed class Chord : Sound
 	{
+		private bool _isChromaFlagsBelow = false;
+		[DataMember]
+		public bool IsChromaFlagsBelow { get { return _isChromaFlagsBelow; } private set { _isChromaFlagsBelow = value; RaisePropertyChanged(); } }
+
 		private SegniSuNote _segno = SegniSuNote.Nil;
 		[DataMember]
 		public SegniSuNote Segno { get { return _segno; } private set { _segno = value; RaisePropertyChanged(); } }
@@ -30,35 +34,54 @@ namespace Pentagram.PersistentData
 		[DataMember]
 		public Chord NextJoinedChord { get { return _nextJoinedChord; } set { _nextJoinedChord = value; RaisePropertyChanged(); } }
 
-		public Chord(Duration duration, SegniSuNote segno, Tone tone) : base(duration)
-		{
-			if (tone == null) throw new ArgumentOutOfRangeException("Chord ctor wants a tone");
-			Segno = segno;
-			_tones.Add(tone);
-		}
+		//public Chord(Duration duration, SegniSuNote segno, Tone tone) : base(duration)
+		//{
+		//	if (tone == null) throw new ArgumentOutOfRangeException("Chord ctor wants a tone");
+		//	Segno = segno;
+		//	_tones.Add(tone);
+		//}
 		public Chord(Duration duration, SegniSuNote segno, params Tone[] tones) : base(duration)
 		{
 			if (tones == null) throw new ArgumentOutOfRangeException("Chord ctor wants some notes");
 			Segno = segno;
 			_tones.AddRange(tones);
 		}
-		public Tone GetHighestTone()
+
+		public void SetChromaFlags(bool below)
 		{
-			Tone result = null;
-			foreach (Tone tone in _tones)
+			IsChromaFlagsBelow = below;
+
+			Chord otherChord = PrevJoinedChord;
+			while (otherChord != null)
 			{
-				if (result == null || tone.CompareTo(result) > 0) result = tone;
+				otherChord.IsChromaFlagsBelow = below;
+				otherChord = otherChord.PrevJoinedChord;
 			}
-			return result;
-		}
-		public Tone GetLowestTone()
-		{
-			Tone result = null;
-			foreach (Tone tone in _tones)
+
+			otherChord = NextJoinedChord;
+			while (otherChord != null)
 			{
-				if (result == null || tone.CompareTo(result) < 0) result = tone;
+				otherChord.IsChromaFlagsBelow = below;
+				otherChord = otherChord.NextJoinedChord;
 			}
-			return result;
 		}
+		//public Tone GetHighestTone()
+		//{
+		//	Tone result = null;
+		//	foreach (Tone tone in _tones)
+		//	{
+		//		if (result == null || tone.CompareTo(result) > 0) result = tone;
+		//	}
+		//	return result;
+		//}
+		//public Tone GetLowestTone()
+		//{
+		//	Tone result = null;
+		//	foreach (Tone tone in _tones)
+		//	{
+		//		if (result == null || tone.CompareTo(result) < 0) result = tone;
+		//	}
+		//	return result;
+		//}
 	}
 }
