@@ -62,11 +62,8 @@ namespace Pentagram.PersistentData
 
 				bool isDeleteCurrentSong = _currentSongHeader?.Id == songHeader.Id;
 
-				if (isDeleteCurrentSong)//LOLLO TODO always delete the song directory
-				{
-					var dir = await _currentSongHeader.GetDirectoryAsync().ConfigureAwait(false);
-					await dir.DeleteAsync(StorageDeleteOption.PermanentDelete).AsTask().ConfigureAwait(false);
-				}
+				var dir = await _currentSongHeader.GetDirectoryAsync().ConfigureAwait(false);
+				await dir.DeleteAsync(StorageDeleteOption.PermanentDelete).AsTask().ConfigureAwait(false);
 
 				await RunInUiThreadAsync(() =>
 				{

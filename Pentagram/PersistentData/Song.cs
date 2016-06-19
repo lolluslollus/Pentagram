@@ -36,7 +36,7 @@ namespace Pentagram.PersistentData
 		#region utilz
 		protected const string DIR_NAME = "LolloSessionSongs";
 		protected const string BODY_FILE_NAME = "Body.xml";
-		//private const string HEADER_FILE_NAME = "Header.xml";
+
 		internal async Task<StorageFolder> GetDirectoryAsync()
 		{
 			if (!IsValid) return null;

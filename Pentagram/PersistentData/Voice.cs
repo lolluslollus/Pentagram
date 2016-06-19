@@ -64,9 +64,7 @@ namespace Pentagram.PersistentData
 		}
 		public void RemoveSoundFromInstant(Sound sound, InstantWithTouches instant)
 		{
-			if (sound == null || instant == null) return;
-			var instantBeingUpdated = _instants.FirstOrDefault(tou => tou == instant);
-			if (instantBeingUpdated == null) return;
+			if (sound == null || instant == null || !_instants.Contains(instant)) return;
 
 			if (sound is Chord)
 			{
@@ -75,26 +73,26 @@ namespace Pentagram.PersistentData
 
 				if (idx > 0)
 				{
-					var instantPrev = _instants[idx - 1];
-					foreach (Chord chordInInstantPrev in instantPrev.Sounds.Where(sou => sou is Chord))
+					var prevInstant = _instants[idx - 1];
+					foreach (Chord chordInPrevInstant in prevInstant.Sounds.Where(sou => sou is Chord))
 					{
-						if (chordInInstantPrev.NextJoinedChord == chord) chordInInstantPrev.NextJoinedChord = null;
+						if (chordInPrevInstant.NextJoinedChord == chord) chordInPrevInstant.NextJoinedChord = null;
 					}
 				}
 				if (idx < _instants.Count - 1)
 				{
-					var instantNext = _instants[idx + 1];
-					foreach (Chord chordInInstantNext in instantNext.Sounds.Where(sou => sou is Chord))
+					var nextInstant = _instants[idx + 1];
+					foreach (Chord chordInNextInstant in nextInstant.Sounds.Where(sou => sou is Chord))
 					{
-						if (chordInInstantNext.PrevJoinedChord == chord) chordInInstantNext.PrevJoinedChord = null;
+						if (chordInNextInstant.PrevJoinedChord == chord) chordInNextInstant.PrevJoinedChord = null;
 					}
 				}
 			}
 
-			instantBeingUpdated.Sounds.Remove(sound);
+			instant.Sounds.Remove(sound);
 
-			if (instantBeingUpdated.Sounds.Count > 0) return;
-			_instants.Remove(instantBeingUpdated);
+			if (instant.Sounds.Count > 0) return;
+			_instants.Remove(instant);
 		}
 		public void AddToneToChord(Tone tone, Chord chord, InstantWithTouches instant)
 		{
@@ -120,33 +118,37 @@ namespace Pentagram.PersistentData
 			if (chordBeingUpdated.Tones.Count > 0) return;
 			RemoveSoundFromInstant(chordBeingUpdated, instant);
 		}
-		public void LinkChord1ToChord2(Chord chord1, Chord chord2, InstantWithTouches instant1, InstantWithTouches instant2)
+		public bool TryLinkChord1ToChord2(Chord chord1, Chord chord2, InstantWithTouches instant1, InstantWithTouches instant2)
 		{
-			if (chord1 == null || chord2 == null || instant1 == null || instant2 == null || !instant1.Sounds.Contains(chord1) || !instant2.Sounds.Contains(chord2)) return;
+			bool result = false;
+
+			if (chord1 == null || chord2 == null || instant1 == null || instant2 == null || !instant1.Sounds.Contains(chord1) || !instant2.Sounds.Contains(chord2)) return result;
+			if (chord1.Duration.DurataCanonica.CompareTo(DurateCanoniche.Croma) > 0 || chord2.Duration.DurataCanonica.CompareTo(DurateCanoniche.Croma) > 0) return result;
+
 			int instant1Idx = _instants.IndexOf(instant1);
 			int instant2Idx = _instants.IndexOf(instant2);
-			//if (Math.Abs(instant1Idx - instant2Idx) > 1) return;
 
-			//int chord1Idx = instant1.Sounds.IndexOf(chord1);
-			//int chord2Idx = instant2.Sounds.IndexOf(chord2);
 			if (instant1Idx + 1 == instant2Idx)
 			{
 				chord2.PrevJoinedChord = chord1;
 				chord1.NextJoinedChord = chord2;
+				result = true;
 			}
 			else if (instant1Idx - 1 == instant2Idx)
 			{
 				chord2.NextJoinedChord = chord1;
 				chord1.PrevJoinedChord = chord2;
+				result = true;
 			}
+
+			return result;
 		}
 		public void UnlinkChord1FromChord2(Chord chord1, Chord chord2, InstantWithTouches instant1, InstantWithTouches instant2)
 		{
 			if (chord1 == null || chord2 == null || instant1 == null || instant2 == null || !instant1.Sounds.Contains(chord1) || !instant2.Sounds.Contains(chord2)) return;
 			int instant1Idx = _instants.IndexOf(instant1);
 			int instant2Idx = _instants.IndexOf(instant2);
-			//int chord1Idx = instant1.Sounds.IndexOf(chord1);
-			//int chord2Idx = instant2.Sounds.IndexOf(chord2);
+
 			if (instant1Idx < instant2Idx)
 			{
 				if (chord2.PrevJoinedChord == chord1) chord2.PrevJoinedChord = null;

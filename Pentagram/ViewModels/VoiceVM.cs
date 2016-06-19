@@ -20,18 +20,30 @@ namespace Pentagram.ViewModels
 		private static Chord _defaultChord3 = new Chord(new Duration(DurateCanoniche.Semicroma), SegniSuNote.Nil, _defaultTone0, _defaultTone2);
 		private static Chord _defaultChord4 = new Chord(new Duration(DurateCanoniche.Semicroma), SegniSuNote.Nil, _defaultTone0, _defaultTone1, _defaultTone2, _defaultTone3);
 		private static Chord _defaultChord5 = new Chord(new Duration(DurateCanoniche.Biscroma), SegniSuNote.Nil, _defaultTone0, _defaultTone2);
+
 		private static Chord _defaultChord6 = new Chord(new Duration(DurateCanoniche.Semicroma), SegniSuNote.Nil, _defaultTone0, _defaultTone2);
 		private static Chord _defaultChord7 = new Chord(new Duration(DurateCanoniche.Semicroma), SegniSuNote.Nil, _defaultTone1, _defaultTone2);
 		private static Chord _defaultChord8 = new Chord(new Duration(DurateCanoniche.Biscroma), SegniSuNote.Nil, _defaultTone2, _defaultTone3);
+
 		private static Chord _defaultChord9 = new Chord(new Duration(DurateCanoniche.Semicroma), SegniSuNote.Nil, _defaultTone0, _defaultTone2);
 		private static Chord _defaultChord10 = new Chord(new Duration(DurateCanoniche.Biscroma), SegniSuNote.Nil, _defaultTone1, _defaultTone2);
 		private static Chord _defaultChord11 = new Chord(new Duration(DurateCanoniche.Semicroma), SegniSuNote.Nil, _defaultTone2, _defaultTone3);
+
 		private static Chord _defaultChord12 = new Chord(new Duration(DurateCanoniche.Biscroma), SegniSuNote.Nil, _defaultTone0, _defaultTone2);
 		private static Chord _defaultChord13 = new Chord(new Duration(DurateCanoniche.Semicroma), SegniSuNote.Nil, _defaultTone1, _defaultTone2);
 		private static Chord _defaultChord14 = new Chord(new Duration(DurateCanoniche.Semicroma), SegniSuNote.Nil, _defaultTone2, _defaultTone3);
+
 		private static Chord _defaultChord15 = new Chord(new Duration(DurateCanoniche.Semicroma), SegniSuNote.Nil, _defaultTone0, _defaultTone2);
-		private static Chord _defaultChord16 = new Chord(new Duration(DurateCanoniche.Semicroma), SegniSuNote.Nil, _defaultTone1, _defaultTone2);
+		private static Chord _defaultChord16 = new Chord(new Duration(DurateCanoniche.Croma), SegniSuNote.Nil, _defaultTone1, _defaultTone2);
 		private static Chord _defaultChord17 = new Chord(new Duration(DurateCanoniche.Semicroma), SegniSuNote.Nil, _defaultTone2, _defaultTone3);
+
+		private static Chord _defaultChord18 = new Chord(new Duration(DurateCanoniche.Semicroma), SegniSuNote.Nil, _defaultTone0, _defaultTone2);
+		private static Chord _defaultChord19 = new Chord(new Duration(DurateCanoniche.Biscroma), SegniSuNote.Nil, _defaultTone1, _defaultTone2);
+		private static Chord _defaultChord20 = new Chord(new Duration(DurateCanoniche.Croma), SegniSuNote.Nil, _defaultTone2, _defaultTone3);
+
+		private static Chord _defaultChord21 = new Chord(new Duration(DurateCanoniche.Croma), SegniSuNote.Nil, _defaultTone0, _defaultTone2);
+		private static Chord _defaultChord22 = new Chord(new Duration(DurateCanoniche.Semicroma), SegniSuNote.Nil, _defaultTone1, _defaultTone2);
+		private static Chord _defaultChord23 = new Chord(new Duration(DurateCanoniche.Biscroma), SegniSuNote.Nil, _defaultTone2, _defaultTone3);
 
 		private readonly Voice _voice = null;
 		public Voice Voice { get { return _voice; } }
@@ -46,33 +58,33 @@ namespace Pentagram.ViewModels
 				InstantWithTouches ins1 = null;
 				InstantWithTouches ins2 = null;
 
-				voice.AddInstant();
-				ins0 = voice.Instants[0];
-				voice.AddSoundToInstant(_defaultChord0, ins0);
+				//voice.AddInstant();
+				//ins0 = voice.Instants[0];
+				//voice.AddSoundToInstant(_defaultChord0, ins0);
 
-				voice.AddInstant();
-				ins0 = voice.Instants[1];
-				voice.AddSoundToInstant(_defaultChord1, ins0);
+				//voice.AddInstant();
+				//ins0 = voice.Instants[1];
+				//voice.AddSoundToInstant(_defaultChord1, ins0);
 
-				voice.AddInstant();
-				ins0 = voice.Instants[2];
-				voice.AddSoundToInstant(_defaultChord2, ins0);
+				//voice.AddInstant();
+				//ins0 = voice.Instants[2];
+				//voice.AddSoundToInstant(_defaultChord2, ins0);
 
-				voice.AddInstant();
-				ins1 = voice.Instants[3];
-				voice.AddSoundToInstant(_defaultChord3, ins1);
+				//voice.AddInstant();
+				//ins1 = voice.Instants[3];
+				//voice.AddSoundToInstant(_defaultChord3, ins1);
 
-				voice.LinkChord1ToChord2(_defaultChord2, _defaultChord3, ins0, ins1);
+				//voice.LinkChord1ToChord2(_defaultChord2, _defaultChord3, ins0, ins1);
 
-				voice.AddInstant();
-				ins0 = voice.Instants[4];
-				voice.AddSoundToInstant(_defaultChord4, ins0);
+				//voice.AddInstant();
+				//ins0 = voice.Instants[4];
+				//voice.AddSoundToInstant(_defaultChord4, ins0);
 
-				voice.AddInstant();
-				ins1 = voice.Instants[5];
-				voice.AddSoundToInstant(_defaultChord5, ins1);
+				//voice.AddInstant();
+				//ins1 = voice.Instants[5];
+				//voice.AddSoundToInstant(_defaultChord5, ins1);
 
-				voice.LinkChord1ToChord2(_defaultChord4, _defaultChord5, ins0, ins1);
+				//voice.LinkChord1ToChord2(_defaultChord4, _defaultChord5, ins0, ins1);
 
 				ins0 = voice.AddInstant();
 				voice.AddSoundToInstant(_defaultChord6, ins0);
@@ -81,8 +93,8 @@ namespace Pentagram.ViewModels
 				ins2 = voice.AddInstant();
 				voice.AddSoundToInstant(_defaultChord8, ins2);
 
-				voice.LinkChord1ToChord2(_defaultChord6, _defaultChord7, ins0, ins1);
-				voice.LinkChord1ToChord2(_defaultChord7, _defaultChord8, ins1, ins2);
+				voice.TryLinkChord1ToChord2(_defaultChord6, _defaultChord7, ins0, ins1);
+				voice.TryLinkChord1ToChord2(_defaultChord7, _defaultChord8, ins1, ins2);
 
 				ins0 = voice.AddInstant();
 				voice.AddSoundToInstant(_defaultChord9, ins0);
@@ -91,8 +103,8 @@ namespace Pentagram.ViewModels
 				ins2 = voice.AddInstant();
 				voice.AddSoundToInstant(_defaultChord11, ins2);
 
-				voice.LinkChord1ToChord2(_defaultChord9, _defaultChord10, ins0, ins1);
-				voice.LinkChord1ToChord2(_defaultChord10, _defaultChord11, ins1, ins2);
+				voice.TryLinkChord1ToChord2(_defaultChord9, _defaultChord10, ins0, ins1);
+				voice.TryLinkChord1ToChord2(_defaultChord10, _defaultChord11, ins1, ins2);
 
 				ins0 = voice.AddInstant();
 				voice.AddSoundToInstant(_defaultChord12, ins0);
@@ -101,8 +113,8 @@ namespace Pentagram.ViewModels
 				ins2 = voice.AddInstant();
 				voice.AddSoundToInstant(_defaultChord14, ins2);
 
-				voice.LinkChord1ToChord2(_defaultChord12, _defaultChord13, ins0, ins1);
-				voice.LinkChord1ToChord2(_defaultChord13, _defaultChord14, ins1, ins2);
+				voice.TryLinkChord1ToChord2(_defaultChord12, _defaultChord13, ins0, ins1);
+				voice.TryLinkChord1ToChord2(_defaultChord13, _defaultChord14, ins1, ins2);
 
 				ins0 = voice.AddInstant();
 				voice.AddSoundToInstant(_defaultChord15, ins0);
@@ -111,8 +123,28 @@ namespace Pentagram.ViewModels
 				ins2 = voice.AddInstant();
 				voice.AddSoundToInstant(_defaultChord17, ins2);
 
-				voice.LinkChord1ToChord2(_defaultChord15, _defaultChord16, ins0, ins1);
-				voice.LinkChord1ToChord2(_defaultChord16, _defaultChord17, ins1, ins2);
+				voice.TryLinkChord1ToChord2(_defaultChord15, _defaultChord16, ins0, ins1);
+				voice.TryLinkChord1ToChord2(_defaultChord16, _defaultChord17, ins1, ins2);
+
+				ins0 = voice.AddInstant();
+				voice.AddSoundToInstant(_defaultChord18, ins0);
+				ins1 = voice.AddInstant();
+				voice.AddSoundToInstant(_defaultChord19, ins1);
+				ins2 = voice.AddInstant();
+				voice.AddSoundToInstant(_defaultChord20, ins2);
+
+				voice.TryLinkChord1ToChord2(_defaultChord18, _defaultChord19, ins0, ins1);
+				voice.TryLinkChord1ToChord2(_defaultChord19, _defaultChord20, ins1, ins2);
+
+				ins0 = voice.AddInstant();
+				voice.AddSoundToInstant(_defaultChord21, ins0);
+				ins1 = voice.AddInstant();
+				voice.AddSoundToInstant(_defaultChord22, ins1);
+				ins2 = voice.AddInstant();
+				voice.AddSoundToInstant(_defaultChord23, ins2);
+
+				voice.TryLinkChord1ToChord2(_defaultChord21, _defaultChord22, ins0, ins1);
+				voice.TryLinkChord1ToChord2(_defaultChord22, _defaultChord23, ins1, ins2);
 			}
 		}
 

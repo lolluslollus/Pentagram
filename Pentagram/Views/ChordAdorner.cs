@@ -121,16 +121,17 @@ namespace Pentagram.Views
 					var mastTop = GetTallestMastTop(_chiave, _chord); // GetMastTop(ballYs);
 					DrawMast(ballYs, mastTop);
 
+					int howManyFlagsOrCurls = GetHowManyFlagsOrCurls(_chord);
 					if (GetIsNeedsFlags(_chord))
 					{
-						for (int i = 0; i < GetHowManyFlagsOrCurls(_chord); i++)
+						for (int i = 1; i <= howManyFlagsOrCurls; i++)
 						{
 							DrawFlag(i, mastTop);//, FLAG_WIDTH * 2.0);
 						}
 					}
 					else if (GetIsNeedsCurl(_chord))
 					{
-						for (int i = 0; i < GetHowManyFlagsOrCurls(_chord); i++)
+						for (int i = 1; i <= howManyFlagsOrCurls; i++)
 						{
 							DrawCurl(i, mastTop);//, FLAG_WIDTH);
 						}
@@ -162,42 +163,53 @@ namespace Pentagram.Views
 
 		private void DrawFlag(double flagNo, double mastTop/*, double flagWidth*/)
 		{
-			PathFigure flag = null;
-			
+			PathFigure flagLeft = new PathFigure() { StartPoint = new Point(LINE_GAP, mastTop + (flagNo - 1) * FLAG_GAP) };
+			PathFigure flagRight = new PathFigure() { StartPoint = new Point(LINE_GAP - 2.0, mastTop + (flagNo - 1) * FLAG_GAP) };
+
 			if (Chord.NextJoinedChord != null && Chord.PrevJoinedChord == null)
 			{
-				flag = new PathFigure() { StartPoint = new Point(LINE_GAP - 2.0, mastTop + flagNo * FLAG_GAP) };
-				// flag right
-				if (Chord.NextJoinedChord.Duration.CompareTo(Chord.Duration) == 0)
-					// flag wide up to the next note
-					flag.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + 2.0 * FLAG_WIDTH, mastTop + flagNo * FLAG_GAP) });
-				else 
-					// flag wide up to halfways
-					flag.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + FLAG_WIDTH, mastTop + flagNo * FLAG_GAP) });
+				/*
+				 * Se la seguente ha la barretta che sto facendo, aggiungi una barra a destra
+				 * altrimenti aggiungi una mezza barretta a destra
+				 */
+				if (GetHowManyFlagsOrCurls(Chord.NextJoinedChord) >= flagNo)
+					flagRight.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+				else
+					flagRight.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
 			}
 			else if (Chord.PrevJoinedChord != null && Chord.NextJoinedChord == null)
 			{
-				flag = new PathFigure() { StartPoint = new Point(LINE_GAP, mastTop + flagNo * FLAG_GAP) };
-				// flag left
-				if (Chord.PrevJoinedChord.Duration.CompareTo(Chord.Duration) == 0)
-					// flag wide up to the next note
-					flag.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 - 2.0 * FLAG_WIDTH, mastTop + flagNo * FLAG_GAP) });
+				/*
+				 * Se la precedente ha la barretta che sto facendo, aggiungi una barra a sinistra
+				 * altrimenti aggiungi una mezza barretta a sinistra
+				 */
+				if (GetHowManyFlagsOrCurls(Chord.PrevJoinedChord) >= flagNo)
+					flagLeft.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
 				else
-					// flag wide up to halfways
-					flag.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 - FLAG_WIDTH, mastTop + flagNo * FLAG_GAP) });
+					flagLeft.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
 			}
 			else
 			{
-				flag = new PathFigure() { StartPoint = new Point(LINE_GAP, mastTop + flagNo * FLAG_GAP) };
-				// flag left
-				if (Chord.PrevJoinedChord.Duration.CompareTo(Chord.Duration) != 0 && Chord.NextJoinedChord.Duration.CompareTo(Chord.Duration) != 0)
-					// flag wide up to halfways
-					flag.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 - FLAG_WIDTH, mastTop + flagNo * FLAG_GAP) });
+				// LOLLO TODO this looks good but check it a little more
+				/*
+				 * Se la precedente ha la barretta che sto facendo, aggiungi una barra a sinistra
+				 * altrimenti aggiungi una mezza barretta a sinistra
+				 * Poi
+				 * Se la seguente ha la barretta che sto facendo, aggiungi una barra a destra
+				 * altrimenti no
+				 * */
+				if (GetHowManyFlagsOrCurls(Chord.PrevJoinedChord) >= flagNo)
+					flagLeft.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+				else
+					flagLeft.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+				if (GetHowManyFlagsOrCurls(Chord.NextJoinedChord) >= flagNo)
+					flagRight.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
 			}
-			if (flag == null) return;
 
 			var geom = new PathGeometry();
-			geom.Figures.Add(flag);
+			if (flagLeft?.Segments != null && flagLeft.Segments.Count > 0) geom.Figures.Add(flagLeft);
+			if (flagRight?.Segments != null && flagRight.Segments.Count > 0) geom.Figures.Add(flagRight);
+			if (geom.Figures.Count < 1) return;
 
 			var newPath = new Windows.UI.Xaml.Shapes.Path()
 			{
@@ -211,9 +223,9 @@ namespace Pentagram.Views
 		{
 			var flag = new PathFigure()
 			{
-				StartPoint = new Point(LINE_GAP - 2.0, mastTop + flagNo * FLAG_GAP)
+				StartPoint = new Point(LINE_GAP - 2.0, mastTop + (flagNo - 1) * FLAG_GAP)
 			};
-			flag.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + FLAG_WIDTH, mastTop + flagNo * FLAG_GAP) });
+			flag.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
 
 			var geom = new PathGeometry();
 			geom.Figures.Add(flag);
