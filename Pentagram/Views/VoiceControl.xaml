@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Height="180">
+	<Grid Height="180">
 		<Canvas Background="White" Tapped="OnPentagram_Tapped">
 			<Viewbox x:Name="ChiaveDiViolino" Visibility="Collapsed" Height="{x:Bind MinY4, Mode=OneWay}" Canvas.Left="10" Canvas.Top="32" Canvas.ZIndex="200">
 				<Image Source="ms-appx:///Assets/Symbols/chiaveDiViolino.png" Stretch="None" />
@@ -34,7 +34,7 @@
 
 			<ItemsControl
 				Canvas.Left="180"
-				ItemsSource="{x:Bind VM.Voice.Chords, Mode=OneWay}">
+				ItemsSource="{x:Bind VM.Voice.Instants, Mode=OneWay}">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
 						<ItemsStackPanel Orientation="Horizontal" ItemsUpdatingScrollMode="KeepItemsInView" />
@@ -42,8 +42,9 @@
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
-						<local:ChordControl Chiave="{Binding ElementName=me, Path=VM.Voice.Chiave, Mode=OneWay}" Chord="{Binding}"/>
-						<!--<Image Source="ms-appx:///Assets/Symbols/croma_g.bmp"/>-->
+						<local:InstantCtrl
+							Chiave="{Binding ElementName=me, Path=VM.Voice.Chiave, Mode=OneWay}"
+							Sounds="{Binding Sounds, Mode=OneWay}"/>
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>

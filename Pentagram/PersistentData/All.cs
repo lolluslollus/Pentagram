@@ -62,7 +62,7 @@ namespace Pentagram.PersistentData
 
 				bool isDeleteCurrentSong = _currentSongHeader?.Id == songHeader.Id;
 
-				if (isDeleteCurrentSong)
+				if (isDeleteCurrentSong)//LOLLO TODO always delete the song directory
 				{
 					var dir = await _currentSongHeader.GetDirectoryAsync().ConfigureAwait(false);
 					await dir.DeleteAsync(StorageDeleteOption.PermanentDelete).AsTask().ConfigureAwait(false);
@@ -101,13 +101,13 @@ namespace Pentagram.PersistentData
 		#endregion while open
 
 		#region open close
-		protected override async Task OpenMayOverrideAsync(object args = null)
+		protected override Task OpenMayOverrideAsync(object args = null)
 		{
-			await LoadAsync();
+			return LoadAsync();
 		}
-		protected override async Task CloseMayOverrideAsync()
+		protected override Task CloseMayOverrideAsync()
 		{
-			await SaveAsync().ConfigureAwait(false);
+			return SaveAsync();
 		}
 		private async Task LoadAsync()
 		{

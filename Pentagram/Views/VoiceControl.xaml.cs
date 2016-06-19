@@ -61,9 +61,9 @@ namespace Pentagram.Views
 			MinY3 = 50 + LineGap + LineGap + LineGap;
 			MinY4 = 50 + LineGap + LineGap + LineGap + LineGap;
 			MinX = 0;
-			MaxX = 600;
+			MaxX = 1200;
 
-			this.InitializeComponent();
+			InitializeComponent();
 		}
 		private void UpdateChiave()
 		{
@@ -76,7 +76,7 @@ namespace Pentagram.Views
 
 		private void OnPentagram_Tapped(object sender, TappedRoutedEventArgs e)
 		{
-			_vm.AddNoteAndChord(DurateCanoniche.Croma, 3, NoteBianche.@do, Accidenti.Diesis);
+			//_vm.AddNote(DurateCanoniche.Croma, 3, NoteBianche.@do, Accidenti.Diesis);
 		}
 	}
 }

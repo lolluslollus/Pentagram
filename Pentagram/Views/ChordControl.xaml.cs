@@ -27,18 +27,19 @@ namespace Pentagram.Views
 		public readonly static double LINE_GAP;
 		public readonly static double BAR_GAP;
 		public readonly static double MIN_MAST_HEIGHT;
-		private static Note _defaultNote0 = new Note(DurateCanoniche.Semibiscroma, 3, NoteBianche.@do, Accidenti.Bequadro);
-		private static Note _defaultNote1 = new Note(DurateCanoniche.Semibiscroma, 3, NoteBianche.mi, Accidenti.Diesis);
-		private static Note _defaultNote2 = new Note(DurateCanoniche.Semibiscroma, 3, NoteBianche.sol, Accidenti.Bemolle);
-		private static Note _defaultNote3 = new Note(DurateCanoniche.Minima, 4, NoteBianche.@do, Accidenti.Bequadro);
-		private static Chord _defaultChord = new Chord(_defaultNote0, _defaultNote1, _defaultNote2, _defaultNote3);
+		private static PersistentData.Duration _defaultDuration = new PersistentData.Duration(DurateCanoniche.Semibiscroma);
+		private static Tone _defaultTone0 = new Tone(3, NoteBianche.@do, Accidenti.Bequadro);
+		private static Tone _defaultTone1 = new Tone(3, NoteBianche.mi, Accidenti.Diesis);
+		private static Tone _defaultTone2 = new Tone(3, NoteBianche.sol, Accidenti.Bemolle);
+		private static Tone _defaultTone3 = new Tone(4, NoteBianche.@do, Accidenti.Bequadro);
+		private static Chord _defaultChord = new Chord(_defaultDuration, SegniSuNote.Nil, _defaultTone0, _defaultTone1, _defaultTone2, _defaultTone3);
 		private static readonly BitmapImage _blackBallImage = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/palla_nera_100.png", UriKind.Absolute) };
 		private static readonly BitmapImage _emptyBallImage = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/palla_vuota_100.png", UriKind.Absolute) };
 
 		static ChordControl()
 		{
 			LINE_GAP = (double)App.Current.Resources["LineGap"];
-			BAR_GAP = (double)App.Current.Resources["BarGap"];
+			BAR_GAP = (double)App.Current.Resources["FlagGap"];
 			MIN_MAST_HEIGHT = (double)App.Current.Resources["MinMastHeight"];
 			HOW_MANY_WHITE_NOTES = Enum.GetValues(typeof(NoteBianche)).GetLength(0);
 		}
@@ -86,70 +87,48 @@ namespace Pentagram.Views
 				LayoutRoot.Children.Clear();
 				if (Chord == null) return;
 
-				if (Chord.NextJoinedChords.Count > 0 || Chord.PrevJoinedChords.Count > 0) LayoutRoot.Width = LINE_GAP * 2.0;
+				// set control width
+				if (Chord.NextJoinedChord != null /*|| Chord.PrevJoinedChord != null*/) LayoutRoot.Width = LINE_GAP * 2.0;
 				else LayoutRoot.Width = LINE_GAP * 3.0;
 
-				var ballYsForMast = new List<double>();
-				int howManyBars = 0;
-				bool isNeedsMast = false;
-				bool isNeedsBar = false;
-				bool isNeedsCurl = false;
+				// draw balls
+				var ballImageSource = Chord.Duration.DurataCanonica == DurateCanoniche.Breve || Chord.Duration.DurataCanonica == DurateCanoniche.Semibreve || Chord.Duration.DurataCanonica == DurateCanoniche.Minima ? _emptyBallImage : _blackBallImage;
+				var ballYs = new List<double>();
 
-				foreach (Note note in Chord.Touches.Where(tou => tou is Note))
+				foreach (var tone in Chord.Tones)
 				{
 					var newBall = new Image()
 					{
-						Source = note.DurataCanonica == DurateCanoniche.Breve || note.DurataCanonica == DurateCanoniche.Semibreve || note.DurataCanonica == DurateCanoniche.Minima ? _emptyBallImage : _blackBallImage,
+						Source = ballImageSource, //Chord.Duration.DurataCanonica == DurateCanoniche.Breve || Chord.Duration.DurataCanonica == DurateCanoniche.Semibreve || Chord.Duration.DurataCanonica == DurateCanoniche.Minima ? _emptyBallImage : _blackBallImage,
 						Height = LINE_GAP
 					};
 					LayoutRoot.Children.Add(newBall);
 
-					double ballY = ((4.0 - Convert.ToDouble(note.Ottava)) * HOW_MANY_WHITE_NOTES * LINE_GAP / 2.0 + LINE_GAP / 2.0 * (HOW_MANY_WHITE_NOTES - (int)note.NotaBianca));
+					double ballY = ((4.0 - Convert.ToDouble(tone.Ottava)) * HOW_MANY_WHITE_NOTES * LINE_GAP / 2.0 + LINE_GAP / 2.0 * (HOW_MANY_WHITE_NOTES - (int)tone.NotaBianca));
 					if (Chiave == Chiavi.Violino) ballY -= LINE_GAP / 2.0;
 					else if (Chiave == Chiavi.Basso) ballY -= LINE_GAP * 7.5;
 
 					Canvas.SetTop(newBall, ballY);
-
-					if (note.DurataCanonica == DurateCanoniche.Breve || note.DurataCanonica == DurateCanoniche.Semibreve) continue;
 					// 		<!--<Path Stroke="Black" StrokeThickness="2"
 					// Data = "M24,12.5 V-80 H50 V-78 H24 V-70 H50 V-68 H24 V-60" /> -->
-					isNeedsMast = true;
-					ballYsForMast.Add(ballY);
-					if (note.DurataCanonica == DurateCanoniche.Minima || note.DurataCanonica == DurateCanoniche.Semiminima) continue;
-					if (Chord.NextJoinedChords.Count > 0) isNeedsBar = true;
-					if (Chord.PrevJoinedChords.Count == 0 && Chord.NextJoinedChords.Count == 0) isNeedsCurl = true;
 
-					switch (note.DurataCanonica)
-					{
-						case DurateCanoniche.Croma:
-							if (howManyBars < 1) howManyBars = 1;
-							break;
-						case DurateCanoniche.Semicroma:
-							if (howManyBars < 2) howManyBars = 2;
-							break;
-						case DurateCanoniche.Biscroma:
-							if (howManyBars < 3) howManyBars = 3;
-							break;
-						case DurateCanoniche.Semibiscroma:
-							if (howManyBars < 4) howManyBars = 4;
-							break;
-						default:
-							break;
-					}
+					ballYs.Add(ballY);
 				}
-				if (isNeedsMast)
+
+				// draw mast and (bars or curls)
+				if (GetIsNeedsMast())
 				{
-					var canvasTopAndMastTop = AddMast(ballYsForMast);
-					if (isNeedsBar)
+					var canvasTopAndMastTop = AddMast(ballYs);
+					if (GetIsNeedsBars())
 					{
-						for (int i = 0; i < howManyBars; i++)
+						for (int i = 0; i < GetHowManyBarsOrCurls(); i++)
 						{
 							AddBar(i, canvasTopAndMastTop, LINE_GAP * 2.0);
 						}
 					}
-					else if (isNeedsCurl)
+					else if (GetIsNeedsCurl())
 					{
-						for (int i = 0; i < howManyBars; i++)
+						for (int i = 0; i < GetHowManyBarsOrCurls(); i++)
 						{
 							AddBar(i, canvasTopAndMastTop, LINE_GAP);
 						}
@@ -157,6 +136,69 @@ namespace Pentagram.Views
 				}
 			});
 		}
+		private bool GetIsNeedsMast()
+		{
+			switch (Chord.Duration.DurataCanonica)
+			{
+				case DurateCanoniche.Breve:
+					return false;
+				case DurateCanoniche.Semibreve:
+					return false;
+				default:
+					return true;
+			}
+
+		}
+		private bool GetIsNeedsBars()
+		{
+			switch (Chord.Duration.DurataCanonica)
+			{
+				case DurateCanoniche.Breve:
+					return false;
+				case DurateCanoniche.Semibreve:
+					return false;
+				case DurateCanoniche.Minima:
+					return false;
+				case DurateCanoniche.Semiminima:
+					return false;
+				default:
+					return Chord.NextJoinedChord != null;
+			}
+		}
+		private bool GetIsNeedsCurl()
+		{
+			switch (Chord.Duration.DurataCanonica)
+			{
+				case DurateCanoniche.Breve:
+					return false;
+				case DurateCanoniche.Semibreve:
+					return false;
+				case DurateCanoniche.Minima:
+					return false;
+				case DurateCanoniche.Semiminima:
+					return false;
+				default:
+					return Chord.PrevJoinedChord == null && Chord.NextJoinedChord == null;
+			}
+		}
+		private int GetHowManyBarsOrCurls()
+		{
+			switch (Chord.Duration.DurataCanonica)
+			{
+				case DurateCanoniche.Croma:
+					return 1;
+				case DurateCanoniche.Semicroma:
+					return 2;
+				case DurateCanoniche.Biscroma:
+					return 3;
+				case DurateCanoniche.Semibiscroma:
+					return 4;
+				default:
+					return 0;
+			}
+
+		}
+
 		private Tuple<double, double> AddMast(List<double> ballYs)
 		{
 			double maxY = ballYs.Max() + LINE_GAP / 2.0;

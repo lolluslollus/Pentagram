@@ -11,7 +11,8 @@
 	<!--<x:Double x:Key="LineGapHalf">12.5</x:Double>-->
 	<x:Double x:Key="BarLength">25</x:Double>
 	<!--<x:Double x:Key="LineGapAndBarLength">50</x:Double>-->
-	<x:Double x:Key="BarGap">10</x:Double>
+	<x:Double x:Key="FlagGap">10</x:Double>
+	<x:Double x:Key="FlagWidth">26</x:Double>
 	<x:Double x:Key="MinMastHeight">62.5</x:Double>
 	
 	<Thickness x:Key="Thickness0">0, 0, 0, 0</Thickness>

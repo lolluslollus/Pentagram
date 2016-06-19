@@ -163,6 +163,10 @@ namespace Pentagram.PersistentData
 		{
 			return SaveAsync();
 		}
+		private readonly static List<Type> _knownTypes = new List<Type>()
+		{
+			typeof(Voice), typeof(InstantWithTouches), typeof(Chord), /*typeof(Note), */typeof(Tone), typeof(Pause), typeof(Duration)
+		};
 		private async Task LoadAsync()
 		{
 			Song newSong = null;
@@ -178,7 +182,7 @@ namespace Pentagram.PersistentData
 				{
 					using (var iinStream = inStream.AsStreamForRead())
 					{
-						var serializer = new DataContractSerializer(typeof(Song), new List<Type>() { typeof(Voice), typeof(Chord), typeof(Note), typeof(Pause), typeof(Touch) });
+						var serializer = new DataContractSerializer(typeof(Song), new DataContractSerializerSettings() { PreserveObjectReferences = true, KnownTypes = _knownTypes });
 						iinStream.Position = 0;
 						if (iinStream.Length > 0) // we may be dealing with a new song: no errors
 						{
@@ -222,8 +226,8 @@ namespace Pentagram.PersistentData
 				var bodyFile = await dir
 					.CreateFileAsync(BODY_FILE_NAME, CreationCollisionOption.ReplaceExisting)
 					.AsTask().ConfigureAwait(false);
-
-				var bodySerializer = new DataContractSerializer(typeof(Song));
+				
+				var bodySerializer = new DataContractSerializer(typeof(Song), new DataContractSerializerSettings() { PreserveObjectReferences=true, KnownTypes=_knownTypes });
 
 				using (MemoryStream memoryStream = new MemoryStream())
 				{
@@ -239,6 +243,8 @@ namespace Pentagram.PersistentData
 					}
 				}
 			}
+			// LOLLO TODO Object graph for type 'Pentagram.PersistentData.Chord' contains cycles and cannot be serialized if references are not tracked. 
+			// Consider using the DataContractAttribute with the IsReference property set to true.
 			catch (Exception ex)
 			{
 				Logger.Add_TPL(ex.ToString(), Logger.FileErrorLogFilename);

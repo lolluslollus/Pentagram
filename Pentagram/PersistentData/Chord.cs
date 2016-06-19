@@ -9,52 +9,54 @@ using Utilz.Data;
 
 namespace Pentagram.PersistentData
 {
-	[DataContract]
-	public class Chord
+	[DataContract(IsReference=true)]
+	// [DataContract]
+	public sealed class Chord : Sound
 	{
-		// we cannot make this readonly because it is serialised. we only use the setter for serialising.
-		private SwitchableObservableCollection<Touch> _touches = new SwitchableObservableCollection<Touch>();
+		private SegniSuNote _segno = SegniSuNote.Nil;
 		[DataMember]
-		public SwitchableObservableCollection<Touch> Touches { get { return _touches; } private set { _touches = value; } }
-		// we cannot make this readonly because it is serialised. we only use the setter for serialising.
-		private SwitchableObservableCollection<Chord> _prevJoinedChords = new SwitchableObservableCollection<Chord>();
-		[DataMember]
-		public SwitchableObservableCollection<Chord> PrevJoinedChords { get { return _prevJoinedChords; } private set { _prevJoinedChords = value; } }
-		// we cannot make this readonly because it is serialised. we only use the setter for serialising.
-		private SwitchableObservableCollection<Chord> _nextJoinedChords = new SwitchableObservableCollection<Chord>();
-		[DataMember]
-		public SwitchableObservableCollection<Chord> NextJoinedChords { get { return _nextJoinedChords; } private set { _nextJoinedChords = value; } }
+		public SegniSuNote Segno { get { return _segno; } private set { _segno = value; RaisePropertyChanged(); } }
 
-		public Chord(Note note)
+		// we cannot make this readonly because it is serialised. we only use the setter for serialising.
+		private SwitchableObservableCollection<Tone> _tones = new SwitchableObservableCollection<Tone>();
+		[DataMember]
+		public SwitchableObservableCollection<Tone> Tones { get { return _tones; } private set { _tones = value; } }
+
+		private Chord _prevJoinedChord = null;
+		[DataMember]
+		public Chord PrevJoinedChord { get { return _prevJoinedChord; } set { _prevJoinedChord = value; RaisePropertyChanged(); } }
+
+		private Chord _nextJoinedChord = null;
+		[DataMember]
+		public Chord NextJoinedChord { get { return _nextJoinedChord; } set { _nextJoinedChord = value; RaisePropertyChanged(); } }
+
+		public Chord(Duration duration, SegniSuNote segno, Tone tone) : base(duration)
 		{
-			if (note == null) throw new ArgumentOutOfRangeException("Chord ctor wants a note");
-			_touches.Add(note);
+			if (tone == null) throw new ArgumentOutOfRangeException("Chord ctor wants a tone");
+			Segno = segno;
+			_tones.Add(tone);
 		}
-		public Chord(params Note[] notes)
+		public Chord(Duration duration, SegniSuNote segno, params Tone[] tones) : base(duration)
 		{
-			if (notes == null) throw new ArgumentOutOfRangeException("Chord ctor wants some notes");
-			_touches.AddRange(notes);
+			if (tones == null) throw new ArgumentOutOfRangeException("Chord ctor wants some notes");
+			Segno = segno;
+			_tones.AddRange(tones);
 		}
-		public Chord(Pause pause)
+		public Tone GetHighestTone()
 		{
-			if (pause == null) throw new ArgumentOutOfRangeException("Chord ctor wants a pause");
-			_touches.Add(pause);
-		}
-		public Note GetHighestNote()
-		{
-			Note result = null;
-			foreach (Note note in _touches.Where(tou => tou is Note))
+			Tone result = null;
+			foreach (Tone tone in _tones)
 			{
-				if (result == null || note.CompareTo(result) > 0) result = note;
+				if (result == null || tone.CompareTo(result) > 0) result = tone;
 			}
 			return result;
 		}
-		public Note GetLowestNote()
+		public Tone GetLowestTone()
 		{
-			Note result = null;
-			foreach (Note note in _touches.Where(tou => tou is Note))
+			Tone result = null;
+			foreach (Tone tone in _tones)
 			{
-				if (result == null || note.CompareTo(result) < 0) result = note;
+				if (result == null || tone.CompareTo(result) < 0) result = tone;
 			}
 			return result;
 		}

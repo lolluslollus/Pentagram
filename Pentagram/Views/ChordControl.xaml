@@ -57,7 +57,7 @@
 			Y2="{StaticResource LineGapHalf}" 
 			RenderTransformOrigin="0.5,0.5">
 			<Line.RenderTransform>
-				--><!-- - LineGapHalf * ScaleY + BarGap --><!--
+				--><!-- - LineGapHalf * ScaleY + FlagGap --><!--
 				<TranslateTransform Y="-52.5"/>
 			</Line.RenderTransform>
 		</Line>
@@ -70,7 +70,7 @@
 			Y2="{StaticResource LineGapHalf}" 
 			RenderTransformOrigin="0.5,0.5">
 			<Line.RenderTransform>
-				--><!-- - LineGapHalf * ScaleY + BarGap + BarGap --><!--
+				--><!-- - LineGapHalf * ScaleY + FlagGap + FlagGap --><!--
 				<TranslateTransform Y="-42.5"/>
 			</Line.RenderTransform>
 		</Line>
@@ -83,7 +83,7 @@
 			Y2="{StaticResource LineGapHalf}" 
 			RenderTransformOrigin="0.5,0.5">
 			<Line.RenderTransform>
-				--><!-- - LineGapHalf * ScaleY + BarGap + BarGap + BarGap --><!--
+				--><!-- - LineGapHalf * ScaleY + FlagGap + FlagGap + FlagGap --><!--
 				<TranslateTransform Y="-32.5"/>
 			</Line.RenderTransform>
 		</Line>-->

@@ -98,14 +98,18 @@
     <Compile Include="PersistentData\Enums.cs" />
     <Compile Include="PersistentData\Song.cs" />
     <Compile Include="PersistentData\Chord.cs" />
-    <Compile Include="PersistentData\Touch.cs" />
+    <Compile Include="PersistentData\Sound.cs" />
     <Compile Include="PersistentData\Voice.cs" />
+    <Compile Include="Utilz\ObservableDataCycl.cs" />
     <Compile Include="ViewModels\AllVM.cs" />
     <Compile Include="ViewModels\SongVM.cs" />
     <Compile Include="ViewModels\VoiceVM.cs" />
     <Compile Include="Views\ChordControl.xaml.cs">
       <DependentUpon>ChordControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\PauseAdorner.cs" />
+    <Compile Include="Views\ChordAdorner.cs" />
+    <Compile Include="Views\InstantCtrl.cs" />
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -126,6 +130,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Symbols\dq.png" />
+    <Content Include="Assets\Symbols\minima_p_100.png" />
     <Content Include="Assets\Symbols\palla_vuota_100.png" />
     <Content Include="Assets\Symbols\palla_nera_100.png" />
     <Content Include="Assets\Symbols\tq.png" />

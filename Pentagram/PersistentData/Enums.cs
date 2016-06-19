@@ -10,6 +10,6 @@ namespace Pentagram.PersistentData
 	public enum Chiavi { Violino, Basso }
 	public enum NoteBianche { @do, re, mi, fa, sol, la, si }
 	public enum DurateCanoniche { Breve, Semibreve, Minima, Semiminima, Croma, Semicroma, Biscroma, Semibiscroma }
-	public enum SegniSuNote { None, Accento, Trillo }
+	public enum SegniSuNote { Nil, Accento, Trillo }
 	public enum Accidenti { Nil, Bequadro, Diesis, Bemolle, DoppioDiesis, DoppioBemolle }
 }
