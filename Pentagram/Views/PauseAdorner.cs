@@ -17,15 +17,7 @@ namespace Pentagram.Views
 {
 	public sealed class PauseAdorner : Adorner
 	{
-		public readonly static int HOW_MANY_WHITE_NOTES;
-		public readonly static double LINE_GAP;
 		private static readonly BitmapImage _minimaImage = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/minima_p_100.png", UriKind.Absolute) };
-
-		static PauseAdorner()
-		{
-			LINE_GAP = (double)App.Current.Resources["LineGap"];
-			HOW_MANY_WHITE_NOTES = Enum.GetValues(typeof(NoteBianche)).GetLength(0);
-		}
 
 		private Chiavi _chiave;
 

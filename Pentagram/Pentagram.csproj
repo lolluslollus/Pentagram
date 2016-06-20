@@ -95,11 +95,12 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PersistentData\Enums.cs" />
-    <Compile Include="PersistentData\Song.cs" />
-    <Compile Include="PersistentData\Chord.cs" />
-    <Compile Include="PersistentData\Sound.cs" />
-    <Compile Include="PersistentData\Voice.cs" />
+    <Compile Include="Converters\Converters.cs" />
+    <Compile Include="Data\Persistent\Enums.cs" />
+    <Compile Include="Data\Persistent\Song.cs" />
+    <Compile Include="Data\Persistent\Chord.cs" />
+    <Compile Include="Data\Persistent\Sound.cs" />
+    <Compile Include="Data\Persistent\Voice.cs" />
     <Compile Include="Utilz\ObservableDataCycl.cs" />
     <Compile Include="ViewModels\AllVM.cs" />
     <Compile Include="ViewModels\SongVM.cs" />
@@ -119,7 +120,7 @@
     <Compile Include="Views\SongPage.xaml.cs">
       <DependentUpon>SongPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PersistentData\All.cs" />
+    <Compile Include="Data\Persistent\All.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

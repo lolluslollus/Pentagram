@@ -17,11 +17,10 @@ namespace Pentagram.Views
 {
 	public sealed class ChordAdorner : Adorner
 	{
-		public readonly static int HOW_MANY_WHITE_NOTES;
-		public readonly static double LINE_GAP;
 		public readonly static double FLAG_GAP;
 		public readonly static double FLAG_WIDTH;
 		public readonly static double MIN_MAST_HEIGHT;
+
 		private static PersistentData.Duration _defaultDuration = new PersistentData.Duration(DurateCanoniche.Semibiscroma);
 		private static Tone _defaultTone0 = new Tone(3, NoteBianche.@do, Accidenti.Bequadro);
 		private static Tone _defaultTone1 = new Tone(3, NoteBianche.mi, Accidenti.Diesis);
@@ -33,11 +32,9 @@ namespace Pentagram.Views
 
 		static ChordAdorner()
 		{
-			LINE_GAP = (double)App.Current.Resources["LineGap"];
 			FLAG_GAP = (double)App.Current.Resources["FlagGap"];
 			FLAG_WIDTH = (double)App.Current.Resources["FlagWidth"];
 			MIN_MAST_HEIGHT = (double)App.Current.Resources["MinMastHeight"];
-			HOW_MANY_WHITE_NOTES = Enum.GetValues(typeof(NoteBianche)).GetLength(0);
 		}
 
 		private Chiavi _chiave;

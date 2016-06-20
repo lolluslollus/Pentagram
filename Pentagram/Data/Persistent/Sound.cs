@@ -59,7 +59,7 @@ namespace Pentagram.PersistentData
 	[DataContract]
 	public sealed class Duration : ObservableData, IComparable
 	{
-		public uint GetDurata64()
+		public double GetDurata64()
 		{
 			switch (_durataCanonica)
 			{
@@ -83,22 +83,28 @@ namespace Pentagram.PersistentData
 					return 1;
 			}
 		}
-		private uint GetDurata64_2(uint basicDurata)
+		private double GetDurata64_2(double basicDurata)
 		{
-			return basicDurata + ((2 ^ PuntiDiValore - 1) / 2 ^ PuntiDiValore) * basicDurata;
+			uint pv = (uint)PuntiDiValore;
+			double result = basicDurata;
+			for (uint i = 1; i <= pv; i++)
+			{
+				result += result * Math.Pow(.5, i);
+			}
+			return result;
 		}
 		private DurateCanoniche _durataCanonica = DurateCanoniche.Semibreve;
 		[DataMember]
 		public DurateCanoniche DurataCanonica { get { return _durataCanonica; } private set { if (_durataCanonica == value) return; _durataCanonica = value; RaisePropertyChanged(); } }
-		private uint _puntiDiValore = 0;
+		private PuntiDiValore _puntiDiValore = PuntiDiValore.Nil;
 		[DataMember]
-		public uint PuntiDiValore { get { return _puntiDiValore; } private set { if (_puntiDiValore == value) return; _puntiDiValore = value > 3 ? 3 : value < 0 ? 0 : value; RaisePropertyChanged(); } }
+		public PuntiDiValore PuntiDiValore { get { return _puntiDiValore; } private set { if (_puntiDiValore == value) return; _puntiDiValore = value; RaisePropertyChanged(); } }
 
 		public Duration(DurateCanoniche durataCanonica)
 		{
 			DurataCanonica = durataCanonica;
 		}
-		public Duration(DurateCanoniche durataCanonica, uint puntiDiValore) : this(durataCanonica)
+		public Duration(DurateCanoniche durataCanonica, PuntiDiValore puntiDiValore) : this(durataCanonica)
 		{
 			PuntiDiValore = puntiDiValore;
 		}

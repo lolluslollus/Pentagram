@@ -82,8 +82,10 @@ namespace Pentagram.ViewModels
 		{
 			if (voice == null) throw new ArgumentNullException("VoiceVM needs a voice");
 			_voice = voice;
-			if (voice.Instants.Count < 1)
+			if (voice.Battute.Count < 1)
 			{
+				Battuta bat0 = null;
+				Battuta bat1 = null;
 				InstantWithTouches ins0 = null;
 				InstantWithTouches ins1 = null;
 				InstantWithTouches ins2 = null;
@@ -116,103 +118,107 @@ namespace Pentagram.ViewModels
 
 				//voice.LinkChord1ToChord2(_defaultChord4, _defaultChord5, ins0, ins1);
 
-				ins0 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord6, ins0);
-				voice.AddSoundToInstant(_defaultChord6b, ins0);
-				ins1 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord7, ins1);
-				voice.AddSoundToInstant(_defaultChord7b, ins1);
-				ins2 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord8, ins2);
-				voice.AddSoundToInstant(_defaultChord8b, ins2);
+				bat0 = voice.AddBattuta();
+				bat1 = voice.AddBattuta();
 
-				voice.TryLinkChord1ToChord2(_defaultChord6, _defaultChord7, ins0, ins1);
-				voice.TryLinkChord1ToChord2(_defaultChord7, _defaultChord8, ins1, ins2);
-				voice.TryLinkChord1ToChord2(_defaultChord6b, _defaultChord7b, ins0, ins1);
-				voice.TryLinkChord1ToChord2(_defaultChord7b, _defaultChord8b, ins1, ins2);
+				ins0 = voice.AddInstant(bat0);
+				voice.AddSoundToInstant(_defaultChord6, ins0, bat0);
+				voice.AddSoundToInstant(_defaultChord6b, ins0, bat0);
+				ins1 = voice.AddInstant(bat0);
+				voice.AddSoundToInstant(_defaultChord7, ins1, bat0);
+				voice.AddSoundToInstant(_defaultChord7b, ins1, bat0);
+				ins2 = voice.AddInstant(bat0);
+				voice.AddSoundToInstant(_defaultChord8, ins2, bat0);
+				voice.AddSoundToInstant(_defaultChord8b, ins2, bat0);
 
-				ins0 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord9, ins0);
-				voice.AddSoundToInstant(_defaultChord9b, ins0);
-				ins1 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord10, ins1);
-				voice.AddSoundToInstant(_defaultChord10b, ins1);
-				ins2 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord11, ins2);
-				voice.AddSoundToInstant(_defaultChord11b, ins2);
+				voice.TryLinkChord1ToChord2(_defaultChord6, _defaultChord7, ins0, ins1, bat0);
+				voice.TryLinkChord1ToChord2(_defaultChord7, _defaultChord8, ins1, ins2, bat0);
+				voice.TryLinkChord1ToChord2(_defaultChord6b, _defaultChord7b, ins0, ins1, bat0);
+				voice.TryLinkChord1ToChord2(_defaultChord7b, _defaultChord8b, ins1, ins2, bat0);
 
-				voice.TryLinkChord1ToChord2(_defaultChord9, _defaultChord10, ins0, ins1);
-				voice.TryLinkChord1ToChord2(_defaultChord10, _defaultChord11, ins1, ins2);
-				voice.TryLinkChord1ToChord2(_defaultChord9b, _defaultChord10b, ins0, ins1);
-				voice.TryLinkChord1ToChord2(_defaultChord10b, _defaultChord11b, ins1, ins2);
+				ins0 = voice.AddInstant(bat0);
+				voice.AddSoundToInstant(_defaultChord9, ins0, bat0);
+				voice.AddSoundToInstant(_defaultChord9b, ins0, bat0);
+				ins1 = voice.AddInstant(bat0);
+				voice.AddSoundToInstant(_defaultChord10, ins1, bat0);
+				voice.AddSoundToInstant(_defaultChord10b, ins1, bat0);
+				ins2 = voice.AddInstant(bat0);
+				voice.AddSoundToInstant(_defaultChord11, ins2, bat0);
+				voice.AddSoundToInstant(_defaultChord11b, ins2, bat0);
 
-				ins0 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord12, ins0);
-				voice.AddSoundToInstant(_defaultChord12b, ins0);
-				ins1 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord13, ins1);
-				voice.AddSoundToInstant(_defaultChord13b, ins1);
-				ins2 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord14, ins2);
-				voice.AddSoundToInstant(_defaultChord14b, ins2);
+				voice.TryLinkChord1ToChord2(_defaultChord9, _defaultChord10, ins0, ins1, bat0);
+				voice.TryLinkChord1ToChord2(_defaultChord10, _defaultChord11, ins1, ins2, bat0);
+				voice.TryLinkChord1ToChord2(_defaultChord9b, _defaultChord10b, ins0, ins1, bat0);
+				voice.TryLinkChord1ToChord2(_defaultChord10b, _defaultChord11b, ins1, ins2, bat0);
 
-				voice.TryLinkChord1ToChord2(_defaultChord12, _defaultChord13, ins0, ins1);
-				voice.TryLinkChord1ToChord2(_defaultChord13, _defaultChord14, ins1, ins2);
-				voice.TryLinkChord1ToChord2(_defaultChord12b, _defaultChord13b, ins0, ins1);
-				voice.TryLinkChord1ToChord2(_defaultChord13b, _defaultChord14b, ins1, ins2);
+				ins0 = voice.AddInstant(bat0);
+				voice.AddSoundToInstant(_defaultChord12, ins0, bat0);
+				voice.AddSoundToInstant(_defaultChord12b, ins0, bat0);
+				ins1 = voice.AddInstant(bat0);
+				voice.AddSoundToInstant(_defaultChord13, ins1, bat0);
+				voice.AddSoundToInstant(_defaultChord13b, ins1, bat0);
+				ins2 = voice.AddInstant(bat0);
+				voice.AddSoundToInstant(_defaultChord14, ins2, bat0);
+				voice.AddSoundToInstant(_defaultChord14b, ins2, bat0);
 
-				ins0 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord15, ins0);
-				voice.AddSoundToInstant(_defaultChord15b, ins0);
-				ins1 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord16, ins1);
-				voice.AddSoundToInstant(_defaultChord16b, ins1);
-				ins2 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord17, ins2);
-				voice.AddSoundToInstant(_defaultChord17b, ins2);
+				voice.TryLinkChord1ToChord2(_defaultChord12, _defaultChord13, ins0, ins1, bat0);
+				voice.TryLinkChord1ToChord2(_defaultChord13, _defaultChord14, ins1, ins2, bat0);
+				voice.TryLinkChord1ToChord2(_defaultChord12b, _defaultChord13b, ins0, ins1, bat0);
+				voice.TryLinkChord1ToChord2(_defaultChord13b, _defaultChord14b, ins1, ins2, bat0);
 
-				voice.TryLinkChord1ToChord2(_defaultChord15, _defaultChord16, ins0, ins1);
-				voice.TryLinkChord1ToChord2(_defaultChord16, _defaultChord17, ins1, ins2);
-				voice.TryLinkChord1ToChord2(_defaultChord15b, _defaultChord16b, ins0, ins1);
-				voice.TryLinkChord1ToChord2(_defaultChord16b, _defaultChord17b, ins1, ins2);
+				ins0 = voice.AddInstant(bat1);
+				voice.AddSoundToInstant(_defaultChord15, ins0, bat1);
+				voice.AddSoundToInstant(_defaultChord15b, ins0, bat1);
+				ins1 = voice.AddInstant(bat1);
+				voice.AddSoundToInstant(_defaultChord16, ins1, bat1);
+				voice.AddSoundToInstant(_defaultChord16b, ins1, bat1);
+				ins2 = voice.AddInstant(bat1);
+				voice.AddSoundToInstant(_defaultChord17, ins2, bat1);
+				voice.AddSoundToInstant(_defaultChord17b, ins2, bat1);
 
-				ins0 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord18, ins0);
-				voice.AddSoundToInstant(_defaultChord18b, ins0);
-				ins1 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord19, ins1);
-				voice.AddSoundToInstant(_defaultChord19b, ins1);
-				ins2 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord20, ins2);
-				voice.AddSoundToInstant(_defaultChord20b, ins2);
+				voice.TryLinkChord1ToChord2(_defaultChord15, _defaultChord16, ins0, ins1, bat1);
+				voice.TryLinkChord1ToChord2(_defaultChord16, _defaultChord17, ins1, ins2, bat1);
+				voice.TryLinkChord1ToChord2(_defaultChord15b, _defaultChord16b, ins0, ins1, bat1);
+				voice.TryLinkChord1ToChord2(_defaultChord16b, _defaultChord17b, ins1, ins2, bat1);
 
-				voice.TryLinkChord1ToChord2(_defaultChord18, _defaultChord19, ins0, ins1);
-				voice.TryLinkChord1ToChord2(_defaultChord19, _defaultChord20, ins1, ins2);
-				voice.TryLinkChord1ToChord2(_defaultChord18b, _defaultChord19b, ins0, ins1);
-				voice.TryLinkChord1ToChord2(_defaultChord19b, _defaultChord20b, ins1, ins2);
+				ins0 = voice.AddInstant(bat1);
+				voice.AddSoundToInstant(_defaultChord18, ins0, bat1);
+				voice.AddSoundToInstant(_defaultChord18b, ins0, bat1);
+				ins1 = voice.AddInstant(bat1);
+				voice.AddSoundToInstant(_defaultChord19, ins1, bat1);
+				voice.AddSoundToInstant(_defaultChord19b, ins1, bat1);
+				ins2 = voice.AddInstant(bat1);
+				voice.AddSoundToInstant(_defaultChord20, ins2, bat1);
+				voice.AddSoundToInstant(_defaultChord20b, ins2, bat1);
 
-				ins0 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord21, ins0);
-				voice.AddSoundToInstant(_defaultChord21b, ins0);
-				ins1 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord22, ins1);
-				voice.AddSoundToInstant(_defaultChord22b, ins1);
-				ins2 = voice.AddInstant();
-				voice.AddSoundToInstant(_defaultChord23, ins2);
-				voice.AddSoundToInstant(_defaultChord23b, ins2);
+				voice.TryLinkChord1ToChord2(_defaultChord18, _defaultChord19, ins0, ins1, bat1);
+				voice.TryLinkChord1ToChord2(_defaultChord19, _defaultChord20, ins1, ins2, bat1);
+				voice.TryLinkChord1ToChord2(_defaultChord18b, _defaultChord19b, ins0, ins1, bat1);
+				voice.TryLinkChord1ToChord2(_defaultChord19b, _defaultChord20b, ins1, ins2, bat1);
 
-				voice.TryLinkChord1ToChord2(_defaultChord21, _defaultChord22, ins0, ins1);
-				voice.TryLinkChord1ToChord2(_defaultChord22, _defaultChord23, ins1, ins2);
-				voice.TryLinkChord1ToChord2(_defaultChord21b, _defaultChord22b, ins0, ins1);
-				voice.TryLinkChord1ToChord2(_defaultChord22b, _defaultChord23b, ins1, ins2);
+				ins0 = voice.AddInstant(bat1);
+				voice.AddSoundToInstant(_defaultChord21, ins0, bat1);
+				voice.AddSoundToInstant(_defaultChord21b, ins0, bat1);
+				ins1 = voice.AddInstant(bat1);
+				voice.AddSoundToInstant(_defaultChord22, ins1, bat1);
+				voice.AddSoundToInstant(_defaultChord22b, ins1, bat1);
+				ins2 = voice.AddInstant(bat1);
+				voice.AddSoundToInstant(_defaultChord23, ins2, bat1);
+				voice.AddSoundToInstant(_defaultChord23b, ins2, bat1);
+
+				voice.TryLinkChord1ToChord2(_defaultChord21, _defaultChord22, ins0, ins1, bat1);
+				voice.TryLinkChord1ToChord2(_defaultChord22, _defaultChord23, ins1, ins2, bat1);
+				voice.TryLinkChord1ToChord2(_defaultChord21b, _defaultChord22b, ins0, ins1, bat1);
+				voice.TryLinkChord1ToChord2(_defaultChord22b, _defaultChord23b, ins1, ins2, bat1);
 			}
 		}
 
-		//public void AddNote(DurateCanoniche durataCanonica, uint ottava, NoteBianche notaBianca, Accidenti accidente)
-		//{
-		//	var note = new Note(durataCanonica, ottava, notaBianca, accidente);
-		//	_voice.AddSoundToInstant(new Chord(note));
-		//}
+		public void AddNote(DurateCanoniche durataCanonica, PuntiDiValore puntiDiValore, SegniSuNote segniSuNote, bool isChromaFlagsBelow, uint ottava, NoteBianche notaBianca, Accidenti accidente)
+		{
+			var bat = _voice.AddBattuta();
+			var ins = _voice.AddInstant(bat);
+			_voice.AddSoundToInstant(new Chord(new Duration(durataCanonica, puntiDiValore), segniSuNote, isChromaFlagsBelow, new Tone(ottava, notaBianca, accidente)), ins, bat);
+		}
 		//public void AddNoteToChord(DurateCanoniche durataCanonica, uint ottava, NoteBianche notaBianca, Accidenti accidente, Chord chord)
 		//{
 		//	if (chord == null) return;

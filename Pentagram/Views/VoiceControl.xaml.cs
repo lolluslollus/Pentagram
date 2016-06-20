@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using WinRTXamlToolkit.Controls;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -35,6 +36,15 @@ namespace Pentagram.Views
 		{
 			LineGap = (double)App.Current.Resources["LineGap"];
 		}
+
+		public int VoicesCount
+		{
+			get { return (int)GetValue(VoicesCountProperty); }
+			set { SetValue(VoicesCountProperty, value); }
+		}
+		public static readonly DependencyProperty VoicesCountProperty =
+			DependencyProperty.Register("VoicesCount", typeof(int), typeof(VoiceControl), new PropertyMetadata(0));
+
 		public Voice Voice
 		{
 			get { return (Voice)GetValue(VoiceProperty); }
@@ -76,7 +86,7 @@ namespace Pentagram.Views
 
 		private void OnPentagram_Tapped(object sender, TappedRoutedEventArgs e)
 		{
-			//_vm.AddNote(DurateCanoniche.Croma, 3, NoteBianche.@do, Accidenti.Diesis);
+			_vm.AddNote(DurateCanoniche.Croma, PuntiDiValore.Nil, SegniSuNote.Nil, false, 3, NoteBianche.@do, Accidenti.Diesis);
 		}
 	}
 }

@@ -8,6 +8,7 @@ using Utilz.Controlz;
 using Utilz.Data;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -20,15 +21,6 @@ namespace Pentagram.Views
 {
 	public sealed class InstantCtrl : ObservableControl
 	{
-		public readonly static int HOW_MANY_WHITE_NOTES;
-		public readonly static double LINE_GAP;
-
-		static InstantCtrl()
-		{
-			LINE_GAP = (double)App.Current.Resources["LineGap"];
-			HOW_MANY_WHITE_NOTES = Enum.GetValues(typeof(NoteBianche)).GetLength(0);
-		}
-
 		public Chiavi Chiave
 		{
 			get { return (Chiavi)GetValue(ChiaveProperty); }
@@ -111,16 +103,22 @@ namespace Pentagram.Views
 
 				if (Sounds == null) return;
 				// set width
-				double layoutRootWidth = LINE_GAP * 3.0;
+				var red = new SolidColorBrush(Colors.LightPink);
+				var blue = new SolidColorBrush(Colors.LightBlue);
+				var bkg = red;
+				double layoutRootWidth = Adorner.LINE_GAP * 5.0; // 3.0; // LOLLO TODO restore when done testing
 				foreach (var sound in Sounds)
 				{
 					if (sound is Chord && ((sound as Chord).NextJoinedChord != null /*|| (sound as Chord).PrevJoinedChords != null*/))
 					{
-						layoutRootWidth = LINE_GAP * 2.0;
+						layoutRootWidth = Adorner.LINE_GAP * 2.0;
+						bkg = blue;
 						break;
 					}
 				}
 				LayoutRoot.Width = layoutRootWidth;
+				LayoutRoot.Height = Adorner.PENTAGRAM_HEIGHT;
+				LayoutRoot.Background = bkg;
 				// draw children
 				foreach (var sound in Sounds)
 				{
@@ -135,6 +133,16 @@ namespace Pentagram.Views
 
 	public abstract class Adorner : ObservableData, IDisposable
 	{
+		public readonly static int HOW_MANY_WHITE_NOTES;
+		public readonly static double PENTAGRAM_HEIGHT;
+		public readonly static double LINE_GAP;
+
+		static Adorner()
+		{
+			PENTAGRAM_HEIGHT = (double)App.Current.Resources["PentagramHeight"];
+			LINE_GAP = (double)App.Current.Resources["LineGap"];
+			HOW_MANY_WHITE_NOTES = Enum.GetValues(typeof(NoteBianche)).GetLength(0);
+		}
 		public abstract void Dispose();
 	}
 }

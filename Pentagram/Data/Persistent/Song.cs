@@ -165,7 +165,7 @@ namespace Pentagram.PersistentData
 		}
 		private readonly static List<Type> _knownTypes = new List<Type>()
 		{
-			typeof(Voice), typeof(InstantWithTouches), typeof(Chord), /*typeof(Note), */typeof(Tone), typeof(Pause), typeof(Duration)
+			typeof(Voice), typeof(Battuta), typeof(InstantWithTouches), typeof(Chord), /*typeof(Note), */typeof(Tone), typeof(Pause), typeof(Duration)
 		};
 		private async Task LoadAsync()
 		{
