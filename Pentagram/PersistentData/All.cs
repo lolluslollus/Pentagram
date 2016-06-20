@@ -27,7 +27,7 @@ namespace Pentagram.PersistentData
 
 		private SongHeader _currentSongHeader = null;
 		[DataMember]
-		public SongHeader CurrentSongHeader { get { return _currentSongHeader; } private set { _currentSongHeader = value; RaisePropertyChanged(); } }
+		public SongHeader CurrentSongHeader { get { return _currentSongHeader; } private set { if (_currentSongHeader == value) return; _currentSongHeader = value; RaisePropertyChanged(); } }
 
 		#region ctor
 		private static All _instance = null;

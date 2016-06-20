@@ -33,7 +33,7 @@ namespace Pentagram.PersistentData
 	{
 		private SegniSuNote _segno = SegniSuNote.Nil;
 		[DataMember]
-		public SegniSuNote Segno { get { return _segno; } private set { _segno = value; RaisePropertyChanged(); } }
+		public SegniSuNote Segno { get { return _segno; } private set { if (_segno == value) return; _segno = value; RaisePropertyChanged(); } }
 
 		public Pause(Duration duration, SegniSuNote segno) : base(duration)
 		{
@@ -47,7 +47,7 @@ namespace Pentagram.PersistentData
 	{
 		private Duration _duration = null;
 		[DataMember]
-		public Duration Duration { get { return _duration; } private set { _duration = value; RaisePropertyChanged(); } }
+		public Duration Duration { get { return _duration; } private set { if (_duration == value) return; _duration = value; RaisePropertyChanged(); } }
 
 		public Sound(Duration duration)
 		{
@@ -89,10 +89,10 @@ namespace Pentagram.PersistentData
 		}
 		private DurateCanoniche _durataCanonica = DurateCanoniche.Semibreve;
 		[DataMember]
-		public DurateCanoniche DurataCanonica { get { return _durataCanonica; } private set { _durataCanonica = value; RaisePropertyChanged(); } }
+		public DurateCanoniche DurataCanonica { get { return _durataCanonica; } private set { if (_durataCanonica == value) return; _durataCanonica = value; RaisePropertyChanged(); } }
 		private uint _puntiDiValore = 0;
 		[DataMember]
-		public uint PuntiDiValore { get { return _puntiDiValore; } private set { _puntiDiValore = value > 3 ? 3 : value < 0 ? 0 : value; RaisePropertyChanged(); } }
+		public uint PuntiDiValore { get { return _puntiDiValore; } private set { if (_puntiDiValore == value) return; _puntiDiValore = value > 3 ? 3 : value < 0 ? 0 : value; RaisePropertyChanged(); } }
 
 		public Duration(DurateCanoniche durataCanonica)
 		{
@@ -116,13 +116,13 @@ namespace Pentagram.PersistentData
 	{
 		private uint _ottava = 3;
 		[DataMember]
-		public uint Ottava { get { return _ottava; } private set { _ottava = value < 10 ? value : 10; RaisePropertyChanged(); } }
+		public uint Ottava { get { return _ottava; } private set { if (_ottava == value) return; _ottava = value < 10 ? value : 10; RaisePropertyChanged(); } }
 		private NoteBianche _notaBianca = NoteBianche.@do;
 		[DataMember]
-		public NoteBianche NotaBianca { get { return _notaBianca; } private set { _notaBianca = value; RaisePropertyChanged(); } }
+		public NoteBianche NotaBianca { get { return _notaBianca; } private set { if (_notaBianca == value) return; _notaBianca = value; RaisePropertyChanged(); } }
 		private Accidenti _accidente = Accidenti.Nil;
 		[DataMember]
-		public Accidenti Accidente { get { return _accidente; } private set { _accidente = value; RaisePropertyChanged(); } }
+		public Accidenti Accidente { get { return _accidente; } private set { if (_accidente == value) return; _accidente = value; RaisePropertyChanged(); } }
 
 		public Tone(uint ottava, NoteBianche notaBianca, Accidenti accidente)
 		{

@@ -9,17 +9,18 @@ using Utilz.Data;
 
 namespace Pentagram.PersistentData
 {
-	[DataContract(IsReference=true)]
+	[DataContract(IsReference = true)]
 	// [DataContract]
 	public sealed class Chord : Sound
 	{
+		public event EventHandler ChromaFlagsPositionChanged;
 		private bool _isChromaFlagsBelow = false;
 		[DataMember]
-		public bool IsChromaFlagsBelow { get { return _isChromaFlagsBelow; } private set { _isChromaFlagsBelow = value; RaisePropertyChanged(); } }
+		public bool IsChromaFlagsBelow { get { return _isChromaFlagsBelow; } private set { if (_isChromaFlagsBelow == value) return; _isChromaFlagsBelow = value; RaisePropertyChanged(); } }
 
 		private SegniSuNote _segno = SegniSuNote.Nil;
 		[DataMember]
-		public SegniSuNote Segno { get { return _segno; } private set { _segno = value; RaisePropertyChanged(); } }
+		public SegniSuNote Segno { get { return _segno; } private set { if (_segno == value) return; _segno = value; RaisePropertyChanged(); } }
 
 		// we cannot make this readonly because it is serialised. we only use the setter for serialising.
 		private SwitchableObservableCollection<Tone> _tones = new SwitchableObservableCollection<Tone>();
@@ -28,11 +29,11 @@ namespace Pentagram.PersistentData
 
 		private Chord _prevJoinedChord = null;
 		[DataMember]
-		public Chord PrevJoinedChord { get { return _prevJoinedChord; } set { _prevJoinedChord = value; RaisePropertyChanged(); } }
+		public Chord PrevJoinedChord { get { return _prevJoinedChord; } set { if (_prevJoinedChord == value) return; _prevJoinedChord = value; RaisePropertyChanged(); } }
 
 		private Chord _nextJoinedChord = null;
 		[DataMember]
-		public Chord NextJoinedChord { get { return _nextJoinedChord; } set { _nextJoinedChord = value; RaisePropertyChanged(); } }
+		public Chord NextJoinedChord { get { return _nextJoinedChord; } set { if (_nextJoinedChord == value) return; _nextJoinedChord = value; RaisePropertyChanged(); } }
 
 		//public Chord(Duration duration, SegniSuNote segno, Tone tone) : base(duration)
 		//{
@@ -46,8 +47,11 @@ namespace Pentagram.PersistentData
 			Segno = segno;
 			_tones.AddRange(tones);
 		}
-
-		public void SetChromaFlags(bool below)
+		public Chord(Duration duration, SegniSuNote segno, bool isChromaFlagsBelow, params Tone[] tones) : this(duration, segno, tones)
+		{
+			IsChromaFlagsBelow = isChromaFlagsBelow;
+		}
+		public void SetChromaFlagsPositions(bool below)
 		{
 			IsChromaFlagsBelow = below;
 
@@ -64,6 +68,8 @@ namespace Pentagram.PersistentData
 				otherChord.IsChromaFlagsBelow = below;
 				otherChord = otherChord.NextJoinedChord;
 			}
+
+			ChromaFlagsPositionChanged?.Invoke(this, EventArgs.Empty);
 		}
 		//public Tone GetHighestTone()
 		//{

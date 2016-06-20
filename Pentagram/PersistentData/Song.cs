@@ -19,7 +19,7 @@ namespace Pentagram.PersistentData
 		protected string _id = string.Empty;
 		// the setter is only for the serialiser
 		[DataMember]
-		public string Id { get { return _id; } private set { _id = value; RaisePropertyChanged(); } }
+		public string Id { get { return _id; } private set { if (_id == value) return; _id = value; RaisePropertyChanged(); } }
 
 		[IgnoreDataMember]
 		public bool IsValid { get { return !string.IsNullOrWhiteSpace(_id); } }
@@ -71,7 +71,7 @@ namespace Pentagram.PersistentData
 	{
 		protected string _name = null;
 		[DataMember]
-		public string Name { get { return _name; } set { _name = value; RaisePropertyChanged(); } }
+		public string Name { get { return _name; } set { if (_name == value) return; _name = value; RaisePropertyChanged(); } }
 
 		public SongHeader(string id) : base(id) { }
 		public SongHeader(string name, bool newSong) : base()
@@ -226,8 +226,8 @@ namespace Pentagram.PersistentData
 				var bodyFile = await dir
 					.CreateFileAsync(BODY_FILE_NAME, CreationCollisionOption.ReplaceExisting)
 					.AsTask().ConfigureAwait(false);
-				
-				var bodySerializer = new DataContractSerializer(typeof(Song), new DataContractSerializerSettings() { PreserveObjectReferences=true, KnownTypes=_knownTypes });
+
+				var bodySerializer = new DataContractSerializer(typeof(Song), new DataContractSerializerSettings() { PreserveObjectReferences = true, KnownTypes = _knownTypes });
 
 				using (MemoryStream memoryStream = new MemoryStream())
 				{

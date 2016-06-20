@@ -22,11 +22,11 @@ namespace Pentagram.PersistentData
 	{
 		private Ritmi _ritmo = All.DEFAULT_RITMO;
 		[DataMember]
-		public Ritmi Ritmo { get { return _ritmo; } private set { _ritmo = value; RaisePropertyChanged(); } }
+		public Ritmi Ritmo { get { return _ritmo; } private set { if (_ritmo == value) return; _ritmo = value; RaisePropertyChanged(); } }
 
 		private Chiavi _chiave = All.DEFAULT_CHIAVE;
 		[DataMember]
-		public Chiavi Chiave { get { return _chiave; } private set { _chiave = value; RaisePropertyChanged(); } }
+		public Chiavi Chiave { get { return _chiave; } private set { if (_chiave == value) return; _chiave = value; RaisePropertyChanged(); } }
 
 		// we cannot make this readonly because it is serialised. we only use the setter for serialising.
 		private SwitchableObservableCollection<InstantWithTouches> _instants = new SwitchableObservableCollection<InstantWithTouches>();
@@ -141,6 +141,7 @@ namespace Pentagram.PersistentData
 				result = true;
 			}
 
+			if (result) chord1.SetChromaFlagsPositions(chord2.IsChromaFlagsBelow);
 			return result;
 		}
 		public void UnlinkChord1FromChord2(Chord chord1, Chord chord2, InstantWithTouches instant1, InstantWithTouches instant2)

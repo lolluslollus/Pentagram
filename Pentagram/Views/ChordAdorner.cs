@@ -51,14 +51,28 @@ namespace Pentagram.Views
 				bool isChanged = value != _chord;
 				if (isChanged)
 				{
-					if (_chord != null) _chord.PropertyChanged -= OnChord_PropertyChanged;
+					if (_chord != null)
+					{
+						_chord.PropertyChanged -= OnChord_PropertyChanged;
+						_chord.ChromaFlagsPositionChanged -= OnChord_ChromaFlagsPositionChanged;
+					}
 					_chord = value;
-					if (_chord != null) _chord.PropertyChanged += OnChord_PropertyChanged;
+					if (_chord != null)
+					{
+						_chord.PropertyChanged += OnChord_PropertyChanged;
+						_chord.ChromaFlagsPositionChanged += OnChord_ChromaFlagsPositionChanged;
+					}
 				}
 			}
 		}
+		private void OnChord_ChromaFlagsPositionChanged(object sender, EventArgs e)
+		{
+			Draw();
+		}
+
 		private void OnChord_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
+			if (e.PropertyName == nameof(Chord.IsChromaFlagsBelow)) return;
 			Draw();
 		}
 
@@ -87,9 +101,14 @@ namespace Pentagram.Views
 				_layoutRoot.Children.Clear();
 				if (_chord == null) return;
 
+				LinkedChromasHelper helper = _chord.IsChromaFlagsBelow
+					? new LinkedChromaHelper_Below(Chord, _layoutRoot) as LinkedChromasHelper
+					: new LinkedChromaHelper_Above(Chord, _layoutRoot) as LinkedChromasHelper;
+				//LinkedChromasHelper helper = null;
+				//if (_chord.IsChromaFlagsBelow) helper = new LinkedChromaHelper_Below(); else helper = new LinkedChromaHelper_Above();
 				// draw balls
 				var ballImageSource = _chord.Duration.DurataCanonica == DurateCanoniche.Breve || _chord.Duration.DurataCanonica == DurateCanoniche.Semibreve || _chord.Duration.DurataCanonica == DurateCanoniche.Minima ? _emptyBallImage : _blackBallImage;
-				var ballYs = GetBallYs(_chiave, _chord);
+				var ballYs = LinkedChromasHelper.GetBallYs(_chiave, _chord);
 				int idx = 0;
 
 				foreach (var tone in _chord.Tones)
@@ -102,255 +121,400 @@ namespace Pentagram.Views
 					_layoutRoot.Children.Add(newBall);
 
 					Canvas.SetTop(newBall, ballYs[idx]);
+					// 		<!--<Path Stroke="Black" StrokeThickness="2"
+					// Data = "M24,12.5 V-80 H50 V-78 H24 V-70 H50 V-68 H24 V-60" /> -->
 
-					//double ballY = ((4.0 - Convert.ToDouble(tone.Ottava)) * HOW_MANY_WHITE_NOTES * LINE_GAP / 2.0 + LINE_GAP / 2.0 * (HOW_MANY_WHITE_NOTES - (int)tone.NotaBianca));
-					//if (_chiave == Chiavi.Violino) ballY -= LINE_GAP / 2.0;
-					//else if (_chiave == Chiavi.Basso) ballY -= LINE_GAP * 7.5;
-
-					//Canvas.SetTop(newBall, ballY);
-					//// 		<!--<Path Stroke="Black" StrokeThickness="2"
-					//// Data = "M24,12.5 V-80 H50 V-78 H24 V-70 H50 V-68 H24 V-60" /> -->
-
-					//ballYs.Add(ballY);
 					idx++;
 				}
 
 				// draw mast and (flags or curls)
-				if (GetIsNeedsMast(_chord))
+				if (LinkedChromasHelper.GetIsNeedsMast(_chord))
 				{
-					var mastTop = GetTallestMastTop(_chiave, _chord); // GetMastTop(ballYs);
-					DrawMast(ballYs, mastTop);
+					var mastTop = helper.GetTallestMastTop(_chiave, _chord);
+					helper.DrawMast(ballYs, mastTop);
 
-					int howManyFlagsOrCurls = GetHowManyFlagsOrCurls(_chord);
-					if (GetIsNeedsFlags(_chord))
+					int howManyFlagsOrCurls = LinkedChromasHelper.GetHowManyFlagsOrCurls(_chord);
+					if (LinkedChromasHelper.GetIsNeedsFlags(_chord))
 					{
 						for (int i = 1; i <= howManyFlagsOrCurls; i++)
 						{
-							DrawFlag(i, mastTop);//, FLAG_WIDTH * 2.0);
+							helper.DrawFlag(i, mastTop);
 						}
 					}
-					else if (GetIsNeedsCurl(_chord))
+					else if (LinkedChromasHelper.GetIsNeedsCurl(_chord))
 					{
 						for (int i = 1; i <= howManyFlagsOrCurls; i++)
 						{
-							DrawCurl(i, mastTop);//, FLAG_WIDTH);
+							helper.DrawCurl(i, mastTop);
 						}
 					}
 				}
 			});
 		}
-
-		private void DrawMast(List<double> ballYs, double minY)
-		{
-			double maxY = ballYs.Max() + LINE_GAP / 2.0;
-
-			var mast = new PathFigure()
-			{
-				StartPoint = new Point(LINE_GAP - 1.0, maxY)
-			};
-			mast.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 1.0, minY) });
-			var geom = new PathGeometry();
-			geom.Figures.Add(mast);
-
-			var newPath = new Windows.UI.Xaml.Shapes.Path()
-			{
-				Stroke = new SolidColorBrush(Windows.UI.Colors.Black),
-				StrokeThickness = 2.0,
-				Data = geom
-			};
-			_layoutRoot.Children.Add(newPath);
-		}
-
-		private void DrawFlag(double flagNo, double mastTop/*, double flagWidth*/)
-		{
-			PathFigure flagLeft = new PathFigure() { StartPoint = new Point(LINE_GAP, mastTop + (flagNo - 1) * FLAG_GAP) };
-			PathFigure flagRight = new PathFigure() { StartPoint = new Point(LINE_GAP - 2.0, mastTop + (flagNo - 1) * FLAG_GAP) };
-
-			if (Chord.NextJoinedChord != null && Chord.PrevJoinedChord == null)
-			{
-				/*
-				 * Se la seguente ha la barretta che sto facendo, aggiungi una barra a destra
-				 * altrimenti aggiungi una mezza barretta a destra
-				 */
-				if (GetHowManyFlagsOrCurls(Chord.NextJoinedChord) >= flagNo)
-					flagRight.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
-				else
-					flagRight.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
-			}
-			else if (Chord.PrevJoinedChord != null && Chord.NextJoinedChord == null)
-			{
-				/*
-				 * Se la precedente ha la barretta che sto facendo, aggiungi una barra a sinistra
-				 * altrimenti aggiungi una mezza barretta a sinistra
-				 */
-				if (GetHowManyFlagsOrCurls(Chord.PrevJoinedChord) >= flagNo)
-					flagLeft.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
-				else
-					flagLeft.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
-			}
-			else
-			{
-				// LOLLO TODO this looks good but check it a little more
-				/*
-				 * Se la precedente ha la barretta che sto facendo, aggiungi una barra a sinistra
-				 * altrimenti aggiungi una mezza barretta a sinistra
-				 * Poi
-				 * Se la seguente ha la barretta che sto facendo, aggiungi una barra a destra
-				 * altrimenti no
-				 * */
-				if (GetHowManyFlagsOrCurls(Chord.PrevJoinedChord) >= flagNo)
-					flagLeft.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
-				else
-					flagLeft.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
-				if (GetHowManyFlagsOrCurls(Chord.NextJoinedChord) >= flagNo)
-					flagRight.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
-			}
-
-			var geom = new PathGeometry();
-			if (flagLeft?.Segments != null && flagLeft.Segments.Count > 0) geom.Figures.Add(flagLeft);
-			if (flagRight?.Segments != null && flagRight.Segments.Count > 0) geom.Figures.Add(flagRight);
-			if (geom.Figures.Count < 1) return;
-
-			var newPath = new Windows.UI.Xaml.Shapes.Path()
-			{
-				Stroke = new SolidColorBrush(Windows.UI.Colors.Black),
-				StrokeThickness = 6.0,
-				Data = geom
-			};
-			_layoutRoot.Children.Add(newPath);
-		}
-		private void DrawCurl(double flagNo, double mastTop/*, double flagWidth*/)
-		{
-			var flag = new PathFigure()
-			{
-				StartPoint = new Point(LINE_GAP - 2.0, mastTop + (flagNo - 1) * FLAG_GAP)
-			};
-			flag.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
-
-			var geom = new PathGeometry();
-			geom.Figures.Add(flag);
-
-			var newPath = new Windows.UI.Xaml.Shapes.Path()
-			{
-				Stroke = new SolidColorBrush(Windows.UI.Colors.Black),
-				StrokeThickness = 6.0,
-				Data = geom
-			};
-			_layoutRoot.Children.Add(newPath);
-		}
 		#endregion draw
 
 		#region utils
-		private static List<double> GetBallYs(Chiavi chiave, Chord chord)
+		internal abstract class LinkedChromasHelper
 		{
-			var ballYs = new List<double>();
-
-			foreach (var tone in chord.Tones)
+			protected readonly Chord _chord = null;
+			protected readonly Canvas _layoutRoot = null;
+			internal LinkedChromasHelper(Chord chord, Canvas layoutRoot)
 			{
-				double ballY = ((4.0 - Convert.ToDouble(tone.Ottava)) * HOW_MANY_WHITE_NOTES * LINE_GAP / 2.0 + LINE_GAP / 2.0 * (HOW_MANY_WHITE_NOTES - (int)tone.NotaBianca));
-
-				if (chiave == Chiavi.Violino) ballY -= LINE_GAP / 2.0;
-				else if (chiave == Chiavi.Basso) ballY -= LINE_GAP * 7.5;
-
-				ballYs.Add(ballY);
+				if (chord == null) throw new ArgumentNullException("LinkedChromasHelper needs a chord");
+				if (layoutRoot == null) throw new ArgumentNullException("LinkedChromasHelper needs a canvas");
+				_chord = chord;
+				_layoutRoot = layoutRoot;
 			}
+			internal static List<double> GetBallYs(Chiavi chiave, Chord chord)
+			{
+				var ballYs = new List<double>();
 
-			return ballYs;
+				foreach (var tone in chord.Tones)
+				{
+					double ballY = ((4.0 - Convert.ToDouble(tone.Ottava)) * HOW_MANY_WHITE_NOTES * LINE_GAP / 2.0 + LINE_GAP / 2.0 * (HOW_MANY_WHITE_NOTES - (int)tone.NotaBianca));
+
+					if (chiave == Chiavi.Violino) ballY -= LINE_GAP / 2.0;
+					else if (chiave == Chiavi.Basso) ballY -= LINE_GAP * 7.5;
+
+					ballYs.Add(ballY);
+				}
+
+				return ballYs;
+			}
+			internal static bool GetIsNeedsMast(Chord chord)
+			{
+				switch (chord.Duration.DurataCanonica)
+				{
+					case DurateCanoniche.Breve:
+						return false;
+					case DurateCanoniche.Semibreve:
+						return false;
+					default:
+						return true;
+				}
+
+			}
+			internal static bool GetIsNeedsFlags(Chord chord)
+			{
+				switch (chord.Duration.DurataCanonica)
+				{
+					case DurateCanoniche.Breve:
+						return false;
+					case DurateCanoniche.Semibreve:
+						return false;
+					case DurateCanoniche.Minima:
+						return false;
+					case DurateCanoniche.Semiminima:
+						return false;
+					default:
+						return (chord.NextJoinedChord != null && chord.NextJoinedChord.IsChromaFlagsBelow == chord.IsChromaFlagsBelow)
+							|| (chord.PrevJoinedChord != null && chord.PrevJoinedChord.IsChromaFlagsBelow == chord.IsChromaFlagsBelow);
+				}
+			}
+			internal static bool GetIsNeedsCurl(Chord chord)
+			{
+				switch (chord.Duration.DurataCanonica)
+				{
+					case DurateCanoniche.Breve:
+						return false;
+					case DurateCanoniche.Semibreve:
+						return false;
+					case DurateCanoniche.Minima:
+						return false;
+					case DurateCanoniche.Semiminima:
+						return false;
+					default:
+						return !GetIsNeedsFlags(chord);
+				}
+			}
+			internal static int GetHowManyFlagsOrCurls(Chord chord)
+			{
+				switch (chord.Duration.DurataCanonica)
+				{
+					case DurateCanoniche.Croma:
+						return 1;
+					case DurateCanoniche.Semicroma:
+						return 2;
+					case DurateCanoniche.Biscroma:
+						return 3;
+					case DurateCanoniche.Semibiscroma:
+						return 4;
+					default:
+						return 0;
+				}
+			}
+			internal abstract double GetTallestMastTop(Chiavi chiave, Chord chord);
+			internal abstract void DrawMast(List<double> ballYs, double minY);
+			internal abstract void DrawFlag(double flagNo, double mastTop/*, double flagWidth*/);
+			internal abstract void DrawCurl(double flagNo, double mastTop/*, double flagWidth*/);
 		}
-		private static bool GetIsNeedsMast(Chord chord)
-		{
-			switch (chord.Duration.DurataCanonica)
-			{
-				case DurateCanoniche.Breve:
-					return false;
-				case DurateCanoniche.Semibreve:
-					return false;
-				default:
-					return true;
-			}
 
+		private class LinkedChromaHelper_Above : LinkedChromasHelper
+		{
+			internal LinkedChromaHelper_Above(Chord chord, Canvas layoutRoot) : base(chord, layoutRoot) { }
+			private static double GetMastTop(List<double> ballYs)
+			{
+				return ballYs.Min() + LINE_GAP / 2.0 - MIN_MAST_HEIGHT;
+			}
+			internal override double GetTallestMastTop(Chiavi chiave, Chord chord)
+			{
+				if (chord == null) throw new ArgumentException("LinkedChromaHelper_Above.GetTallestMastTop() needs a chord");
+
+				var ballsYs = GetBallYs(chiave, chord);
+				double mastTop = GetMastTop(ballsYs);
+				double tallestMastTop = mastTop;
+
+				Chord otherChord = chord.PrevJoinedChord;
+				while (otherChord != null)
+				{
+					var otherBallsYs = GetBallYs(chiave, otherChord);
+					double otherMastTop = GetMastTop(otherBallsYs);
+					tallestMastTop = Math.Min(otherMastTop, tallestMastTop);
+					otherChord = otherChord.PrevJoinedChord;
+				}
+
+				otherChord = chord.NextJoinedChord;
+				while (otherChord != null)
+				{
+					var otherBallsYs = GetBallYs(chiave, otherChord);
+					double otherMastTop = GetMastTop(otherBallsYs);
+					tallestMastTop = Math.Min(otherMastTop, tallestMastTop);
+					otherChord = otherChord.NextJoinedChord;
+				}
+
+				return tallestMastTop;
+			}
+			internal override void DrawMast(List<double> ballYs, double flagY)
+			{
+				double ballY = ballYs.Max() + LINE_GAP / 2.0;
+
+				var mast = new PathFigure()
+				{
+					StartPoint = new Point(LINE_GAP - 1.0, ballY)
+				};
+				mast.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 1.0, flagY) });
+				var geom = new PathGeometry();
+				geom.Figures.Add(mast);
+
+				var newPath = new Windows.UI.Xaml.Shapes.Path()
+				{
+					Stroke = new SolidColorBrush(Windows.UI.Colors.Black),
+					StrokeThickness = 2.0,
+					Data = geom
+				};
+				_layoutRoot.Children.Add(newPath);
+			}
+			internal override void DrawFlag(double flagNo, double mastTop)
+			{
+				PathFigure flagLeft = new PathFigure() { StartPoint = new Point(LINE_GAP, mastTop + (flagNo - 1) * FLAG_GAP) };
+				PathFigure flagRight = new PathFigure() { StartPoint = new Point(LINE_GAP - 2.0, mastTop + (flagNo - 1) * FLAG_GAP) };
+
+				if (_chord.NextJoinedChord != null && _chord.PrevJoinedChord == null)
+				{
+					/*
+					 * Se la seguente ha la barretta che sto facendo, aggiungi una barra a destra
+					 * altrimenti aggiungi una mezza barretta a destra
+					 */
+					if (GetHowManyFlagsOrCurls(_chord.NextJoinedChord) >= flagNo)
+						flagRight.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+					else
+						flagRight.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+				}
+				else if (_chord.PrevJoinedChord != null && _chord.NextJoinedChord == null)
+				{
+					/*
+					 * Se la precedente ha la barretta che sto facendo, aggiungi una barra a sinistra
+					 * altrimenti aggiungi una mezza barretta a sinistra
+					 */
+					if (GetHowManyFlagsOrCurls(_chord.PrevJoinedChord) >= flagNo)
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+					else
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+				}
+				else
+				{
+					// LOLLO TODO this looks good but check it a little more
+					/*
+					 * Se la precedente ha la barretta che sto facendo, aggiungi una barra a sinistra
+					 * altrimenti aggiungi una mezza barretta a sinistra
+					 * Poi
+					 * Se la seguente ha la barretta che sto facendo, aggiungi una barra a destra
+					 * altrimenti no
+					 * */
+					if (GetHowManyFlagsOrCurls(_chord.PrevJoinedChord) >= flagNo)
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+					else
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+					if (GetHowManyFlagsOrCurls(_chord.NextJoinedChord) >= flagNo)
+						flagRight.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+				}
+
+				var geom = new PathGeometry();
+				if (flagLeft?.Segments != null && flagLeft.Segments.Count > 0) geom.Figures.Add(flagLeft);
+				if (flagRight?.Segments != null && flagRight.Segments.Count > 0) geom.Figures.Add(flagRight);
+				if (geom.Figures.Count < 1) return;
+
+				var newPath = new Windows.UI.Xaml.Shapes.Path()
+				{
+					Stroke = new SolidColorBrush(Windows.UI.Colors.Black),
+					StrokeThickness = 6.0,
+					Data = geom
+				};
+				_layoutRoot.Children.Add(newPath);
+			}
+			internal override void DrawCurl(double flagNo, double mastTop)
+			{
+				var flag = new PathFigure()
+				{
+					StartPoint = new Point(LINE_GAP - 2.0, mastTop + (flagNo - 1) * FLAG_GAP)
+				};
+				flag.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+
+				var geom = new PathGeometry();
+				geom.Figures.Add(flag);
+
+				var newPath = new Windows.UI.Xaml.Shapes.Path()
+				{
+					Stroke = new SolidColorBrush(Windows.UI.Colors.Black),
+					StrokeThickness = 6.0,
+					Data = geom
+				};
+				_layoutRoot.Children.Add(newPath);
+			}
 		}
-		private static bool GetIsNeedsFlags(Chord chord)
+
+		private class LinkedChromaHelper_Below : LinkedChromasHelper
 		{
-			switch (chord.Duration.DurataCanonica)
+			internal LinkedChromaHelper_Below(Chord chord, Canvas layoutRoot) : base(chord, layoutRoot) { }
+			private static double GetMastTop(List<double> ballYs)
 			{
-				case DurateCanoniche.Breve:
-					return false;
-				case DurateCanoniche.Semibreve:
-					return false;
-				case DurateCanoniche.Minima:
-					return false;
-				case DurateCanoniche.Semiminima:
-					return false;
-				default:
-					return chord.NextJoinedChord != null || chord.PrevJoinedChord != null;
+				return ballYs.Max() + LINE_GAP / 2.0 + MIN_MAST_HEIGHT;
 			}
-		}
-		private static bool GetIsNeedsCurl(Chord chord)
-		{
-			switch (chord.Duration.DurataCanonica)
+			internal override double GetTallestMastTop(Chiavi chiave, Chord chord)
 			{
-				case DurateCanoniche.Breve:
-					return false;
-				case DurateCanoniche.Semibreve:
-					return false;
-				case DurateCanoniche.Minima:
-					return false;
-				case DurateCanoniche.Semiminima:
-					return false;
-				default:
-					return chord.PrevJoinedChord == null && chord.NextJoinedChord == null;
+				if (chord == null) throw new ArgumentException("LinkedChromaHelper_Below.GetTallestMastTop() needs a chord");
+
+				var ballsYs = GetBallYs(chiave, chord);
+				double mastTop = GetMastTop(ballsYs);
+				double tallestMastTop = mastTop;
+
+				Chord otherChord = chord.PrevJoinedChord;
+				while (otherChord != null)
+				{
+					var otherBallsYs = GetBallYs(chiave, otherChord);
+					double otherMastTop = GetMastTop(otherBallsYs);
+					tallestMastTop = Math.Max(otherMastTop, tallestMastTop);
+					otherChord = otherChord.PrevJoinedChord;
+				}
+
+				otherChord = chord.NextJoinedChord;
+				while (otherChord != null)
+				{
+					var otherBallsYs = GetBallYs(chiave, otherChord);
+					double otherMastTop = GetMastTop(otherBallsYs);
+					tallestMastTop = Math.Max(otherMastTop, tallestMastTop);
+					otherChord = otherChord.NextJoinedChord;
+				}
+
+				return tallestMastTop;
 			}
-		}
-		private static int GetHowManyFlagsOrCurls(Chord chord)
-		{
-			switch (chord.Duration.DurataCanonica)
+			internal override void DrawMast(List<double> ballYs, double flagY)
 			{
-				case DurateCanoniche.Croma:
-					return 1;
-				case DurateCanoniche.Semicroma:
-					return 2;
-				case DurateCanoniche.Biscroma:
-					return 3;
-				case DurateCanoniche.Semibiscroma:
-					return 4;
-				default:
-					return 0;
+				double ballY = ballYs.Min() + LINE_GAP / 2.0;
+
+				var mast = new PathFigure()
+				{
+					StartPoint = new Point(1.0, ballY)
+				};
+				mast.Segments.Add(new LineSegment() { Point = new Point(1.0, flagY) });
+				var geom = new PathGeometry();
+				geom.Figures.Add(mast);
+
+				var newPath = new Windows.UI.Xaml.Shapes.Path()
+				{
+					Stroke = new SolidColorBrush(Windows.UI.Colors.Black),
+					StrokeThickness = 2.0,
+					Data = geom
+				};
+				_layoutRoot.Children.Add(newPath);
 			}
-		}
-
-		private static double GetMastTop(List<double> ballYs)
-		{
-			return ballYs.Min() + LINE_GAP / 2.0 - MIN_MAST_HEIGHT;
-		}
-
-		private static double GetTallestMastTop(Chiavi chiave, Chord chord)
-		{
-			if (chord == null) throw new ArgumentException("ChordAdorner.GetTallestMastTop() needs a chord");
-
-			var ballsYs = GetBallYs(chiave, chord);
-			double mastTop = GetMastTop(ballsYs);
-			double tallestMastTop = mastTop;
-
-			Chord otherChord = chord.PrevJoinedChord;
-			while (otherChord != null)
+			internal override void DrawFlag(double flagNo, double mastTop)
 			{
-				var otherBallsYs = GetBallYs(chiave, otherChord);
-				double otherMastTop = GetMastTop(otherBallsYs);
-				tallestMastTop = Math.Min(otherMastTop, tallestMastTop);
-				otherChord = otherChord.PrevJoinedChord;
-			}
+				PathFigure flagLeft = new PathFigure() { StartPoint = new Point(2.0, mastTop - (flagNo - 1) * FLAG_GAP) };
+				PathFigure flagRight = new PathFigure() { StartPoint = new Point(0.0, mastTop - (flagNo - 1) * FLAG_GAP) };
 
-			otherChord = chord.NextJoinedChord;
-			while (otherChord != null)
+				if (_chord.NextJoinedChord != null && _chord.PrevJoinedChord == null)
+				{
+					/*
+					 * Se la seguente ha la barretta che sto facendo, aggiungi 1 barra a destra
+					 * altrimenti aggiungi una mezza barretta a destra
+					 */
+					if (GetHowManyFlagsOrCurls(_chord.NextJoinedChord) >= flagNo)
+						flagRight.Segments.Add(new LineSegment() { Point = new Point(2.0 * FLAG_WIDTH, mastTop - (flagNo - 1) * FLAG_GAP) });
+					else
+						flagRight.Segments.Add(new LineSegment() { Point = new Point(FLAG_WIDTH, mastTop - (flagNo - 1) * FLAG_GAP) });
+				}
+				else if (_chord.PrevJoinedChord != null && _chord.NextJoinedChord == null)
+				{
+					/*
+					 * Se la precedente ha la barretta che sto facendo, aggiungi una barra a sinistra
+					 * altrimenti aggiungi una mezza barretta a sinistra
+					 */
+					if (GetHowManyFlagsOrCurls(_chord.PrevJoinedChord) >= flagNo)
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(2.0 - 2.0 * FLAG_WIDTH, mastTop - (flagNo - 1) * FLAG_GAP) });
+					else
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(2.0 - FLAG_WIDTH, mastTop - (flagNo - 1) * FLAG_GAP) });
+				}
+				else
+				{
+					// LOLLO TODO this looks good but check it a little more
+					/*
+					 * Se la precedente ha la barretta che sto facendo, aggiungi una barra a sinistra
+					 * altrimenti aggiungi una mezza barretta a sinistra
+					 * Poi
+					 * Se la seguente ha la barretta che sto facendo, aggiungi una barra a destra
+					 * altrimenti no
+					 * */
+					if (GetHowManyFlagsOrCurls(_chord.PrevJoinedChord) >= flagNo)
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(2.0 - 2.0 * FLAG_WIDTH, mastTop - (flagNo - 1) * FLAG_GAP) });
+					else
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(2.0 - FLAG_WIDTH, mastTop - (flagNo - 1) * FLAG_GAP) });
+					if (GetHowManyFlagsOrCurls(_chord.NextJoinedChord) >= flagNo)
+						flagRight.Segments.Add(new LineSegment() { Point = new Point(2.0 * FLAG_WIDTH, mastTop - (flagNo - 1) * FLAG_GAP) });
+				}
+
+				var geom = new PathGeometry();
+				if (flagLeft?.Segments != null && flagLeft.Segments.Count > 0) geom.Figures.Add(flagLeft);
+				if (flagRight?.Segments != null && flagRight.Segments.Count > 0) geom.Figures.Add(flagRight);
+				if (geom.Figures.Count < 1) return;
+
+				var newPath = new Windows.UI.Xaml.Shapes.Path()
+				{
+					Stroke = new SolidColorBrush(Windows.UI.Colors.Black),
+					StrokeThickness = 6.0,
+					Data = geom
+				};
+				_layoutRoot.Children.Add(newPath);
+			}
+			internal override void DrawCurl(double flagNo, double mastTop)
 			{
-				var otherBallsYs = GetBallYs(chiave, otherChord);
-				double otherMastTop = GetMastTop(otherBallsYs);
-				tallestMastTop = Math.Min(otherMastTop, tallestMastTop);
-				otherChord = otherChord.NextJoinedChord;
-			}
+				var flag = new PathFigure()
+				{
+					StartPoint = new Point(0.0, mastTop - (flagNo - 1) * FLAG_GAP)
+				};
+				flag.Segments.Add(new LineSegment() { Point = new Point(FLAG_WIDTH, mastTop - (flagNo - 1) * FLAG_GAP) });
 
-			return tallestMastTop;
+				var geom = new PathGeometry();
+				geom.Figures.Add(flag);
+
+				var newPath = new Windows.UI.Xaml.Shapes.Path()
+				{
+					Stroke = new SolidColorBrush(Windows.UI.Colors.Black),
+					StrokeThickness = 6.0,
+					Data = geom
+				};
+				_layoutRoot.Children.Add(newPath);
+			}
 		}
 		#endregion utils
 	}
