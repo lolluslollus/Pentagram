@@ -74,40 +74,48 @@ namespace Pentagram.Adorners
 		}
 		#endregion ctor and dispose
 
+		private double _width = 0.0;
 		private void Draw()
 		{
 			Task upd = RunInUiThreadAsync(() =>
 			{
 				_layoutRoot.Children.Clear();
+				_width = 0.0;
 				if (_tab == null) return;
 
-				// draw symbol
 				BitmapImage imageSource = null;
 				switch (_tab.TabSymbol)
 				{
 					case TabSymbols.Nil:
+						_width = NOTE_BALL_WIDTH;
 						break;
 					case TabSymbols.Chiave:
+						_width = CHIAVE_WIDTH;
 						if (_chiave == Chiavi.Violino) imageSource = _chiaveDiViolino;
 						else if (_chiave == Chiavi.Basso) imageSource = _chiaveDiBasso;
 						break;
 					case TabSymbols.Armatura:
+						_width = ARMATURA_WIDTH;
 						break;
 					case TabSymbols.Ritmo:
+						_width = RITMO_WIDTH;
 						if (_ritmo == Ritmi.dq) imageSource = _dq;
 						else if (_ritmo == Ritmi.tq) imageSource = _tq;
 						else if (_ritmo == Ritmi.qq) imageSource = _qq;
 						break;
 					case TabSymbols.TwoVerticalBars:
+						_width = VERTICAL_BAR_WIDTH;
 						break;
 					case TabSymbols.Refrain:
+						_width = REFRAIN_WIDTH;
 						break;
 					default:
+						_width = NOTE_BALL_WIDTH;
 						break;
 				}
 				if (imageSource == null) return;
 
-				_layoutRoot.Children.Add(new Image() { Source = imageSource });
+				_layoutRoot.Children.Add(new Image() { Source = imageSource, Width = _width });
 			});
 		}
 
@@ -118,25 +126,25 @@ namespace Pentagram.Adorners
 
 		public override double GetWidth()
 		{
-			if (_tab == null) throw new ArgumentNullException("TabAdorner.GetWidth() needs a tab");
-			switch (_tab.TabSymbol)
-			{
-				case TabSymbols.Nil:
-					return NOTE_BALL_WIDTH;
-				case TabSymbols.Chiave:
-					return CHIAVE_WIDTH;
-				case TabSymbols.Armatura:
-					return ARMATURA_WIDTH;
-				case TabSymbols.Ritmo:
-					return RITMO_WIDTH;
-				case TabSymbols.TwoVerticalBars:
-					return VERTICAL_BAR_WIDTH;
-				case TabSymbols.Refrain:
-					return REFRAIN_WIDTH;
-				default:
-					return NOTE_BALL_WIDTH;
-			}
-
+			return _width;
+			//if (_tab == null) throw new ArgumentNullException("TabAdorner.GetWidth() needs a tab");
+			//switch (_tab.TabSymbol)
+			//{
+			//	case TabSymbols.Nil:
+			//		return NOTE_BALL_WIDTH;
+			//	case TabSymbols.Chiave:
+			//		return CHIAVE_WIDTH;
+			//	case TabSymbols.Armatura:
+			//		return ARMATURA_WIDTH;
+			//	case TabSymbols.Ritmo:
+			//		return RITMO_WIDTH;
+			//	case TabSymbols.TwoVerticalBars:
+			//		return VERTICAL_BAR_WIDTH;
+			//	case TabSymbols.Refrain:
+			//		return REFRAIN_WIDTH;
+			//	default:
+			//		return NOTE_BALL_WIDTH;
+			//}
 		}
 	}
 }

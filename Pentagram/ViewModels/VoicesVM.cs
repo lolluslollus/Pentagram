@@ -135,6 +135,11 @@ namespace Pentagram.ViewModels
 			bat1 = voice.AddBattuta(Chiavi.Basso, Ritmi.tq);
 
 			ins0 = voice.AddInstant(bat0);
+			ins0.SoundsOrTabs.Add(new Tab(TabSymbols.Chiave));
+			ins0 = voice.AddInstant(bat0);
+			ins0.SoundsOrTabs.Add(new Tab(TabSymbols.Ritmo));
+
+			ins0 = voice.AddInstant(bat0);
 			voice.AddSoundToInstant(_defaultChord6, ins0, bat0);
 			voice.AddSoundToInstant(_defaultChord6b, ins0, bat0);
 			ins1 = voice.AddInstant(bat0);
@@ -244,6 +249,11 @@ namespace Pentagram.ViewModels
 
 			bat0 = voice.AddBattuta(Chiavi.Basso, Ritmi.dq);
 			bat1 = voice.AddBattuta(Chiavi.Violino, Ritmi.tq);
+
+			ins0 = voice.AddInstant(bat0);
+			ins0.SoundsOrTabs.Add(new Tab(TabSymbols.Chiave));
+			ins0 = voice.AddInstant(bat0);
+			ins0.SoundsOrTabs.Add(new Tab(TabSymbols.Ritmo));
 
 			ins0 = voice.AddInstant(bat0);
 			voice.AddSoundToInstant(_defaultChord0, ins0, bat0);
