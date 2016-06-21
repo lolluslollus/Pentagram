@@ -57,6 +57,7 @@ namespace Pentagram.Views
 		protected override Task CloseMayOverrideAsync()
 		{
 			_bhwa?.Dispose();
+			_bhwa = null;
 			return Task.CompletedTask;
 		}
 		#endregion lifecycle
@@ -72,7 +73,7 @@ namespace Pentagram.Views
 			{
 				var voices = Voices;
 
-				if (_bhwa != null) _bhwa.Dispose();
+				_bhwa?.Dispose();
 				if (voices == null)
 				{
 					_bhwa = null;

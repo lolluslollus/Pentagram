@@ -29,6 +29,12 @@ namespace Pentagram.Adorners
 		private static Chord _defaultChord = new Chord(_defaultDuration, SegniSuNote.Nil, _defaultTone0, _defaultTone1, _defaultTone2, _defaultTone3);
 		private static readonly BitmapImage _blackBallImage = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/palla_nera_100.png", UriKind.Absolute) };
 		private static readonly BitmapImage _emptyBallImage = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/palla_vuota_100.png", UriKind.Absolute) };
+		private static readonly BitmapImage _bemolleImage = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/bemolle_100.png", UriKind.Absolute) };
+		private static readonly BitmapImage _bequadroImage = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/bequadro_100.png", UriKind.Absolute) };
+		private static readonly BitmapImage _diesisImage = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/diesis_100.png", UriKind.Absolute) };
+		private static readonly BitmapImage _pdv1Image = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/punti1_100.png", UriKind.Absolute) };
+		private static readonly BitmapImage _pdv2Image = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/punti2_100.png", UriKind.Absolute) };
+		private static readonly BitmapImage _pdv3Image = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/punti3_100.png", UriKind.Absolute) };
 
 		private Chiavi _chiave;
 
@@ -91,26 +97,17 @@ namespace Pentagram.Adorners
 				_layoutRoot.Children.Clear();
 				if (_chord == null) return;
 
-				LinkedChromasHelper helper = _chord.IsChromaFlagsBelow
-					? new LinkedChromaHelper_Below(_chord, _layoutRoot) as LinkedChromasHelper
-					: new LinkedChromaHelper_Above(_chord, _layoutRoot) as LinkedChromasHelper;
-				//LinkedChromasHelper helper = null;
-				//if (_chord.IsChromaFlagsBelow) helper = new LinkedChromaHelper_Below(); else helper = new LinkedChromaHelper_Above();
-				// draw balls
 				var ballImageSource = _chord.Duration.DurataCanonica == DurateCanoniche.Breve || _chord.Duration.DurataCanonica == DurateCanoniche.Semibreve || _chord.Duration.DurataCanonica == DurateCanoniche.Minima ? _emptyBallImage : _blackBallImage;
+				var pdvImageSource = _chord.Duration.PuntiDiValore == PuntiDiValore.One ? _pdv1Image : _chord.Duration.PuntiDiValore == PuntiDiValore.Two ? _pdv2Image : _chord.Duration.PuntiDiValore == PuntiDiValore.Three ? _pdv3Image : null;
+				double ballsX0 = _chord.Tones.Any(tone => tone.Accidente != Accidenti.Nil) ? NOTE_BALL_WIDTH : 0.0;
 				var ballYs = LinkedChromasHelper.GetBallYs(_chiave, _chord);
 				int idx = 0;
 
 				foreach (var tone in _chord.Tones)
 				{
-					var newBall = new Image()
-					{
-						Source = ballImageSource,
-						Height = LINE_GAP
-					};
-					_layoutRoot.Children.Add(newBall);
-
-					Canvas.SetTop(newBall, ballYs[idx]);
+					DrawBall(ballImageSource, ballsX0, ballYs, idx);
+					DrawAccidente(ballYs, idx, tone.Accidente);
+					DrawPuntiDiValore(ballsX0, ballYs, idx, pdvImageSource);
 					// 		<!--<Path Stroke="Black" StrokeThickness="2"
 					// Data = "M24,12.5 V-80 H50 V-78 H24 V-70 H50 V-68 H24 V-60" /> -->
 
@@ -118,30 +115,98 @@ namespace Pentagram.Adorners
 				}
 
 				// draw mast and (flags or curls)
+				LinkedChromasHelper helper = _chord.IsChromaFlagsBelow
+					? new LinkedChromaHelper_Below(_chord, _layoutRoot) as LinkedChromasHelper
+					: new LinkedChromaHelper_Above(_chord, _layoutRoot) as LinkedChromasHelper;
+
 				if (LinkedChromasHelper.GetIsNeedsMast(_chord))
 				{
-					var mastTop = helper.GetTallestMastTop(_chiave, _chord);
-					helper.DrawMast(ballYs, mastTop);
+					var mastTopY = helper.GetTallestMastTop(_chiave, _chord);
+					helper.DrawMast(ballsX0, ballYs, mastTopY);
 
 					int howManyFlagsOrCurls = LinkedChromasHelper.GetHowManyFlagsOrCurls(_chord);
 					if (LinkedChromasHelper.GetIsNeedsFlags(_chord))
 					{
 						for (int i = 1; i <= howManyFlagsOrCurls; i++)
 						{
-							helper.DrawFlag(i, mastTop);
+							helper.DrawFlag(i, ballsX0, mastTopY);
 						}
 					}
 					else if (LinkedChromasHelper.GetIsNeedsCurl(_chord))
 					{
 						for (int i = 1; i <= howManyFlagsOrCurls; i++)
 						{
-							helper.DrawCurl(i, mastTop);
+							helper.DrawCurl(i, ballsX0, mastTopY);
 						}
 					}
 				}
 			});
 		}
 
+		private void DrawBall(BitmapImage ballImageSource, double ballsX0, List<double> ballYs, int idx)
+		{
+			var newBall = new Image()
+			{
+				Source = ballImageSource,
+				Height = LINE_GAP
+			};
+			_layoutRoot.Children.Add(newBall);
+
+			Canvas.SetLeft(newBall, ballsX0);
+			Canvas.SetTop(newBall, ballYs[idx]);
+		}
+
+		private void DrawAccidente(List<double> ballYs, int idx, Accidenti accidente)
+		{
+			BitmapImage accidenteImageSource = null;// tone.Accidente == Accidenti.Bemolle ? _bemolleImage : tone.Accidente == Accidenti.Bequadro ? _bequadroImage : tone.Accidente == Accidenti.Diesis ? _diesisImage : null;
+			switch (accidente)
+			{
+				case Accidenti.Nil:
+					break;
+				case Accidenti.Bequadro:
+					accidenteImageSource = _bequadroImage;
+					break;
+				case Accidenti.Diesis:
+					accidenteImageSource = _diesisImage;
+					break;
+				case Accidenti.Bemolle:
+					accidenteImageSource = _bemolleImage;
+					break;
+				case Accidenti.DoppioDiesis:
+					break;
+				case Accidenti.DoppioBemolle:
+					break;
+				default:
+					break;
+			}
+			if (accidenteImageSource != null)
+			{
+				var newAccidente = new Image()
+				{
+					Source = accidenteImageSource,
+					Height = LINE_GAP
+				};
+				_layoutRoot.Children.Add(newAccidente);
+
+				Canvas.SetLeft(newAccidente, 0.0);
+				Canvas.SetTop(newAccidente, ballYs[idx]);
+			}
+		}
+
+		private void DrawPuntiDiValore(double ballsX, List<double> ballYs, int idx, BitmapImage pdvImageSource)
+		{
+			if (pdvImageSource == null) return;
+
+			var newPDV = new Image()
+			{
+				Source = pdvImageSource,
+				Height = LINE_GAP
+			};
+			_layoutRoot.Children.Add(newPDV);
+
+			Canvas.SetLeft(newPDV, ballsX + NOTE_BALL_WIDTH);
+			Canvas.SetTop(newPDV, ballYs[idx]);
+		}
 		public override double GetHeight()
 		{
 			return PENTAGRAM_HEIGHT;
@@ -150,10 +215,16 @@ namespace Pentagram.Adorners
 		public override double GetWidth()
 		{
 			if (_chord == null) throw new ArgumentNullException("ChordAdorner.GetWidth() needs a chord");
-			if (_chord.Duration.PuntiDiValore == PuntiDiValore.Nil) return NOTE_BALL_WIDTH + FLAG_WIDTH;
-			else return NOTE_BALL_WIDTH + NOTE_BALL_WIDTH + FLAG_WIDTH;
+			double result = NOTE_BALL_WIDTH + FLAG_WIDTH;
+			// if (_chord.Duration.PuntiDiValore != PuntiDiValore.Nil) result += NOTE_BALL_WIDTH;
+			if (_chord.Tones.Any(tone => tone.Accidente != Accidenti.Nil)) result += NOTE_BALL_WIDTH;
+			return result;
 		}
 
+		//private double GetBallsX0()
+		//{
+		//	return _chord.Tones.Any(tone => tone.Accidente != Accidenti.Nil) ? NOTE_BALL_WIDTH : 0.0;
+		//}
 		#region utils
 		internal abstract class LinkedChromasHelper
 		{
@@ -245,9 +316,9 @@ namespace Pentagram.Adorners
 				}
 			}
 			internal abstract double GetTallestMastTop(Chiavi chiave, Chord chord);
-			internal abstract void DrawMast(List<double> ballYs, double minY);
-			internal abstract void DrawFlag(double flagNo, double mastTop/*, double flagWidth*/);
-			internal abstract void DrawCurl(double flagNo, double mastTop/*, double flagWidth*/);
+			internal abstract void DrawMast(double ballsX0, List<double> ballYs, double minY);
+			internal abstract void DrawFlag(int flagNo, double ballsX0, double mastTopY);
+			internal abstract void DrawCurl(int flagNo, double ballsX0, double mastTopY);
 		}
 
 		private class LinkedChromaHelper_Above : LinkedChromasHelper
@@ -285,15 +356,16 @@ namespace Pentagram.Adorners
 
 				return tallestMastTop;
 			}
-			internal override void DrawMast(List<double> ballYs, double flagY)
+			internal override void DrawMast(double ballsX0, List<double> ballYs, double flagY)
 			{
 				double ballY = ballYs.Max() + LINE_GAP / 2.0;
+				double mastX0 = NOTE_BALL_WIDTH - 1.0 + ballsX0;
 
 				var mast = new PathFigure()
 				{
-					StartPoint = new Point(NOTE_BALL_WIDTH - 1.0, ballY)
+					StartPoint = new Point(mastX0, ballY)
 				};
-				mast.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - 1.0, flagY) });
+				mast.Segments.Add(new LineSegment() { Point = new Point(mastX0, flagY) });
 				var geom = new PathGeometry();
 				geom.Figures.Add(mast);
 
@@ -305,10 +377,11 @@ namespace Pentagram.Adorners
 				};
 				_layoutRoot.Children.Add(newPath);
 			}
-			internal override void DrawFlag(double flagNo, double mastTop)
+			internal override void DrawFlag(int flagNo, double ballsX0, double mastTopY)
 			{
-				PathFigure flagLeft = new PathFigure() { StartPoint = new Point(NOTE_BALL_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) };
-				PathFigure flagRight = new PathFigure() { StartPoint = new Point(NOTE_BALL_WIDTH - 2.0, mastTop + (flagNo - 1) * FLAG_GAP) };
+				double flagY = mastTopY + (flagNo - 1) * FLAG_GAP;
+				PathFigure flagLeft = new PathFigure() { StartPoint = new Point(NOTE_BALL_WIDTH + ballsX0, flagY) };
+				PathFigure flagRight = new PathFigure() { StartPoint = new Point(NOTE_BALL_WIDTH - 2.0 + ballsX0, flagY) };
 
 				if (_chord.NextJoinedChord != null && _chord.PrevJoinedChord == null)
 				{
@@ -317,9 +390,9 @@ namespace Pentagram.Adorners
 					 * altrimenti aggiungi una mezza barretta a destra
 					 */
 					if (GetHowManyFlagsOrCurls(_chord.NextJoinedChord) >= flagNo)
-						flagRight.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - 2.0 + 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+						flagRight.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH + ballsX0 - 2.0 + 2.0 * FLAG_WIDTH, flagY) });
 					else
-						flagRight.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - 2.0 + FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+						flagRight.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH + ballsX0 - 2.0 + FLAG_WIDTH, flagY) });
 				}
 				else if (_chord.PrevJoinedChord != null && _chord.NextJoinedChord == null)
 				{
@@ -328,9 +401,9 @@ namespace Pentagram.Adorners
 					 * altrimenti aggiungi una mezza barretta a sinistra
 					 */
 					if (GetHowManyFlagsOrCurls(_chord.PrevJoinedChord) >= flagNo)
-						flagLeft.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH + ballsX0 - 2.0 * FLAG_WIDTH, flagY) });
 					else
-						flagLeft.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH + ballsX0 - FLAG_WIDTH, flagY) });
 				}
 				else
 				{
@@ -343,11 +416,11 @@ namespace Pentagram.Adorners
 					 * altrimenti no
 					 * */
 					if (GetHowManyFlagsOrCurls(_chord.PrevJoinedChord) >= flagNo)
-						flagLeft.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH + ballsX0 - 2.0 * FLAG_WIDTH, flagY) });
 					else
-						flagLeft.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH + ballsX0 - FLAG_WIDTH, flagY) });
 					if (GetHowManyFlagsOrCurls(_chord.NextJoinedChord) >= flagNo)
-						flagRight.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - 2.0 + 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+						flagRight.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH + ballsX0 - 2.0 + 2.0 * FLAG_WIDTH, flagY) });
 				}
 
 				var geom = new PathGeometry();
@@ -363,13 +436,13 @@ namespace Pentagram.Adorners
 				};
 				_layoutRoot.Children.Add(newPath);
 			}
-			internal override void DrawCurl(double flagNo, double mastTop)
+			internal override void DrawCurl(int flagNo, double ballsX0, double mastTopY)
 			{
 				var flag = new PathFigure()
 				{
-					StartPoint = new Point(NOTE_BALL_WIDTH - 2.0, mastTop + (flagNo - 1) * FLAG_GAP)
+					StartPoint = new Point(ballsX0 + NOTE_BALL_WIDTH - 2.0, mastTopY + (flagNo - 1) * FLAG_GAP)
 				};
-				flag.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - 2.0 + FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+				flag.Segments.Add(new LineSegment() { Point = new Point(ballsX0 + NOTE_BALL_WIDTH - 2.0 + FLAG_WIDTH, mastTopY + (flagNo - 1) * FLAG_GAP) });
 
 				var geom = new PathGeometry();
 				geom.Figures.Add(flag);
@@ -419,15 +492,16 @@ namespace Pentagram.Adorners
 
 				return tallestMastTop;
 			}
-			internal override void DrawMast(List<double> ballYs, double flagY)
+			internal override void DrawMast(double ballsX0, List<double> ballYs, double flagY)
 			{
 				double ballY = ballYs.Min() + LINE_GAP / 2.0;
+				double mastX0 = 1.0 + ballsX0;
 
 				var mast = new PathFigure()
 				{
-					StartPoint = new Point(1.0, ballY)
+					StartPoint = new Point(mastX0, ballY)
 				};
-				mast.Segments.Add(new LineSegment() { Point = new Point(1.0, flagY) });
+				mast.Segments.Add(new LineSegment() { Point = new Point(mastX0, flagY) });
 				var geom = new PathGeometry();
 				geom.Figures.Add(mast);
 
@@ -439,10 +513,11 @@ namespace Pentagram.Adorners
 				};
 				_layoutRoot.Children.Add(newPath);
 			}
-			internal override void DrawFlag(double flagNo, double mastTop)
+			internal override void DrawFlag(int flagNo, double ballsX0, double mastTopY)
 			{
-				PathFigure flagLeft = new PathFigure() { StartPoint = new Point(2.0, mastTop - (flagNo - 1) * FLAG_GAP) };
-				PathFigure flagRight = new PathFigure() { StartPoint = new Point(0.0, mastTop - (flagNo - 1) * FLAG_GAP) };
+				double flagY = mastTopY - (flagNo - 1) * FLAG_GAP;
+				PathFigure flagLeft = new PathFigure() { StartPoint = new Point(2.0 + ballsX0, flagY) };
+				PathFigure flagRight = new PathFigure() { StartPoint = new Point(ballsX0, flagY) };
 
 				if (_chord.NextJoinedChord != null && _chord.PrevJoinedChord == null)
 				{
@@ -451,9 +526,9 @@ namespace Pentagram.Adorners
 					 * altrimenti aggiungi una mezza barretta a destra
 					 */
 					if (GetHowManyFlagsOrCurls(_chord.NextJoinedChord) >= flagNo)
-						flagRight.Segments.Add(new LineSegment() { Point = new Point(2.0 * FLAG_WIDTH, mastTop - (flagNo - 1) * FLAG_GAP) });
+						flagRight.Segments.Add(new LineSegment() { Point = new Point(ballsX0 + 2.0 * FLAG_WIDTH, flagY) });
 					else
-						flagRight.Segments.Add(new LineSegment() { Point = new Point(FLAG_WIDTH, mastTop - (flagNo - 1) * FLAG_GAP) });
+						flagRight.Segments.Add(new LineSegment() { Point = new Point(ballsX0 + FLAG_WIDTH, flagY) });
 				}
 				else if (_chord.PrevJoinedChord != null && _chord.NextJoinedChord == null)
 				{
@@ -462,9 +537,9 @@ namespace Pentagram.Adorners
 					 * altrimenti aggiungi una mezza barretta a sinistra
 					 */
 					if (GetHowManyFlagsOrCurls(_chord.PrevJoinedChord) >= flagNo)
-						flagLeft.Segments.Add(new LineSegment() { Point = new Point(2.0 - 2.0 * FLAG_WIDTH, mastTop - (flagNo - 1) * FLAG_GAP) });
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(2.0 + ballsX0 - 2.0 * FLAG_WIDTH, flagY) });
 					else
-						flagLeft.Segments.Add(new LineSegment() { Point = new Point(2.0 - FLAG_WIDTH, mastTop - (flagNo - 1) * FLAG_GAP) });
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(2.0 + ballsX0 - FLAG_WIDTH, flagY) });
 				}
 				else
 				{
@@ -477,11 +552,11 @@ namespace Pentagram.Adorners
 					 * altrimenti no
 					 * */
 					if (GetHowManyFlagsOrCurls(_chord.PrevJoinedChord) >= flagNo)
-						flagLeft.Segments.Add(new LineSegment() { Point = new Point(2.0 - 2.0 * FLAG_WIDTH, mastTop - (flagNo - 1) * FLAG_GAP) });
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(2.0 + ballsX0 - 2.0 * FLAG_WIDTH, flagY) });
 					else
-						flagLeft.Segments.Add(new LineSegment() { Point = new Point(2.0 - FLAG_WIDTH, mastTop - (flagNo - 1) * FLAG_GAP) });
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(2.0 + ballsX0 - FLAG_WIDTH, flagY) });
 					if (GetHowManyFlagsOrCurls(_chord.NextJoinedChord) >= flagNo)
-						flagRight.Segments.Add(new LineSegment() { Point = new Point(2.0 * FLAG_WIDTH, mastTop - (flagNo - 1) * FLAG_GAP) });
+						flagRight.Segments.Add(new LineSegment() { Point = new Point(ballsX0 + 2.0 * FLAG_WIDTH, flagY) });
 				}
 
 				var geom = new PathGeometry();
@@ -497,13 +572,13 @@ namespace Pentagram.Adorners
 				};
 				_layoutRoot.Children.Add(newPath);
 			}
-			internal override void DrawCurl(double flagNo, double mastTop)
+			internal override void DrawCurl(int flagNo, double ballsX0, double mastTopY)
 			{
 				var flag = new PathFigure()
 				{
-					StartPoint = new Point(0.0, mastTop - (flagNo - 1) * FLAG_GAP)
+					StartPoint = new Point(ballsX0, mastTopY - (flagNo - 1) * FLAG_GAP)
 				};
-				flag.Segments.Add(new LineSegment() { Point = new Point(FLAG_WIDTH, mastTop - (flagNo - 1) * FLAG_GAP) });
+				flag.Segments.Add(new LineSegment() { Point = new Point(ballsX0 + FLAG_WIDTH, mastTopY - (flagNo - 1) * FLAG_GAP) });
 
 				var geom = new PathGeometry();
 				geom.Figures.Add(flag);

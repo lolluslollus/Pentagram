@@ -132,8 +132,14 @@
     <None Include="Pentagram_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Symbols\bemolle_100.png" />
+    <Content Include="Assets\Symbols\bequadro_100.png" />
+    <Content Include="Assets\Symbols\punti3_100.png" />
+    <Content Include="Assets\Symbols\punti2_100.png" />
+    <Content Include="Assets\Symbols\punti1_100.png" />
     <Content Include="Assets\Symbols\dq.png" />
     <Content Include="Assets\Symbols\minima_p_100.png" />
+    <Content Include="Assets\Symbols\diesis_100.png" />
     <Content Include="Assets\Symbols\palla_vuota_100.png" />
     <Content Include="Assets\Symbols\palla_nera_100.png" />
     <Content Include="Assets\Symbols\tq.png" />
