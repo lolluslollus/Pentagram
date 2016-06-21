@@ -38,10 +38,16 @@ namespace Pentagram.Adorners
 		}
 		public Adorner(Canvas parentLayoutRoot)
 		{
-			_layoutRoot = new Canvas() { Name = "LayoutRoot" };
+			_layoutRoot = new Canvas() { Name = GetType().Name + "LayoutRoot" };
 			parentLayoutRoot.Children.Add(_layoutRoot);
 		}
-		public abstract void Dispose();
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		protected virtual void Dispose(bool disposing)
+		{ }
 		#endregion ctor and dispose
 
 		public Panel GetLayoutRoot()

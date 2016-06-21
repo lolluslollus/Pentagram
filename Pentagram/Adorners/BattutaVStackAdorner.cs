@@ -56,11 +56,15 @@ namespace Pentagram.Adorners
 			Battute = battute;
 			Draw();
 		}
-		public override void Dispose()
+		protected override void Dispose(bool isDisposing)
 		{
 			if (_battute != null)
 			{
 				_battute.CollectionChanged -= OnBattute_CollectionChanged;
+			}
+			foreach (var item in _adorners)
+			{
+				item?.Dispose();
 			}
 		}
 		#endregion ctor and dispose
@@ -82,24 +86,27 @@ namespace Pentagram.Adorners
 				double height = 0.0;
 				foreach (var battuta in _battute)
 				{
-					Adorner adorner = new BattutaAdorner(_layoutRoot, battuta);
+					var adorner = new BattutaAdorner(_layoutRoot, battuta);
 					_adorners.Add(adorner);
 					Canvas.SetTop(adorner.GetLayoutRoot(), height);
-					height += PENTAGRAM_HEIGHT;
+					height += adorner.GetHeight();
 				}
-
 			});
 		}
 		#endregion draw
 
 		public override double GetHeight()
 		{
-			return _adorners.Count * PENTAGRAM_HEIGHT;
+			double result = 0.0;
+			foreach (var adorner in _adorners)
+			{
+				result += adorner.GetHeight();
+			}
+			return result;
 		}
 
 		public override double GetWidth()
 		{
-			if (_adorners == null) throw new ArgumentNullException("BattutaStackAdorner.GetWidth() needs an instant");
 			double result = 0.0;
 			foreach (var adorner in _adorners)
 			{

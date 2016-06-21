@@ -78,7 +78,7 @@ namespace Pentagram.Adorners
 			Chord = chord;
 			Draw();
 		}
-		public override void Dispose()
+		protected override void Dispose(bool isDisposing)
 		{
 			if (_chord != null) _chord.PropertyChanged -= OnChord_PropertyChanged;
 		}
@@ -150,8 +150,8 @@ namespace Pentagram.Adorners
 		public override double GetWidth()
 		{
 			if (_chord == null) throw new ArgumentNullException("ChordAdorner.GetWidth() needs a chord");
-			if (_chord.Duration.PuntiDiValore == PuntiDiValore.Nil) return NOTE_BALL_WIDTH;
-			else return NOTE_BALL_WIDTH + NOTE_BALL_WIDTH;
+			if (_chord.Duration.PuntiDiValore == PuntiDiValore.Nil) return NOTE_BALL_WIDTH + FLAG_WIDTH;
+			else return NOTE_BALL_WIDTH + NOTE_BALL_WIDTH + FLAG_WIDTH;
 		}
 
 		#region utils
@@ -291,9 +291,9 @@ namespace Pentagram.Adorners
 
 				var mast = new PathFigure()
 				{
-					StartPoint = new Point(LINE_GAP - 1.0, ballY)
+					StartPoint = new Point(NOTE_BALL_WIDTH - 1.0, ballY)
 				};
-				mast.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 1.0, flagY) });
+				mast.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - 1.0, flagY) });
 				var geom = new PathGeometry();
 				geom.Figures.Add(mast);
 
@@ -307,8 +307,8 @@ namespace Pentagram.Adorners
 			}
 			internal override void DrawFlag(double flagNo, double mastTop)
 			{
-				PathFigure flagLeft = new PathFigure() { StartPoint = new Point(LINE_GAP, mastTop + (flagNo - 1) * FLAG_GAP) };
-				PathFigure flagRight = new PathFigure() { StartPoint = new Point(LINE_GAP - 2.0, mastTop + (flagNo - 1) * FLAG_GAP) };
+				PathFigure flagLeft = new PathFigure() { StartPoint = new Point(NOTE_BALL_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) };
+				PathFigure flagRight = new PathFigure() { StartPoint = new Point(NOTE_BALL_WIDTH - 2.0, mastTop + (flagNo - 1) * FLAG_GAP) };
 
 				if (_chord.NextJoinedChord != null && _chord.PrevJoinedChord == null)
 				{
@@ -317,9 +317,9 @@ namespace Pentagram.Adorners
 					 * altrimenti aggiungi una mezza barretta a destra
 					 */
 					if (GetHowManyFlagsOrCurls(_chord.NextJoinedChord) >= flagNo)
-						flagRight.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+						flagRight.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - 2.0 + 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
 					else
-						flagRight.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+						flagRight.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - 2.0 + FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
 				}
 				else if (_chord.PrevJoinedChord != null && _chord.NextJoinedChord == null)
 				{
@@ -328,9 +328,9 @@ namespace Pentagram.Adorners
 					 * altrimenti aggiungi una mezza barretta a sinistra
 					 */
 					if (GetHowManyFlagsOrCurls(_chord.PrevJoinedChord) >= flagNo)
-						flagLeft.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
 					else
-						flagLeft.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
 				}
 				else
 				{
@@ -343,11 +343,11 @@ namespace Pentagram.Adorners
 					 * altrimenti no
 					 * */
 					if (GetHowManyFlagsOrCurls(_chord.PrevJoinedChord) >= flagNo)
-						flagLeft.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
 					else
-						flagLeft.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+						flagLeft.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
 					if (GetHowManyFlagsOrCurls(_chord.NextJoinedChord) >= flagNo)
-						flagRight.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+						flagRight.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - 2.0 + 2.0 * FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
 				}
 
 				var geom = new PathGeometry();
@@ -367,9 +367,9 @@ namespace Pentagram.Adorners
 			{
 				var flag = new PathFigure()
 				{
-					StartPoint = new Point(LINE_GAP - 2.0, mastTop + (flagNo - 1) * FLAG_GAP)
+					StartPoint = new Point(NOTE_BALL_WIDTH - 2.0, mastTop + (flagNo - 1) * FLAG_GAP)
 				};
-				flag.Segments.Add(new LineSegment() { Point = new Point(LINE_GAP - 2.0 + FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
+				flag.Segments.Add(new LineSegment() { Point = new Point(NOTE_BALL_WIDTH - 2.0 + FLAG_WIDTH, mastTop + (flagNo - 1) * FLAG_GAP) });
 
 				var geom = new PathGeometry();
 				geom.Figures.Add(flag);

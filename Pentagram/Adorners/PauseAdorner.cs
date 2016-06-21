@@ -48,7 +48,7 @@ namespace Pentagram.Adorners
 			Pause = pause;
 			Draw();
 		}
-		public override void Dispose()
+		protected override void Dispose(bool isDisposing)
 		{
 			if (_pause != null) _pause.PropertyChanged -= OnPause_PropertyChanged;
 		}

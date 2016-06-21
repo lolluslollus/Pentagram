@@ -18,12 +18,13 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using WinRTXamlToolkit.Controls;
+using System.Threading.Tasks;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace Pentagram.Views
 {
-	public sealed partial class VoicesControl : ObservableControl
+	public sealed partial class VoicesControl : OpenableObservableControl
 	{
 		public SwitchableObservableCollection<Voice> Voices
 		{
@@ -36,7 +37,7 @@ namespace Pentagram.Views
 		{
 			if (args.NewValue == args.OldValue) return;
 			var instance = obj as VoicesControl;
-			instance.Update(instance.Voices);
+			instance.UpdateAsync();
 		}
 
 		private VoicesVM _vm = null;
@@ -44,30 +45,56 @@ namespace Pentagram.Views
 
 		private BattutaHWrapAdorner _bhwa = null;
 
+		#region lifecycle
 		public VoicesControl()
 		{
 			InitializeComponent();
-			Update(Voices);
+		}
+		protected override Task OpenMayOverrideAsync(object args = null)
+		{
+			return Update2Async();
+		}
+		protected override Task CloseMayOverrideAsync()
+		{
+			_bhwa?.Dispose();
+			return Task.CompletedTask;
+		}
+		#endregion lifecycle
+
+		private Task UpdateAsync()
+		{
+			return RunFunctionIfOpenAsyncT(Update2Async);
 		}
 
-		private void Update(SwitchableObservableCollection<Voice> voices)
+		private Task Update2Async()
 		{
-			if (_bhwa != null) _bhwa.Dispose();
-			if (voices == null)
+			return RunInUiThreadAsync(() =>
 			{
-				_bhwa = null;
-				VM = null;
-			}
-			else
-			{
-				_bhwa = new BattutaHWrapAdorner(LayoutRoot, voices, 800.0);
-				VM = new VoicesVM(voices);
-			}
+				var voices = Voices;
+
+				if (_bhwa != null) _bhwa.Dispose();
+				if (voices == null)
+				{
+					_bhwa = null;
+					VM = null;
+				}
+				else
+				{
+					_bhwa = new BattutaHWrapAdorner(LayoutRoot, voices, 800.0);
+					VM = new VoicesVM(voices);
+				}
+			});
 		}
 
 		private void OnPentagram_Tapped(object sender, TappedRoutedEventArgs e)
 		{
-			_vm.AddNote(Voices[0], Chiavi.Violino, Ritmi.qq, DurateCanoniche.Croma, PuntiDiValore.Nil, SegniSuNote.Nil, false, 3, NoteBianche.@do, Accidenti.Diesis);
+			Task task = RunFunctionIfOpenAsyncT(() =>
+			{
+				return RunInUiThreadAsync(() =>
+				{
+					_vm.AddNote(Voices[0], Chiavi.Violino, Ritmi.qq, DurateCanoniche.Croma, PuntiDiValore.Nil, SegniSuNote.Nil, false, 3, NoteBianche.@do, Accidenti.Diesis);
+				});
+			});
 		}
 	}
 }

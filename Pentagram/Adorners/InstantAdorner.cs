@@ -62,15 +62,20 @@ namespace Pentagram.Adorners
 		public InstantAdorner(Canvas parentLayoutRoot, Chiavi chiave, Ritmi ritmo, InstantWithTouches instant) : base(parentLayoutRoot)
 		{
 			_chiave = chiave;
+			_ritmo = ritmo;
 			Instant = instant;
 			Draw();
 		}
-		public override void Dispose()
+		protected override void Dispose(bool isDisposing)
 		{
 			if (_instant != null)
 			{
 				_instant.PropertyChanged -= OnInstant_PropertyChanged;
 				_instant.SoundsOrTabs.CollectionChanged -= OnSoundsOrTabs_CollectionChanged;
+			}
+			foreach (var item in _adorners)
+			{
+				item?.Dispose();
 			}
 		}
 		#endregion ctor and dispose
@@ -88,26 +93,7 @@ namespace Pentagram.Adorners
 				_layoutRoot.Children.Clear();
 
 				if (_instant?.SoundsOrTabs == null) return;
-				//// set width
-				//var red = new SolidColorBrush(Colors.LightPink);
-				//var blue = new SolidColorBrush(Colors.LightBlue);
-				//var bkg = red;
-				//double layoutRootWidth = Adorner.LINE_GAP * 5.0; // 3.0; // LOLLO TODO restore when done testing
-				//foreach (var sound in Sounds)
-				//{
-				//	if (sound is Chord && ((sound as Chord).NextJoinedChord != null /*|| (sound as Chord).PrevJoinedChords != null*/))
-				//	{
-				//		layoutRootWidth = Adorner.LINE_GAP * 2.0;
-				//		bkg = blue;
-				//		break;
-				//	}
-				//}
-				//// LayoutRoot.Width = layoutRootWidth;
-				//_layoutRoot.Width = Adorner.NOTE_BALL_WIDTH;
-				//_layoutRoot.Height = Adorner.PENTAGRAM_HEIGHT;
-				//_layoutRoot.Background = bkg;
 
-				// draw children
 				foreach (var soundOrTab in _instant.SoundsOrTabs)
 				{
 					Adorner adorner = null;

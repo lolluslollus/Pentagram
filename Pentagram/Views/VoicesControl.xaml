@@ -1,4 +1,4 @@
-﻿<uctl:ObservableControl
+﻿<uctl:OpenableObservableControl
 	xmlns:uctl="using:Utilz.Controlz"
 	xmlns:toolkitCtlz="using:WinRTXamlToolkit.Controls"
     x:Class="Pentagram.Views.VoicesControl"
@@ -13,4 +13,4 @@
 	<Canvas x:Name="LayoutRoot" Tapped="OnPentagram_Tapped">
 	</Canvas>
 
-</uctl:ObservableControl>
+</uctl:OpenableObservableControl>

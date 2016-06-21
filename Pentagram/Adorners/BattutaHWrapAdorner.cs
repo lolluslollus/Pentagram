@@ -60,11 +60,15 @@ namespace Pentagram.Adorners
 			MaxWidth = maxWidth;
 			// Draw();
 		}
-		public override void Dispose()
+		protected override void Dispose(bool isDisposing)
 		{
 			if (_voices != null)
 			{
 				_voices.CollectionChanged -= OnVoices_CollectionChanged;
+			}
+			foreach (var item in _adorners)
+			{
+				item?.Dispose();
 			}
 		}
 		#endregion ctor and dispose
@@ -81,7 +85,8 @@ namespace Pentagram.Adorners
 				_adorners.Clear();
 				_layoutRoot.Children.Clear();
 
-				if (Voices == null) return;
+				_width = _height = 0.0;
+				if (_voices == null) return;
 
 
 				int maxBattute = 0;
@@ -89,7 +94,7 @@ namespace Pentagram.Adorners
 				{
 					maxBattute = Math.Max(voice.Battute.Count, maxBattute);
 				}
-
+				
 				double lastHeight = 0.0;
 				double lastWidth = 0.0;
 				for (int i = 0; i < maxBattute; i++)
@@ -102,10 +107,10 @@ namespace Pentagram.Adorners
 					}
 					var adorner = new BattutaVStackAdorner(_layoutRoot, battute);
 
-					var nextObjHeight = adorner.GetHeight();
-					var nextObjWidth = adorner.GetWidth();
+					double nextObjHeight = adorner.GetHeight();
+					double nextObjWidth = adorner.GetWidth();
 
-					if (nextObjWidth <= _maxWidth) throw new ArgumentException("BattutaHWrapAdorner.Draw(): MaxWidth too small");
+					if (nextObjWidth >= _maxWidth) throw new ArgumentException("BattutaHWrapAdorner.Draw(): MaxWidth too small");
 					if (lastWidth + nextObjWidth <= _maxWidth)
 					{ // append to current line
 						Canvas.SetLeft(adorner.GetLayoutRoot(), lastWidth);
@@ -119,26 +124,31 @@ namespace Pentagram.Adorners
 						Canvas.SetTop(adorner.GetLayoutRoot(), lastHeight);
 						lastWidth = nextObjWidth;
 					}
+					_width = Math.Max(_width, lastWidth);
+					_height = lastHeight + adorner.GetHeight(); // LOLLO TODO I assume here that all vertical stacks of battute have the same height
 				}
 			});
 		}
+		private double _height = 0.0;
+		private double _width = 0.0;
 		#endregion draw
 
 		public override double GetHeight()
 		{
-			if (_voices.Count < 1) return PENTAGRAM_HEIGHT;
-			return _voices.Count * PENTAGRAM_HEIGHT;
+			return _height;
+			//if (_voices.Count < 1) return PENTAGRAM_HEIGHT;
+			//return _voices.Count * PENTAGRAM_HEIGHT;
 		}
 
 		public override double GetWidth()
 		{
-			if (_adorners == null) throw new ArgumentNullException("BattutaStackAdorner.GetWidth() needs an instant");
-			double result = 0.0;
-			foreach (var adorner in _adorners)
-			{
-				result = Math.Max(adorner.GetWidth(), result);
-			}
-			return result;
+			return _width;
+			//double result = 0.0;
+			//foreach (var adorner in _adorners)
+			//{
+			//	result = Math.Max(adorner.GetWidth(), result);
+			//}
+			//return result;
 		}
 	}
 }

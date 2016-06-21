@@ -61,12 +61,16 @@ namespace Pentagram.Adorners
 			Battuta = battuta;
 			Draw();
 		}
-		public override void Dispose()
+		protected override void Dispose(bool isDisposing)
 		{
 			if (_battuta != null)
 			{
 				_battuta.PropertyChanged -= OnBattuta_PropertyChanged;
 				_battuta.Instants.CollectionChanged -= OnInstants_CollectionChanged;
+			}
+			foreach (var item in _adorners)
+			{
+				item?.Dispose();
 			}
 		}
 		#endregion ctor and dispose
@@ -84,26 +88,7 @@ namespace Pentagram.Adorners
 				_layoutRoot.Children.Clear();
 
 				if (_battuta?.Instants == null) return;
-				//// set width
-				//var red = new SolidColorBrush(Colors.LightPink);
-				//var blue = new SolidColorBrush(Colors.LightBlue);
-				//var bkg = red;
-				//double layoutRootWidth = Adorner.LINE_GAP * 5.0; // 3.0; // LOLLO TODO restore when done testing
-				//foreach (var sound in Sounds)
-				//{
-				//	if (sound is Chord && ((sound as Chord).NextJoinedChord != null /*|| (sound as Chord).PrevJoinedChords != null*/))
-				//	{
-				//		layoutRootWidth = Adorner.LINE_GAP * 2.0;
-				//		bkg = blue;
-				//		break;
-				//	}
-				//}
-				//// LayoutRoot.Width = layoutRootWidth;
-				//_layoutRoot.Width = Adorner.NOTE_BALL_WIDTH;
-				//_layoutRoot.Height = Adorner.PENTAGRAM_HEIGHT;
-				//_layoutRoot.Background = bkg;
 
-				// draw children
 				double width = 0.0;
 				foreach (var instant in _battuta.Instants)
 				{

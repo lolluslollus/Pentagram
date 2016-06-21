@@ -20,34 +20,36 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Pentagram.Views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class SongPage : ObservablePage
-    {
+	/// <summary>
+	/// An empty page that can be used on its own or navigated to within a Frame.
+	/// </summary>
+	public sealed partial class SongPage : ObservablePage
+	{
 		private SongVM _vm = null;
 		public SongVM VM { get { return _vm; } private set { _vm = value; RaisePropertyChanged_UI(); } }
 
 		public SongPage()
-        {			
-			InitializeComponent();			
-        }
+		{
+			InitializeComponent();
+		}
 
 		protected override async void OnNavigatedTo(NavigationEventArgs e)
 		{
 			VM = new SongVM(e.Parameter as SongHeader);
 			await _vm.OpenAsync(); //.ConfigureAwait(false);
 			VoicesControl.Voices = VM.Song.Voices;
+			await VoicesControl.OpenAsync().ConfigureAwait(false);
 		}
 		protected override async void OnNavigatedFrom(NavigationEventArgs e)
 		{
-			VoicesControl.Voices = null;
+			// VoicesControl.Voices = null;
+			await VoicesControl.CloseAsync(); //.ConfigureAwait(false);
 			await _vm.CloseAsync().ConfigureAwait(false);
 		}
 
 		private void OnAddVoice_Click(object sender, RoutedEventArgs e)
 		{
-			_vm.AddVoiceAsync(All.DEFAULT_RITMO, All.DEFAULT_CHIAVE);
+			_vm.AddVoiceAsync();
 		}
 
 		private void OnGotoMain_Click(object sender, RoutedEventArgs e)

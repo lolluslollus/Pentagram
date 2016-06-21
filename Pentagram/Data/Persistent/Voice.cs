@@ -80,6 +80,14 @@ namespace Pentagram.PersistentData
 			battuta.Instants.Add(instant);
 			return instant;
 		}
+		public InstantWithTouches AddInstantWithTab(Battuta battuta)
+		{
+			if (battuta == null || !_battute.Contains(battuta)) return null;
+			var instant = new InstantWithTouches();
+			instant.SoundsOrTabs.Add(new Tab());
+			battuta.Instants.Add(instant);
+			return instant;
+		}
 		public void RemoveInstant(InstantWithTouches instant, Battuta battuta)
 		{
 			if (instant == null || battuta == null) return;

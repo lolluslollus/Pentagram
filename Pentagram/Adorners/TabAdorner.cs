@@ -68,7 +68,7 @@ namespace Pentagram.Adorners
 			Tab = tab;
 			Draw();
 		}
-		public override void Dispose()
+		protected override void Dispose(bool isDisposing)
 		{
 			if (_tab != null) _tab.PropertyChanged -= OnTab_PropertyChanged;
 		}
