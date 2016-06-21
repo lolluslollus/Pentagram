@@ -36,7 +36,7 @@ namespace Pentagram.Views
 		protected override async void OnNavigatedTo(NavigationEventArgs e)
 		{
 			VM = new SongVM(e.Parameter as SongHeader);
-			await _vm.OpenAsync().ConfigureAwait(false);
+			await _vm.OpenAsync(); //.ConfigureAwait(false);
 			VoicesControl.Voices = VM.Song.Voices;
 		}
 		protected override async void OnNavigatedFrom(NavigationEventArgs e)

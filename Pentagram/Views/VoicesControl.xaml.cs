@@ -31,7 +31,7 @@ namespace Pentagram.Views
 			set { SetValue(VoicesProperty, value); }
 		}
 		public static readonly DependencyProperty VoicesProperty =
-			DependencyProperty.Register("Voices", typeof(SwitchableObservableCollection<Voice>), typeof(VoicesControl), new PropertyMetadata(null));
+			DependencyProperty.Register("Voices", typeof(SwitchableObservableCollection<Voice>), typeof(VoicesControl), new PropertyMetadata(null, OnVoicesChanged));
 		private static void OnVoicesChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
 		{
 			if (args.NewValue == args.OldValue) return;
@@ -53,7 +53,12 @@ namespace Pentagram.Views
 		private void Update(SwitchableObservableCollection<Voice> voices)
 		{
 			if (_bhwa != null) _bhwa.Dispose();
-			if (voices != null)
+			if (voices == null)
+			{
+				_bhwa = null;
+				VM = null;
+			}
+			else
 			{
 				_bhwa = new BattutaHWrapAdorner(LayoutRoot, voices, 800.0);
 				VM = new VoicesVM(voices);
