@@ -12,5 +12,4 @@
 
 	<Canvas x:Name="LayoutRoot" Tapped="OnPentagram_Tapped">
 	</Canvas>
-
 </uctl:OpenableObservableControl>

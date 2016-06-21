@@ -37,13 +37,14 @@ namespace Pentagram.Views
 		{
 			if (args.NewValue == args.OldValue) return;
 			var instance = obj as VoicesControl;
-			instance.UpdateAsync();
+			instance.UpdateAfterVoicesChangedAsync();
 		}
 
 		private VoicesVM _vm = null;
 		public VoicesVM VM { get { return _vm; } private set { _vm = value; RaisePropertyChanged_UI(); } }
 
 		private BattutaHWrapAdorner _bhwa = null;
+
 
 		#region lifecycle
 		public VoicesControl()
@@ -52,22 +53,31 @@ namespace Pentagram.Views
 		}
 		protected override Task OpenMayOverrideAsync(object args = null)
 		{
-			return Update2Async();
+			SizeChanged += OnVoicesControl_SizeChanged;
+			return UpdateAfterVoicesChanged2Async();
 		}
+
+		private void OnVoicesControl_SizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			if (e.NewSize.Width == e.PreviousSize.Width) return;
+			var bhwa = _bhwa; if (bhwa != null) bhwa.MaxWidth = e.NewSize.Width;
+		}
+
 		protected override Task CloseMayOverrideAsync()
 		{
+			SizeChanged -= OnVoicesControl_SizeChanged;
 			_bhwa?.Dispose();
 			_bhwa = null;
 			return Task.CompletedTask;
 		}
 		#endregion lifecycle
 
-		private Task UpdateAsync()
+		private Task UpdateAfterVoicesChangedAsync()
 		{
-			return RunFunctionIfOpenAsyncT(Update2Async);
+			return RunFunctionIfOpenAsyncT(UpdateAfterVoicesChanged2Async);
 		}
 
-		private Task Update2Async()
+		private Task UpdateAfterVoicesChanged2Async()
 		{
 			return RunInUiThreadAsync(() =>
 			{
@@ -81,7 +91,7 @@ namespace Pentagram.Views
 				}
 				else
 				{
-					_bhwa = new BattutaHWrapAdorner(LayoutRoot, voices, 800.0);
+					_bhwa = new BattutaHWrapAdorner(LayoutRoot, voices, ActualWidth);
 					VM = new VoicesVM(voices);
 				}
 			});
