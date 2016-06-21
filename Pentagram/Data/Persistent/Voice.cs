@@ -12,45 +12,59 @@ namespace Pentagram.PersistentData
 	[DataContract]
 	public sealed class Battuta : ObservableData
 	{
+		private Chiavi _chiave = All.DEFAULT_CHIAVE;
+		[DataMember]
+		public Chiavi Chiave { get { return _chiave; } private set { if (_chiave == value) return; _chiave = value; RaisePropertyChanged(); } }
+
+		private Ritmi _ritmo = All.DEFAULT_RITMO;
+		[DataMember]
+		public Ritmi Ritmo { get { return _ritmo; } private set { if (_ritmo == value) return; _ritmo = value; RaisePropertyChanged(); } }
+
 		// we cannot make this readonly because it is serialised. we only use the setter for serialising.
 		private SwitchableObservableCollection<InstantWithTouches> _instants = new SwitchableObservableCollection<InstantWithTouches>();
 		[DataMember]
 		public SwitchableObservableCollection<InstantWithTouches> Instants { get { return _instants; } private set { _instants = value; } }
+
+		public Battuta(Chiavi chiave, Ritmi ritmo)
+		{
+			Chiave = chiave;
+			Ritmo = ritmo;
+		}
 	}
 
 	[DataContract]
 	public sealed class InstantWithTouches : ObservableData
 	{
 		// we cannot make this readonly because it is serialised. we only use the setter for serialising.
-		private SwitchableObservableCollection<Sound> _sounds = new SwitchableObservableCollection<Sound>();
+		private SwitchableObservableCollection<SoundOrTab> _soundsOrTabs = new SwitchableObservableCollection<SoundOrTab>();
 		[DataMember]
-		public SwitchableObservableCollection<Sound> Sounds { get { return _sounds; } private set { _sounds = value; } }
+		public SwitchableObservableCollection<SoundOrTab> SoundsOrTabs { get { return _soundsOrTabs; } private set { _soundsOrTabs = value; } }
 	}
 	[DataContract]
 	public sealed class Voice : OpenableObservableData
 	{
-		private Ritmi _ritmo = All.DEFAULT_RITMO;
-		[DataMember]
-		public Ritmi Ritmo { get { return _ritmo; } private set { if (_ritmo == value) return; _ritmo = value; RaisePropertyChanged(); } }
+		//private Ritmi _ritmo = All.DEFAULT_RITMO;
+		//[DataMember]
+		//public Ritmi Ritmo { get { return _ritmo; } private set { if (_ritmo == value) return; _ritmo = value; RaisePropertyChanged(); } }
 
-		private Chiavi _chiave = All.DEFAULT_CHIAVE;
-		[DataMember]
-		public Chiavi Chiave { get { return _chiave; } private set { if (_chiave == value) return; _chiave = value; RaisePropertyChanged(); } }
+		//private Chiavi _chiave = All.DEFAULT_CHIAVE;
+		//[DataMember]
+		//public Chiavi Chiave { get { return _chiave; } private set { if (_chiave == value) return; _chiave = value; RaisePropertyChanged(); } }
 
 		// we cannot make this readonly because it is serialised. we only use the setter for serialising.
 		private SwitchableObservableCollection<Battuta> _battute = new SwitchableObservableCollection<Battuta>();
 		[DataMember]
 		public SwitchableObservableCollection<Battuta> Battute { get { return _battute; } private set { _battute = value; } }
 
-		public Voice(Ritmi ritmo, Chiavi chiave)
+		public Voice(/*Ritmi ritmo, Chiavi chiave*/)
 		{
-			Ritmo = ritmo;
-			Chiave = chiave;
+			//Ritmo = ritmo;
+			//Chiave = chiave;
 		}
 
-		public Battuta AddBattuta()
+		public Battuta AddBattuta(Chiavi chiave, Ritmi ritmo)
 		{
-			var battuta = new Battuta();
+			var battuta = new Battuta(chiave, ritmo);
 			_battute.Add(battuta);
 			return battuta;
 		}
@@ -86,12 +100,12 @@ namespace Pentagram.PersistentData
 			var instantBeingUpdated = battutaBeingUpdated.Instants.FirstOrDefault(ins => ins == instant);
 			if (instantBeingUpdated == null) return;
 
-			instantBeingUpdated.Sounds.Add(sound);
+			instantBeingUpdated.SoundsOrTabs.Add(sound);
 		}
 		public void RemoveSoundFromInstant(Sound sound, InstantWithTouches instant, Battuta battuta)
 		{
 			if (sound == null || instant == null || battuta == null) return;
-			if (!battuta.Instants.Contains(instant) || !instant.Sounds.Contains(sound)) return;
+			if (!battuta.Instants.Contains(instant) || !instant.SoundsOrTabs.Contains(sound)) return;
 
 			if (sound is Chord)
 			{
@@ -101,7 +115,7 @@ namespace Pentagram.PersistentData
 				if (idx > 0)
 				{
 					var prevInstant = battuta.Instants[idx - 1];
-					foreach (Chord chordInPrevInstant in prevInstant.Sounds.Where(sou => sou is Chord))
+					foreach (Chord chordInPrevInstant in prevInstant.SoundsOrTabs.Where(sou => sou is Chord))
 					{
 						if (chordInPrevInstant.NextJoinedChord == chord) chordInPrevInstant.NextJoinedChord = null;
 					}
@@ -109,16 +123,36 @@ namespace Pentagram.PersistentData
 				if (idx < battuta.Instants.Count - 1)
 				{
 					var nextInstant = battuta.Instants[idx + 1];
-					foreach (Chord chordInNextInstant in nextInstant.Sounds.Where(sou => sou is Chord))
+					foreach (Chord chordInNextInstant in nextInstant.SoundsOrTabs.Where(sou => sou is Chord))
 					{
 						if (chordInNextInstant.PrevJoinedChord == chord) chordInNextInstant.PrevJoinedChord = null;
 					}
 				}
 			}
 
-			instant.Sounds.Remove(sound);
+			instant.SoundsOrTabs.Remove(sound);
 
-			if (instant.Sounds.Count > 0) return;
+			if (instant.SoundsOrTabs.Count > 0) return;
+			RemoveInstant(instant, battuta);
+		}
+		public void AddTabToInstant(Tab tab, InstantWithTouches instant, Battuta battuta)
+		{
+			if (tab == null || instant == null || battuta == null) return;
+			var battutaBeingUpdated = _battute.FirstOrDefault(bat => bat == battuta);
+			if (battutaBeingUpdated == null) return;
+			var instantBeingUpdated = battutaBeingUpdated.Instants.FirstOrDefault(ins => ins == instant);
+			if (instantBeingUpdated == null) return;
+
+			instantBeingUpdated.SoundsOrTabs.Add(tab);
+		}
+		public void RemoveTabFromInstant(Tab tab, InstantWithTouches instant, Battuta battuta)
+		{
+			if (tab == null || instant == null || battuta == null) return;
+			if (!battuta.Instants.Contains(instant) || !instant.SoundsOrTabs.Contains(tab)) return;
+
+			instant.SoundsOrTabs.Remove(tab);
+
+			if (instant.SoundsOrTabs.Count > 0) return;
 			RemoveInstant(instant, battuta);
 		}
 		public void AddToneToChord(Tone tone, Chord chord, InstantWithTouches instant, Battuta battuta)
@@ -128,7 +162,7 @@ namespace Pentagram.PersistentData
 			if (battutaBeingUpdated == null) return;
 			var instantBeingUpdated = battutaBeingUpdated.Instants.FirstOrDefault(ins => ins == instant);
 			if (instantBeingUpdated == null) return;
-			var chordBeingUpdated = instantBeingUpdated.Sounds.FirstOrDefault(sou => sou == chord) as Chord;
+			var chordBeingUpdated = instantBeingUpdated.SoundsOrTabs.FirstOrDefault(sou => sou == chord) as Chord;
 			if (chordBeingUpdated == null) return;
 			if (chordBeingUpdated.Tones.Contains(tone)) return;
 
@@ -141,7 +175,7 @@ namespace Pentagram.PersistentData
 			if (battutaBeingUpdated == null) return;
 			var instantBeingUpdated = battutaBeingUpdated.Instants.FirstOrDefault(ins => ins == instant);
 			if (instantBeingUpdated == null) return;
-			var chordBeingUpdated = instantBeingUpdated.Sounds.FirstOrDefault(sou => sou == chord) as Chord;
+			var chordBeingUpdated = instantBeingUpdated.SoundsOrTabs.FirstOrDefault(sou => sou == chord) as Chord;
 			if (chordBeingUpdated == null) return;
 
 			chordBeingUpdated.Tones.Remove(tone);
@@ -155,7 +189,7 @@ namespace Pentagram.PersistentData
 
 			if (chord1 == null || chord2 == null || instant1 == null || instant2 == null || battuta == null) return result;
 			if (!battuta.Instants.Contains(instant1) || !battuta.Instants.Contains(instant2)) return result;
-			if (!instant1.Sounds.Contains(chord1) || !instant2.Sounds.Contains(chord2)) return result;
+			if (!instant1.SoundsOrTabs.Contains(chord1) || !instant2.SoundsOrTabs.Contains(chord2)) return result;
 			if (chord1.Duration.DurataCanonica.CompareTo(DurateCanoniche.Croma) > 0 || chord2.Duration.DurataCanonica.CompareTo(DurateCanoniche.Croma) > 0) return result;
 
 			int instant1Idx = battuta.Instants.IndexOf(instant1);
@@ -181,7 +215,7 @@ namespace Pentagram.PersistentData
 		{
 			if (chord1 == null || chord2 == null || instant1 == null || instant2 == null || battuta == null) return;
 			if (!battuta.Instants.Contains(instant1) || !battuta.Instants.Contains(instant2)) return;
-			if (!instant1.Sounds.Contains(chord1) || !instant2.Sounds.Contains(chord2)) return;
+			if (!instant1.SoundsOrTabs.Contains(chord1) || !instant2.SoundsOrTabs.Contains(chord2)) return;
 
 			int instant1Idx = battuta.Instants.IndexOf(instant1);
 			int instant2Idx = battuta.Instants.IndexOf(instant2);

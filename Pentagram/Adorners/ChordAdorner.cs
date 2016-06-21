@@ -13,7 +13,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
-namespace Pentagram.Views
+namespace Pentagram.Adorners
 {
 	public sealed class ChordAdorner : Adorner
 	{
@@ -29,13 +29,6 @@ namespace Pentagram.Views
 		private static Chord _defaultChord = new Chord(_defaultDuration, SegniSuNote.Nil, _defaultTone0, _defaultTone1, _defaultTone2, _defaultTone3);
 		private static readonly BitmapImage _blackBallImage = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/palla_nera_100.png", UriKind.Absolute) };
 		private static readonly BitmapImage _emptyBallImage = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/palla_vuota_100.png", UriKind.Absolute) };
-
-		static ChordAdorner()
-		{
-			FLAG_GAP = (double)App.Current.Resources["FlagGap"];
-			FLAG_WIDTH = (double)App.Current.Resources["FlagWidth"];
-			MIN_MAST_HEIGHT = (double)App.Current.Resources["MinMastHeight"];
-		}
 
 		private Chiavi _chiave;
 
@@ -66,20 +59,21 @@ namespace Pentagram.Views
 		{
 			Draw();
 		}
-
 		private void OnChord_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == nameof(Chord.IsChromaFlagsBelow)) return;
 			Draw();
 		}
 
-		private readonly Canvas _layoutRoot = null;
-
 		#region ctor and dispose
-		public ChordAdorner(Canvas layoutRoot, Chiavi chiave, Chord chord)
+		static ChordAdorner()
 		{
-			_layoutRoot = new Canvas() { Name = "LayoutRoot" };
-			layoutRoot.Children.Add(_layoutRoot);
+			FLAG_GAP = (double)App.Current.Resources["FlagGap"];
+			FLAG_WIDTH = (double)App.Current.Resources["NoteFlagWidth"];
+			MIN_MAST_HEIGHT = (double)App.Current.Resources["MinMastHeight"];
+		}
+		public ChordAdorner(Canvas parentLayoutRoot, Chiavi chiave, Chord chord) : base(parentLayoutRoot)
+		{
 			_chiave = chiave;
 			Chord = chord;
 			Draw();
@@ -90,8 +84,7 @@ namespace Pentagram.Views
 		}
 		#endregion ctor and dispose
 
-		#region draw
-		internal void Draw()
+		private void Draw()
 		{
 			Task upd = RunInUiThreadAsync(() =>
 			{
@@ -99,8 +92,8 @@ namespace Pentagram.Views
 				if (_chord == null) return;
 
 				LinkedChromasHelper helper = _chord.IsChromaFlagsBelow
-					? new LinkedChromaHelper_Below(Chord, _layoutRoot) as LinkedChromasHelper
-					: new LinkedChromaHelper_Above(Chord, _layoutRoot) as LinkedChromasHelper;
+					? new LinkedChromaHelper_Below(_chord, _layoutRoot) as LinkedChromasHelper
+					: new LinkedChromaHelper_Above(_chord, _layoutRoot) as LinkedChromasHelper;
 				//LinkedChromasHelper helper = null;
 				//if (_chord.IsChromaFlagsBelow) helper = new LinkedChromaHelper_Below(); else helper = new LinkedChromaHelper_Above();
 				// draw balls
@@ -148,7 +141,18 @@ namespace Pentagram.Views
 				}
 			});
 		}
-		#endregion draw
+
+		public override double GetHeight()
+		{
+			return PENTAGRAM_HEIGHT;
+		}
+
+		public override double GetWidth()
+		{
+			if (_chord == null) throw new ArgumentNullException("ChordAdorner.GetWidth() needs a chord");
+			if (_chord.Duration.PuntiDiValore == PuntiDiValore.Nil) return NOTE_BALL_WIDTH;
+			else return NOTE_BALL_WIDTH + NOTE_BALL_WIDTH;
+		}
 
 		#region utils
 		internal abstract class LinkedChromasHelper

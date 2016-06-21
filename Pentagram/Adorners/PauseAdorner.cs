@@ -13,7 +13,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
-namespace Pentagram.Views
+namespace Pentagram.Adorners
 {
 	public sealed class PauseAdorner : Adorner
 	{
@@ -36,17 +36,14 @@ namespace Pentagram.Views
 				}
 			}
 		}
-
 		private void OnPause_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			Draw();
 		}
 
-		private readonly Canvas _layoutRoot = null;
-		public PauseAdorner(Canvas layoutRoot, Chiavi chiave, Pause pause)
+		#region ctor and dispose
+		public PauseAdorner(Canvas parentLayoutRoot, Chiavi chiave, Pause pause) : base(parentLayoutRoot)
 		{
-			_layoutRoot = new Canvas() { Name = "LayoutRoot" };
-			layoutRoot.Children.Add(_layoutRoot);
 			_chiave = chiave;
 			Pause = pause;
 			Draw();
@@ -55,17 +52,18 @@ namespace Pentagram.Views
 		{
 			if (_pause != null) _pause.PropertyChanged -= OnPause_PropertyChanged;
 		}
+		#endregion ctor and dispose
 
-		internal void Draw()
+		private void Draw()
 		{
 			Task upd = RunInUiThreadAsync(() =>
 			{
 				_layoutRoot.Children.Clear();
-				if (Pause == null) return;
+				if (_pause == null) return;
 
 				// draw symbol
-				var imageSource = _minimaImage; // Pause.Duration.DurataCanonica == DurateCanoniche.Breve || Chord.Duration.DurataCanonica == DurateCanoniche.Semibreve || Chord.Duration.DurataCanonica == DurateCanoniche.Minima ? _emptyBallImage : _blackBallImage;
-												//				var ballYs = new List<double>();
+				BitmapImage imageSource = _minimaImage; // Pause.Duration.DurataCanonica == DurateCanoniche.Breve || Chord.Duration.DurataCanonica == DurateCanoniche.Semibreve || Chord.Duration.DurataCanonica == DurateCanoniche.Minima ? _emptyBallImage : _blackBallImage;
+														//				var ballYs = new List<double>();
 
 				var newBall = new Image()
 				{
@@ -82,6 +80,18 @@ namespace Pentagram.Views
 				// 		<!--<Path Stroke="Black" StrokeThickness="2"
 				// Data = "M24,12.5 V-80 H50 V-78 H24 V-70 H50 V-68 H24 V-60" /> -->
 			});
+		}
+
+		public override double GetHeight()
+		{
+			return PENTAGRAM_HEIGHT;
+		}
+
+		public override double GetWidth()
+		{
+			if (_pause == null) throw new ArgumentNullException("PauseAdorner.GetWidth() needs a pause");
+			if (_pause.Duration.PuntiDiValore == PuntiDiValore.Nil) return NOTE_BALL_WIDTH;
+			else return NOTE_BALL_WIDTH + NOTE_BALL_WIDTH;
 		}
 	}
 }

@@ -92,6 +92,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adorners\BattutaHWrapAdorner.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -104,18 +105,19 @@
     <Compile Include="Utilz\ObservableDataCycl.cs" />
     <Compile Include="ViewModels\AllVM.cs" />
     <Compile Include="ViewModels\SongVM.cs" />
-    <Compile Include="ViewModels\VoiceVM.cs" />
-    <Compile Include="Views\ChordControl.xaml.cs">
-      <DependentUpon>ChordControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\PauseAdorner.cs" />
-    <Compile Include="Views\ChordAdorner.cs" />
-    <Compile Include="Views\InstantCtrl.cs" />
+    <Compile Include="ViewModels\VoicesVM.cs" />
+    <Compile Include="Adorners\Adorner.cs" />
+    <Compile Include="Adorners\BattutaVStackAdorner.cs" />
+    <Compile Include="Adorners\BattutaAdorner.cs" />
+    <Compile Include="Adorners\InstantAdorner.cs" />
+    <Compile Include="Adorners\TabAdorner.cs" />
+    <Compile Include="Adorners\PauseAdorner.cs" />
+    <Compile Include="Adorners\ChordAdorner.cs" />
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\VoiceControl.xaml.cs">
-      <DependentUpon>VoiceControl.xaml</DependentUpon>
+    <Compile Include="Views\VoicesControl.xaml.cs">
+      <DependentUpon>VoicesControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SongPage.xaml.cs">
       <DependentUpon>SongPage.xaml</DependentUpon>
@@ -172,15 +174,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\ChordControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\MainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\VoiceControl.xaml">
+    <Page Include="Views\VoicesControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

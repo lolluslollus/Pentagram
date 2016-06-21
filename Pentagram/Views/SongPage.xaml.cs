@@ -30,16 +30,18 @@ namespace Pentagram.Views
 
 		public SongPage()
         {			
-			this.InitializeComponent();			
+			InitializeComponent();			
         }
 
 		protected override async void OnNavigatedTo(NavigationEventArgs e)
 		{
 			VM = new SongVM(e.Parameter as SongHeader);
 			await _vm.OpenAsync().ConfigureAwait(false);
+			VoicesControl.Voices = VM.Song.Voices;
 		}
 		protected override async void OnNavigatedFrom(NavigationEventArgs e)
 		{
+			VoicesControl.Voices = null;
 			await _vm.CloseAsync().ConfigureAwait(false);
 		}
 

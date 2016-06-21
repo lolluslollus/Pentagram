@@ -13,4 +13,5 @@ namespace Pentagram.PersistentData
 	public enum NoteBianche { @do, re, mi, fa, sol, la, si }
 	public enum SegniSuNote { Nil, Accento, Trillo }
 	public enum Accidenti { Nil, Bequadro, Diesis, Bemolle, DoppioDiesis, DoppioBemolle }
+	public enum TabSymbols { Nil, Chiave, Armatura, Ritmo, TwoVerticalBars, Refrain }
 }

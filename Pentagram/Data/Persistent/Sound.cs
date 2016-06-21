@@ -43,7 +43,7 @@ namespace Pentagram.PersistentData
 
 	[DataContract(IsReference = true)]
 	// [DataContract]
-	public abstract class Sound : ObservableData
+	public abstract class Sound : SoundOrTab
 	{
 		private Duration _duration = null;
 		[DataMember]
@@ -148,4 +148,22 @@ namespace Pentagram.PersistentData
 			return 0;
 		}
 	}
+
+	[DataContract(IsReference = true)]
+	// [DataContract]
+	public class Tab : SoundOrTab
+	{
+		private TabSymbols _tabSymbol = TabSymbols.Nil;
+		[DataMember]
+		public TabSymbols TabSymbol { get { return _tabSymbol; } private set { if (_tabSymbol == value) return; _tabSymbol = value; RaisePropertyChanged(); } }
+
+		public Tab(TabSymbols tabSymbol = TabSymbols.Nil)
+		{
+			TabSymbol = tabSymbol;
+		}
+	}
+
+	[DataContract(IsReference = true)]
+	// [DataContract]
+	public abstract class SoundOrTab : ObservableData { }
 }

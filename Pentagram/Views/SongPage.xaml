@@ -23,6 +23,11 @@
 			<AppBarButton Click="OnGotoMain_Click" Icon="Back"/>
 		</uctl:UniversalWrapPanel>
 
+		<local:VoicesControl
+			x:Name="VoicesControl"
+			Grid.Row="2"/>
+		<!--Voices="{Binding ElementName=me, Path=VM.Song.Voices, Mode=OneWay}"/>-->
+		
 		<!--<ItemsControl x:Name="VoicesIC"
 			Grid.Row="2"
 			ItemsSource="{x:Bind VM.Song.Voices, Mode=OneWay}">
@@ -40,7 +45,7 @@
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>-->
 
-		<Canvas Grid.Row="2" Width="800">
+		<!--<Canvas Grid.Row="2" Width="800">
 			<local:VoiceControl			
 				Voice="{Binding ElementName=me, Path=VM.Song.Voices[0], Mode=OneWay}"
 				VoicesCount="{Binding ElementName=me, Path=VM.Song.Voices.Count, Mode=OneWay}">
@@ -50,7 +55,7 @@
 				Voice="{Binding ElementName=me, Path=VM.Song.Voices[1], Mode=OneWay}"
 				VoicesCount="{Binding ElementName=me, Path=VM.Song.Voices.Count, Mode=OneWay}">
 			</local:VoiceControl>
-		</Canvas>
+		</Canvas>-->
 
 		<!--<uctl:UniversalWrapPanel Orientation="Horizontal">
 			<Button>

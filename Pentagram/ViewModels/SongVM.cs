@@ -32,7 +32,7 @@ namespace Pentagram.ViewModels
 		}
 		public Task<bool> AddVoiceAsync(Ritmi ritmo, Chiavi chiave)
 		{
-			var voice = new Voice(ritmo, chiave);
+			var voice = new Voice();
 			return _song.AddVoiceAsync(voice);
 		}
 		public Task<bool> RemoveVoiceAsync(Voice voice)
