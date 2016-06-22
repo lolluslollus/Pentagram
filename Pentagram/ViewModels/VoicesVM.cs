@@ -97,10 +97,10 @@ namespace Pentagram.ViewModels
 			}
 		}
 
-		public void AddNote(Voice voice, Chiavi chiave, Ritmi ritmo, DurateCanoniche durataCanonica, PuntiDiValore puntiDiValore, SegniSuNote segniSuNote, bool isChromaFlagsBelow, uint ottava, NoteBianche notaBianca, Accidenti accidente)
+		public void AddNote(Voice voice, Chiavi chiave, Misura misura, DurateCanoniche durataCanonica, PuntiDiValore puntiDiValore, SegniSuNote segniSuNote, bool isChromaFlagsBelow, uint ottava, NoteBianche notaBianca, Accidenti accidente)
 		{
 			if (voice == null) return;
-			var bat = voice.AddBattuta(chiave, ritmo);
+			var bat = voice.AddBattuta(chiave, misura);
 			var ins = voice.AddInstant(bat);
 			voice.AddSoundToInstant(new Chord(new Duration(durataCanonica, puntiDiValore), segniSuNote, isChromaFlagsBelow, new Tone(ottava, notaBianca, accidente)), ins, bat);
 		}
@@ -131,13 +131,13 @@ namespace Pentagram.ViewModels
 			InstantWithTouches ins1 = null;
 			InstantWithTouches ins2 = null;
 
-			bat0 = voice.AddBattuta(Chiavi.Violino, Ritmi.qq);
-			bat1 = voice.AddBattuta(Chiavi.Basso, Ritmi.tq);
+			bat0 = voice.AddBattuta(Chiavi.Violino, new Misura());
+			bat1 = voice.AddBattuta(Chiavi.Basso, new Misura(7, 12));
 
 			ins0 = voice.AddInstant(bat0);
 			ins0.SoundsOrTabs.Add(new Tab(TabSymbols.Chiave));
 			ins0 = voice.AddInstant(bat0);
-			ins0.SoundsOrTabs.Add(new Tab(TabSymbols.Ritmo));
+			ins0.SoundsOrTabs.Add(new Tab(TabSymbols.Misura));
 
 			ins0 = voice.AddInstant(bat0);
 			voice.AddSoundToInstant(_defaultChord6, ins0, bat0);
@@ -247,13 +247,15 @@ namespace Pentagram.ViewModels
 			InstantWithTouches ins1 = null;
 			InstantWithTouches ins2 = null;
 
-			bat0 = voice.AddBattuta(Chiavi.Basso, Ritmi.dq);
-			bat1 = voice.AddBattuta(Chiavi.Violino, Ritmi.tq);
+			var chtest = new Chord(new Duration(DurateCanoniche.Breve), SegniSuNote.Accento, new Tone(3, NoteBianche.re, Accidenti.Diesis), new Tone(3, NoteBianche.re, Accidenti.Nil), new Tone(2, NoteBianche.sol, Accidenti.Diesis));
+
+			bat0 = voice.AddBattuta(Chiavi.Basso, new Misura(88, 125));
+			bat1 = voice.AddBattuta(Chiavi.Violino, new Misura(3, 21));
 
 			ins0 = voice.AddInstant(bat0);
 			ins0.SoundsOrTabs.Add(new Tab(TabSymbols.Chiave));
 			ins0 = voice.AddInstant(bat0);
-			ins0.SoundsOrTabs.Add(new Tab(TabSymbols.Ritmo));
+			ins0.SoundsOrTabs.Add(new Tab(TabSymbols.Misura));
 
 			ins0 = voice.AddInstant(bat0);
 			voice.AddSoundToInstant(_defaultChord0, ins0, bat0);

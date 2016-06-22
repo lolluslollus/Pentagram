@@ -165,7 +165,7 @@ namespace Pentagram.PersistentData
 		}
 		private readonly static List<Type> _knownTypes = new List<Type>()
 		{
-			typeof(Voice), typeof(Battuta), typeof(InstantWithTouches), typeof(SoundOrTab), typeof(Sound), typeof(Tab), typeof(Chord), typeof(Tone), typeof(Pause), typeof(Duration)
+			typeof(Voice), typeof(Battuta), typeof(InstantWithTouches), typeof(SoundOrTab), typeof(Sound), typeof(Tab), typeof(Chord), typeof(Tone), typeof(Pause), typeof(Duration), typeof(Misura)
 		};
 		private async Task LoadAsync()
 		{
@@ -243,8 +243,6 @@ namespace Pentagram.PersistentData
 					}
 				}
 			}
-			// LOLLO TODO Object graph for type 'Pentagram.PersistentData.Chord' contains cycles and cannot be serialized if references are not tracked. 
-			// Consider using the DataContractAttribute with the IsReference property set to true.
 			catch (Exception ex)
 			{
 				Logger.Add_TPL(ex.ToString(), Logger.FileErrorLogFilename);

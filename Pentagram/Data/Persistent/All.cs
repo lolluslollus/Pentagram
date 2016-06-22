@@ -16,7 +16,7 @@ namespace Pentagram.PersistentData
 	public class All : OpenableObservableData
 	{
 		public const Chiavi DEFAULT_CHIAVE = Chiavi.Violino;
-		public const Ritmi DEFAULT_RITMO = Ritmi.qq;
+		public static readonly Misura DEFAULT_MISURA = new Misura(4,4);
 		private const string DIR_NAME = "LolloSessionAll";
 		private const string FILENAME = "LolloSessionAll.xml";
 

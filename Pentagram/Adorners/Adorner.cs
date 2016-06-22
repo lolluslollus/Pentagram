@@ -24,6 +24,8 @@ namespace Pentagram.Adorners
 		public readonly static int HOW_MANY_WHITE_NOTES;
 		public readonly static double PENTAGRAM_HEIGHT;
 		public readonly static double LINE_GAP;
+		public readonly static double PENTAGRAM_HEIGHT_HALF;
+		public readonly static double LINE_GAP_HALF;
 		public readonly static double NOTE_BALL_WIDTH;
 
 		protected readonly Canvas _layoutRoot = null;
@@ -33,8 +35,10 @@ namespace Pentagram.Adorners
 		{
 			HOW_MANY_WHITE_NOTES = Enum.GetValues(typeof(NoteBianche)).GetLength(0);
 			PENTAGRAM_HEIGHT = (double)App.Current.Resources["PentagramHeight"];
+			PENTAGRAM_HEIGHT_HALF = PENTAGRAM_HEIGHT * .5;
 			LINE_GAP = (double)App.Current.Resources["LineGap"];
-			NOTE_BALL_WIDTH = (double)App.Current.Resources["NoteBallWidth"];
+			LINE_GAP_HALF = LINE_GAP * .5;
+			NOTE_BALL_WIDTH = LINE_GAP;  //(double)App.Current.Resources["NoteBallWidth"];
 		}
 		public Adorner(Canvas parentLayoutRoot)
 		{
@@ -60,20 +64,13 @@ namespace Pentagram.Adorners
 
 		protected static double GetLineY(Tone tone)
 		{
-			// double lineY = ((4.0 - Convert.ToDouble(tone.Ottava)) * HOW_MANY_WHITE_NOTES * LINE_GAP / 2.0 + LINE_GAP / 2.0 * (HOW_MANY_WHITE_NOTES - (int)tone.NotaBianca));
-			return ((4.0 - Convert.ToDouble(tone.Ottava)) * HOW_MANY_WHITE_NOTES + (HOW_MANY_WHITE_NOTES - (int)tone.NotaBianca)) * LINE_GAP / 2.0 + 100.0;
-			// LINE_GAP * 2 per la linea in alto e chiave di violino (fa 4)
-			// LINE_GAP * 2 per la linea in alto e chiave di basso (la 2)
-			//return lineY;
+			return ((3.0 - Convert.ToDouble(tone.Ottava)) * HOW_MANY_WHITE_NOTES + ((int)NoteBianche.si - (int)tone.NotaBianca)) * LINE_GAP_HALF + PENTAGRAM_HEIGHT_HALF;
 		}
 		protected static double GetLineY(Chiavi chiave, Tone tone)
 		{
 			double lineY = GetLineY(tone);
-			// double lineY = ((4.0 - Convert.ToDouble(tone.Ottava)) * HOW_MANY_WHITE_NOTES * LINE_GAP / 2.0 + LINE_GAP / 2.0 * (HOW_MANY_WHITE_NOTES - (int)tone.NotaBianca));
-			if (chiave == Chiavi.Violino) lineY -= LINE_GAP / 2.0;
+			if (chiave == Chiavi.Violino) lineY -= LINE_GAP_HALF;
 			else if (chiave == Chiavi.Basso) lineY -= LINE_GAP * 6.5;
-			// LINE_GAP * 2 per la linea in alto e chiave di violino (fa 4)
-			// LINE_GAP * 2 per la linea in alto e chiave di basso (la 2)
 			return lineY;
 		}
 

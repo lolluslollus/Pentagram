@@ -19,6 +19,7 @@ namespace Pentagram.Adorners
 	{
 		public readonly static double FLAG_GAP;
 		public readonly static double FLAG_WIDTH;
+		public readonly static double FLAG_THICKNESS;
 		public readonly static double MIN_MAST_HEIGHT;
 
 		private static PersistentData.Duration _defaultDuration = new PersistentData.Duration(DurateCanoniche.Semibiscroma);
@@ -74,9 +75,10 @@ namespace Pentagram.Adorners
 		#region ctor and dispose
 		static ChordAdorner()
 		{
-			FLAG_GAP = (double)App.Current.Resources["FlagGap"];
-			FLAG_WIDTH = (double)App.Current.Resources["NoteFlagWidth"];
-			MIN_MAST_HEIGHT = (double)App.Current.Resources["MinMastHeight"];
+			FLAG_GAP = NOTE_BALL_WIDTH * (double)App.Current.Resources["NoteFlagGapFactor"];
+			FLAG_THICKNESS = NOTE_BALL_WIDTH * (double)App.Current.Resources["NoteFlagThicknessFactor"];
+			FLAG_WIDTH = NOTE_BALL_WIDTH + 1; // (double)App.Current.Resources["NoteFlagWidth"];
+			MIN_MAST_HEIGHT = NOTE_BALL_WIDTH * (double)App.Current.Resources["NoteMinMastHeightFactor"];
 		}
 		public ChordAdorner(Canvas parentLayoutRoot, Chiavi chiave, Chord chord) : base(parentLayoutRoot)
 		{
@@ -321,7 +323,7 @@ namespace Pentagram.Adorners
 			internal LinkedChromaHelper_Above(Chord chord, Canvas layoutRoot) : base(chord, layoutRoot) { }
 			private static double GetMastTop(List<double> ballYs)
 			{
-				return ballYs.Min() + LINE_GAP / 2.0 - MIN_MAST_HEIGHT;
+				return ballYs.Min() + LINE_GAP_HALF - MIN_MAST_HEIGHT;
 			}
 			internal override double GetTallestMastTop(Chiavi chiave, Chord chord)
 			{
@@ -353,7 +355,7 @@ namespace Pentagram.Adorners
 			}
 			internal override void DrawMast(double ballsX0, List<double> ballYs, double flagY)
 			{
-				double ballY = ballYs.Max() + LINE_GAP / 2.0;
+				double ballY = ballYs.Max() + LINE_GAP_HALF;
 				double mastX0 = NOTE_BALL_WIDTH - 1.0 + ballsX0;
 
 				var mast = new PathFigure()
@@ -402,7 +404,6 @@ namespace Pentagram.Adorners
 				}
 				else
 				{
-					// LOLLO TODO this looks good but check it a little more
 					/*
 					 * Se la precedente ha la barretta che sto facendo, aggiungi una barra a sinistra
 					 * altrimenti aggiungi una mezza barretta a sinistra
@@ -426,7 +427,7 @@ namespace Pentagram.Adorners
 				var newPath = new Windows.UI.Xaml.Shapes.Path()
 				{
 					Stroke = new SolidColorBrush(Windows.UI.Colors.Black),
-					StrokeThickness = 6.0,
+					StrokeThickness = FLAG_THICKNESS,
 					Data = geom
 				};
 				_layoutRoot.Children.Add(newPath);
@@ -445,7 +446,7 @@ namespace Pentagram.Adorners
 				var newPath = new Windows.UI.Xaml.Shapes.Path()
 				{
 					Stroke = new SolidColorBrush(Windows.UI.Colors.Black),
-					StrokeThickness = 6.0,
+					StrokeThickness = FLAG_THICKNESS,
 					Data = geom
 				};
 				_layoutRoot.Children.Add(newPath);
@@ -457,7 +458,7 @@ namespace Pentagram.Adorners
 			internal LinkedChromaHelper_Below(Chord chord, Canvas layoutRoot) : base(chord, layoutRoot) { }
 			private static double GetMastTop(List<double> ballYs)
 			{
-				return ballYs.Max() + LINE_GAP / 2.0 + MIN_MAST_HEIGHT;
+				return ballYs.Max() + LINE_GAP_HALF + MIN_MAST_HEIGHT;
 			}
 			internal override double GetTallestMastTop(Chiavi chiave, Chord chord)
 			{
@@ -489,7 +490,7 @@ namespace Pentagram.Adorners
 			}
 			internal override void DrawMast(double ballsX0, List<double> ballYs, double flagY)
 			{
-				double ballY = ballYs.Min() + LINE_GAP / 2.0;
+				double ballY = ballYs.Min() + LINE_GAP_HALF;
 				double mastX0 = 1.0 + ballsX0;
 
 				var mast = new PathFigure()
@@ -538,7 +539,6 @@ namespace Pentagram.Adorners
 				}
 				else
 				{
-					// LOLLO TODO this looks good but check it a little more
 					/*
 					 * Se la precedente ha la barretta che sto facendo, aggiungi una barra a sinistra
 					 * altrimenti aggiungi una mezza barretta a sinistra
@@ -562,7 +562,7 @@ namespace Pentagram.Adorners
 				var newPath = new Windows.UI.Xaml.Shapes.Path()
 				{
 					Stroke = new SolidColorBrush(Windows.UI.Colors.Black),
-					StrokeThickness = 6.0,
+					StrokeThickness = FLAG_THICKNESS,
 					Data = geom
 				};
 				_layoutRoot.Children.Add(newPath);
@@ -581,7 +581,7 @@ namespace Pentagram.Adorners
 				var newPath = new Windows.UI.Xaml.Shapes.Path()
 				{
 					Stroke = new SolidColorBrush(Windows.UI.Colors.Black),
-					StrokeThickness = 6.0,
+					StrokeThickness = FLAG_THICKNESS,
 					Data = geom
 				};
 				_layoutRoot.Children.Add(newPath);

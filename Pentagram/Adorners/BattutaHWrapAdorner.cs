@@ -103,7 +103,7 @@ namespace Pentagram.Adorners
 					foreach (var voice in _voices)
 					{
 						if (voice.Battute.Count > i) battute.Add(voice.Battute[i]);
-						else battute.Add(new Battuta(Chiavi.Violino, Ritmi.qq));
+						else battute.Add(new Battuta(Chiavi.Violino, new Misura()));
 					}
 					var adorner = new BattutaVStackAdorner(_layoutRoot, battute);
 

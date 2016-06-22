@@ -22,7 +22,7 @@ namespace Pentagram.Adorners
 	public sealed class InstantAdorner : Adorner
 	{
 		private readonly Chiavi _chiave;
-		private readonly Ritmi _ritmo;
+		private readonly Misura _misura;
 
 		private InstantWithTouches _instant = null;
 		public InstantWithTouches Instant
@@ -59,10 +59,10 @@ namespace Pentagram.Adorners
 		private readonly List<Adorner> _adorners = new List<Adorner>();
 
 		#region ctor and dispose
-		public InstantAdorner(Canvas parentLayoutRoot, Chiavi chiave, Ritmi ritmo, InstantWithTouches instant) : base(parentLayoutRoot)
+		public InstantAdorner(Canvas parentLayoutRoot, Chiavi chiave, Misura misura, InstantWithTouches instant) : base(parentLayoutRoot)
 		{
 			_chiave = chiave;
-			_ritmo = ritmo;
+			_misura = misura;
 			Instant = instant;
 			Draw();
 		}
@@ -99,7 +99,7 @@ namespace Pentagram.Adorners
 					Adorner adorner = null;
 					if (soundOrTab is Pause) adorner = new PauseAdorner(_layoutRoot, _chiave, soundOrTab as Pause);
 					else if (soundOrTab is Chord) adorner = new ChordAdorner(_layoutRoot, _chiave, soundOrTab as Chord);
-					else if (soundOrTab is Tab) adorner = new TabAdorner(_layoutRoot, soundOrTab as Tab, _chiave, _ritmo);
+					else if (soundOrTab is Tab) adorner = new TabAdorner(_layoutRoot, soundOrTab as Tab, _chiave, _misura);
 					if (adorner != null) _adorners.Add(adorner);
 				}
 

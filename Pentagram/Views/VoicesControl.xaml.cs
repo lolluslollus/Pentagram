@@ -103,7 +103,7 @@ namespace Pentagram.Views
 			{
 				return RunInUiThreadAsync(() =>
 				{
-					_vm.AddNote(Voices[0], Chiavi.Violino, Ritmi.qq, DurateCanoniche.Croma, PuntiDiValore.Nil, SegniSuNote.Nil, false, 3, NoteBianche.@do, Accidenti.Diesis);
+					_vm.AddNote(Voices[0], Chiavi.Violino, new Misura(), DurateCanoniche.Croma, PuntiDiValore.Nil, SegniSuNote.Nil, false, 3, NoteBianche.@do, Accidenti.Diesis);
 				});
 			});
 		}

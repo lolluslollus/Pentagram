@@ -35,17 +35,11 @@ namespace Pentagram.PersistentData
 		[DataMember]
 		public Chord NextJoinedChord { get { return _nextJoinedChord; } set { if (_nextJoinedChord == value) return; _nextJoinedChord = value; RaisePropertyChanged(); } }
 
-		//public Chord(Duration duration, SegniSuNote segno, Tone tone) : base(duration)
-		//{
-		//	if (tone == null) throw new ArgumentOutOfRangeException("Chord ctor wants a tone");
-		//	Segno = segno;
-		//	_tones.Add(tone);
-		//}
 		public Chord(Duration duration, SegniSuNote segno, params Tone[] tones) : base(duration)
 		{
 			if (tones == null) throw new ArgumentOutOfRangeException("Chord ctor wants some notes");
 			Segno = segno;
-			_tones.AddRange(tones);
+			_tones.AddRange(tones.OrderBy(tone => tone));
 		}
 		public Chord(Duration duration, SegniSuNote segno, bool isChromaFlagsBelow, params Tone[] tones) : this(duration, segno, tones)
 		{

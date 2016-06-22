@@ -10,25 +10,46 @@ using Utilz.Data;
 namespace Pentagram.PersistentData
 {
 	[DataContract]
+	public sealed class Misura : ObservableData, IComparable
+	{
+		private uint _num = 4;
+		public uint Num { get { return _num; } set { if (_num == value) return; _num = value; RaisePropertyChanged(); } }
+		private uint _den = 4;
+		public uint Den { get { return _den; } set { if (_den == value) return; _den = value; RaisePropertyChanged(); } }
+
+		public Misura(uint num=4, uint den=4)
+		{
+			_num = num;
+			_den = den;
+		}
+
+		public int CompareTo(object obj)
+		{
+			var otherMisura = obj as Misura;
+			if (otherMisura._num == _num && otherMisura._den == _den) return 0;
+			return 1;
+		}
+	}
+	[DataContract]
 	public sealed class Battuta : ObservableData
 	{
 		private Chiavi _chiave = All.DEFAULT_CHIAVE;
 		[DataMember]
 		public Chiavi Chiave { get { return _chiave; } private set { if (_chiave == value) return; _chiave = value; RaisePropertyChanged(); } }
 
-		private Ritmi _ritmo = All.DEFAULT_RITMO;
+		private Misura _misura;
 		[DataMember]
-		public Ritmi Ritmo { get { return _ritmo; } private set { if (_ritmo == value) return; _ritmo = value; RaisePropertyChanged(); } }
+		public Misura Misura { get { return _misura; } private set { if (_misura?.CompareTo(value) == 0) return; _misura = value; RaisePropertyChanged(); } }
 
 		// we cannot make this readonly because it is serialised. we only use the setter for serialising.
 		private SwitchableObservableCollection<InstantWithTouches> _instants = new SwitchableObservableCollection<InstantWithTouches>();
 		[DataMember]
 		public SwitchableObservableCollection<InstantWithTouches> Instants { get { return _instants; } private set { _instants = value; } }
 
-		public Battuta(Chiavi chiave, Ritmi ritmo)
+		public Battuta(Chiavi chiave, Misura misura)
 		{
 			Chiave = chiave;
-			Ritmo = ritmo;
+			Misura = misura;
 		}
 	}
 
@@ -56,15 +77,11 @@ namespace Pentagram.PersistentData
 		[DataMember]
 		public SwitchableObservableCollection<Battuta> Battute { get { return _battute; } private set { _battute = value; } }
 
-		public Voice(/*Ritmi ritmo, Chiavi chiave*/)
-		{
-			//Ritmo = ritmo;
-			//Chiave = chiave;
-		}
+		public Voice() { }
 
-		public Battuta AddBattuta(Chiavi chiave, Ritmi ritmo)
+		public Battuta AddBattuta(Chiavi chiave, Misura misura)
 		{
-			var battuta = new Battuta(chiave, ritmo);
+			var battuta = new Battuta(chiave, misura);
 			_battute.Add(battuta);
 			return battuta;
 		}

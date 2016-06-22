@@ -91,7 +91,7 @@ namespace Pentagram.Adorners
 				double width = 0.0;
 				foreach (var instant in _battuta.Instants)
 				{
-					Adorner adorner = new InstantAdorner(_layoutRoot, _battuta.Chiave, _battuta.Ritmo, instant);
+					Adorner adorner = new InstantAdorner(_layoutRoot, _battuta.Chiave, _battuta.Misura, instant);
 					_adorners.Add(adorner);
 					Canvas.SetLeft(adorner.GetLayoutRoot(), width);
 					width += adorner.GetWidth();

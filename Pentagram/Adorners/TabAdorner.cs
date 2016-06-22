@@ -20,17 +20,18 @@ namespace Pentagram.Adorners
 		public readonly static double ARMATURA_WIDTH;
 		public readonly static double CHIAVE_WIDTH;
 		public readonly static double REFRAIN_WIDTH;
-		public readonly static double RITMO_WIDTH;
+		public readonly static double MISURA_WIDTH;
 		public readonly static double VERTICAL_BAR_WIDTH;
+		public readonly static Thickness MARGIN_THICKNESS_0;
 
-		private static readonly BitmapImage _chiaveDiViolino = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/chiaveDiViolino.png", UriKind.Absolute) };
-		private static readonly BitmapImage _chiaveDiBasso = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/chiaveDiBasso.png", UriKind.Absolute) };
-		private static readonly BitmapImage _qq = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/qq.png", UriKind.Absolute) };
-		private static readonly BitmapImage _tq = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/tq.png", UriKind.Absolute) };
-		private static readonly BitmapImage _dq = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/dq.png", UriKind.Absolute) };
+		private static readonly BitmapImage _chiaveDiViolino = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/chiaveDiViolino_160x370.png", UriKind.Absolute) };
+		private static readonly BitmapImage _chiaveDiBasso = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/chiaveDiBasso_160x244.png", UriKind.Absolute) };
+		private static readonly BitmapImage _ritmoQQ = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/ritmo_qq_186x266.png", UriKind.Absolute) };
+		private static readonly BitmapImage _ritmoTQ = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/ritmo_tq_186x266.png", UriKind.Absolute) };
+		private static readonly BitmapImage _ritmoDQ = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/ritmo_dq_186x266.png", UriKind.Absolute) };
 
 		private readonly Chiavi _chiave;
-		private readonly Ritmi _ritmo;
+		private readonly Misura _misura;
 
 		private Tab _tab = null;
 		public Tab Tab
@@ -58,13 +59,14 @@ namespace Pentagram.Adorners
 			ARMATURA_WIDTH = (double)App.Current.Resources["ArmaturaWidth"];
 			CHIAVE_WIDTH = (double)App.Current.Resources["ChiaveWidth"];
 			REFRAIN_WIDTH = (double)App.Current.Resources["RefrainWidth"];
-			RITMO_WIDTH = (double)App.Current.Resources["RitmoWidth"];
+			MISURA_WIDTH = (double)App.Current.Resources["RitmoWidth"];
 			VERTICAL_BAR_WIDTH = (double)App.Current.Resources["VerticalBarWidth"];
+			MARGIN_THICKNESS_0 = new Thickness(0.0);
 		}
-		public TabAdorner(Canvas parentLayoutRoot, Tab tab, Chiavi chiave, Ritmi ritmo) : base(parentLayoutRoot)
+		public TabAdorner(Canvas parentLayoutRoot, Tab tab, Chiavi chiave, Misura misura) : base(parentLayoutRoot)
 		{
 			_chiave = chiave;
-			_ritmo = ritmo;
+			_misura = misura;
 			Tab = tab;
 			Draw();
 		}
@@ -83,63 +85,53 @@ namespace Pentagram.Adorners
 				_width = 0.0;
 				if (_tab == null) return;
 
-				BitmapImage imageSource = null;
 				switch (_tab.TabSymbol)
 				{
 					case TabSymbols.Nil:
 						_width = NOTE_BALL_WIDTH;
-						break;
+						return;
 					case TabSymbols.Chiave:
 						_width = CHIAVE_WIDTH;
-						if (_chiave == Chiavi.Violino) imageSource = _chiaveDiViolino;
-						else if (_chiave == Chiavi.Basso) imageSource = _chiaveDiBasso;
-						break;
-					case TabSymbols.Armatura:
-						_width = ARMATURA_WIDTH;
-						break;
-					case TabSymbols.Ritmo:
-						_width = RITMO_WIDTH;
-						if (_ritmo == Ritmi.dq) imageSource = _dq;
-						else if (_ritmo == Ritmi.tq) imageSource = _tq;
-						else if (_ritmo == Ritmi.qq) imageSource = _qq;
-						break;
-					case TabSymbols.TwoVerticalBars:
-						_width = VERTICAL_BAR_WIDTH;
-						break;
-					case TabSymbols.Refrain:
-						_width = REFRAIN_WIDTH;
-						break;
-					default:
-						_width = NOTE_BALL_WIDTH;
-						break;
-				}
-				if (imageSource == null) return;
-
-				var symbolImage = new Image() { Source = imageSource, Width = _width };
-				_layoutRoot.Children.Add(symbolImage);
-
-				switch (_tab.TabSymbol)
-				{
-					case TabSymbols.Chiave:
 						if (_chiave == Chiavi.Violino)
 						{
-							double lineY = GetLineY(new Tone(3, NoteBianche.si, Accidenti.Nil));
-							Canvas.SetTop(symbolImage, lineY - 3.0 * LINE_GAP); // the number here comes from the image size
+							var symbolImage = new Image() { Source = _chiaveDiViolino, Width = _width };
+							_layoutRoot.Children.Add(symbolImage);
+							double lineY = GetLineY(new Tone(3, NoteBianche.sol, Accidenti.Nil));
+							Canvas.SetTop(symbolImage, lineY - _width / 160 * 185); // the numbers here comes from the image size
 						}
 						else if (_chiave == Chiavi.Basso)
 						{
-							double lineY = GetLineY(new Tone(3, NoteBianche.si, Accidenti.Nil));
-							Canvas.SetTop(symbolImage, lineY - 3.33 * LINE_GAP); // the number here comes from the image size
+							var symbolImage = new Image() { Source = _chiaveDiBasso, Width = _width };
+							_layoutRoot.Children.Add(symbolImage);
+							double lineY = GetLineY(new Tone(4, NoteBianche.re, Accidenti.Nil));
+							Canvas.SetTop(symbolImage, lineY - _width / 160 * 122); // the numbers here comes from the image size
 						}
-						break;
-					case TabSymbols.Ritmo:
-						{
-							double lineY = GetLineY(new Tone(3, NoteBianche.si, Accidenti.Nil));
-							Canvas.SetTop(symbolImage, lineY - 2.0 * LINE_GAP); // the number here comes from the image size
-						}
-						break;
+						return;
+					case TabSymbols.Armatura:
+						_width = ARMATURA_WIDTH;
+						return;
+					case TabSymbols.Misura:
+						_width = MISURA_WIDTH;
+						var numTB = new TextBlock() { Text = _misura.Num.ToString(), FontSize = 72, FontFamily = new FontFamily("Snap ITC"), Padding = MARGIN_THICKNESS_0, Margin = MARGIN_THICKNESS_0 };
+						var denTB = new TextBlock() { Text = _misura.Den.ToString(), FontSize = 72, FontFamily = new FontFamily("Snap ITC"), Padding = MARGIN_THICKNESS_0, Margin = MARGIN_THICKNESS_0 };
+						var numVB = new Viewbox() { Child = numTB, Height = 2 * LINE_GAP, Margin = MARGIN_THICKNESS_0 };
+						var denVB = new Viewbox() { Child = denTB, Height = 2 * LINE_GAP, Margin = MARGIN_THICKNESS_0 };
+						_layoutRoot.Children.Add(numVB);
+						_layoutRoot.Children.Add(denVB);
+						double numY = GetLineY(new Tone(4, NoteBianche.fa, Accidenti.Nil));
+						double denY = GetLineY(new Tone(3, NoteBianche.si, Accidenti.Nil));
+						Canvas.SetTop(numVB, numY);
+						Canvas.SetTop(denVB, denY);
+						return;
+					case TabSymbols.TwoVerticalBars:
+						_width = VERTICAL_BAR_WIDTH;
+						return;
+					case TabSymbols.Refrain:
+						_width = REFRAIN_WIDTH;
+						return;
 					default:
-						break;
+						_width = NOTE_BALL_WIDTH;
+						return;
 				}
 			});
 		}

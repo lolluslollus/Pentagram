@@ -120,9 +120,10 @@ namespace Pentagram.PersistentData
 	[DataContract]
 	public sealed class Tone : ObservableData, IComparable
 	{
+		public const uint MAX_OTTAVA = 10;
 		private uint _ottava = 3;
 		[DataMember]
-		public uint Ottava { get { return _ottava; } private set { if (_ottava == value) return; _ottava = value < 10 ? value : 10; RaisePropertyChanged(); } }
+		public uint Ottava { get { return _ottava; } private set { if (_ottava == value) return; _ottava = value < MAX_OTTAVA ? value : MAX_OTTAVA; RaisePropertyChanged(); } }
 		private NoteBianche _notaBianca = NoteBianche.@do;
 		[DataMember]
 		public NoteBianche NotaBianca { get { return _notaBianca; } private set { if (_notaBianca == value) return; _notaBianca = value; RaisePropertyChanged(); } }
@@ -140,12 +141,34 @@ namespace Pentagram.PersistentData
 		public int CompareTo(object obj)
 		{
 			var otherTone = obj as Tone;
+			if (otherTone == null) throw new ArgumentNullException("Tone.CompareTo() needs a tone");
 
-			if (Ottava > otherTone.Ottava) return +1;
-			if (Ottava < otherTone.Ottava) return -1;
-			if ((int)NotaBianca > (int)otherTone.NotaBianca) return +1;
-			if ((int)NotaBianca < (int)otherTone.NotaBianca) return -1;
-			return 0;
+			var one = this;
+			var two = otherTone;
+			if (one._accidente == Accidenti.Nil)
+			{
+				one = Clone(this);
+				one._accidente = Accidenti.Bequadro;
+			}
+			if (two._accidente == Accidenti.Nil)
+			{
+				two = Clone(otherTone);
+				two._accidente = Accidenti.Bequadro;
+			}
+
+			if (one._ottava > two._ottava) return +1;
+			if (one._ottava < two._ottava) return -1;
+			if ((int)one._notaBianca > (int)two._notaBianca) return +1;
+			if ((int)one._notaBianca < (int)two._notaBianca) return -1;
+			if (one._accidente == two._accidente) return 0;
+			if ((int)one._accidente > (int)two._accidente) return +1;
+			return -1;
+		}
+
+		public static Tone Clone(Tone tone)
+		{
+			if (tone == null) throw new ArgumentNullException("Tone.Clone() needs a tone");
+			return new Tone(tone._ottava, tone._notaBianca, tone._accidente);
 		}
 	}
 
