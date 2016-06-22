@@ -72,9 +72,10 @@ namespace Pentagram.Adorners
 				};
 				_layoutRoot.Children.Add(newBall);
 
-				double ballY = (LINE_GAP * 3.0);
-				if (_chiave == Chiavi.Violino) ballY -= LINE_GAP / 2.0;
-				else if (_chiave == Chiavi.Basso) ballY -= LINE_GAP * 7.5;
+				double ballY = GetLineY(new Tone(3, NoteBianche.si, Accidenti.Nil));
+				//double ballY = (LINE_GAP * 3.0);
+				//if (_chiave == Chiavi.Violino) ballY -= LINE_GAP / 2.0;
+				//else if (_chiave == Chiavi.Basso) ballY -= LINE_GAP * 7.5;
 
 				Canvas.SetTop(newBall, ballY);
 				// 		<!--<Path Stroke="Black" StrokeThickness="2"

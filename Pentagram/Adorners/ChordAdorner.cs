@@ -243,12 +243,7 @@ namespace Pentagram.Adorners
 
 				foreach (var tone in chord.Tones)
 				{
-					double ballY = ((4.0 - Convert.ToDouble(tone.Ottava)) * HOW_MANY_WHITE_NOTES * LINE_GAP / 2.0 + LINE_GAP / 2.0 * (HOW_MANY_WHITE_NOTES - (int)tone.NotaBianca));
-
-					if (chiave == Chiavi.Violino) ballY -= LINE_GAP / 2.0;
-					else if (chiave == Chiavi.Basso) ballY -= LINE_GAP * 7.5;
-
-					ballYs.Add(ballY);
+					ballYs.Add(GetLineY(chiave, tone));
 				}
 
 				return ballYs;

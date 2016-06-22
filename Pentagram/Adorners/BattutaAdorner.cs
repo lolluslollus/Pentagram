@@ -75,7 +75,6 @@ namespace Pentagram.Adorners
 		}
 		#endregion ctor and dispose
 
-		#region draw
 		private void Draw()
 		{
 			Task upd = RunInUiThreadAsync(() =>
@@ -100,7 +99,6 @@ namespace Pentagram.Adorners
 
 			});
 		}
-		#endregion draw
 
 		public override double GetHeight()
 		{
@@ -108,7 +106,6 @@ namespace Pentagram.Adorners
 		}
 		public override double GetWidth()
 		{
-			if (_adorners == null) throw new ArgumentNullException("BattutaAdorner.GetWidth() needs an instant");
 			double result = 0.0;
 			foreach (var adorner in _adorners)
 			{

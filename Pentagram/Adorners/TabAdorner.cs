@@ -115,7 +115,32 @@ namespace Pentagram.Adorners
 				}
 				if (imageSource == null) return;
 
-				_layoutRoot.Children.Add(new Image() { Source = imageSource, Width = _width });
+				var symbolImage = new Image() { Source = imageSource, Width = _width };
+				_layoutRoot.Children.Add(symbolImage);
+
+				switch (_tab.TabSymbol)
+				{
+					case TabSymbols.Chiave:
+						if (_chiave == Chiavi.Violino)
+						{
+							double lineY = GetLineY(new Tone(3, NoteBianche.si, Accidenti.Nil));
+							Canvas.SetTop(symbolImage, lineY - 3.0 * LINE_GAP); // the number here comes from the image size
+						}
+						else if (_chiave == Chiavi.Basso)
+						{
+							double lineY = GetLineY(new Tone(3, NoteBianche.si, Accidenti.Nil));
+							Canvas.SetTop(symbolImage, lineY - 3.33 * LINE_GAP); // the number here comes from the image size
+						}
+						break;
+					case TabSymbols.Ritmo:
+						{
+							double lineY = GetLineY(new Tone(3, NoteBianche.si, Accidenti.Nil));
+							Canvas.SetTop(symbolImage, lineY - 2.0 * LINE_GAP); // the number here comes from the image size
+						}
+						break;
+					default:
+						break;
+				}
 			});
 		}
 
@@ -127,24 +152,6 @@ namespace Pentagram.Adorners
 		public override double GetWidth()
 		{
 			return _width;
-			//if (_tab == null) throw new ArgumentNullException("TabAdorner.GetWidth() needs a tab");
-			//switch (_tab.TabSymbol)
-			//{
-			//	case TabSymbols.Nil:
-			//		return NOTE_BALL_WIDTH;
-			//	case TabSymbols.Chiave:
-			//		return CHIAVE_WIDTH;
-			//	case TabSymbols.Armatura:
-			//		return ARMATURA_WIDTH;
-			//	case TabSymbols.Ritmo:
-			//		return RITMO_WIDTH;
-			//	case TabSymbols.TwoVerticalBars:
-			//		return VERTICAL_BAR_WIDTH;
-			//	case TabSymbols.Refrain:
-			//		return REFRAIN_WIDTH;
-			//	default:
-			//		return NOTE_BALL_WIDTH;
-			//}
 		}
 	}
 }

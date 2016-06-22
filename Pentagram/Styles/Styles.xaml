@@ -11,8 +11,8 @@
 	<x:Double x:Key="FlagGap">10</x:Double>
 	<x:Double x:Key="NoteFlagWidth">26</x:Double>
 	<x:Double x:Key="MinMastHeight">62.5</x:Double>
-	<x:Double x:Key="PentagramHeight">350</x:Double>
-	<GridLength x:Key="PentagramHeight_4Grid">350</GridLength>
+	<x:Double x:Key="PentagramHeight">400</x:Double>
+	<GridLength x:Key="PentagramHeight_4Grid">400</GridLength>
 	<x:Double x:Key="ArmaturaWidth">20</x:Double>
 	<x:Double x:Key="ChiaveWidth">100</x:Double>
 	<x:Double x:Key="RitmoWidth">80</x:Double>

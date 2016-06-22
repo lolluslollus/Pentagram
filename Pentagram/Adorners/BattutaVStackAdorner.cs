@@ -16,11 +16,16 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Shapes;
 
 namespace Pentagram.Adorners
 {
 	public sealed class BattutaVStackAdorner : Adorner
 	{
+		private static readonly SolidColorBrush _lineStroke = new SolidColorBrush(Colors.Black);
+		private static readonly SolidColorBrush _lineStrokeRed = new SolidColorBrush(Colors.Red);
+		private static readonly SolidColorBrush _lineStrokeBlue = new SolidColorBrush(Colors.Blue);
+		private static readonly double _lineStrokeThickness = 1.0;
 		// 1 battuta each voice
 		private SwitchableObservableCollection<Battuta> _battute = new SwitchableObservableCollection<Battuta>();
 		public SwitchableObservableCollection<Battuta> Battute
@@ -62,21 +67,20 @@ namespace Pentagram.Adorners
 			{
 				_battute.CollectionChanged -= OnBattute_CollectionChanged;
 			}
-			foreach (var item in _adorners)
+			foreach (var adorner in _adorners)
 			{
-				item?.Dispose();
+				adorner?.Dispose();
 			}
 		}
 		#endregion ctor and dispose
 
-		#region draw
 		private void Draw()
 		{
 			Task upd = RunInUiThreadAsync(() =>
 			{
-				foreach (var child in _adorners)
+				foreach (var adorner in _adorners)
 				{
-					child?.Dispose();
+					adorner?.Dispose();
 				}
 				_adorners.Clear();
 				_layoutRoot.Children.Clear();
@@ -84,16 +88,37 @@ namespace Pentagram.Adorners
 				if (_battute == null) return;
 
 				double height = 0.0;
+				double width = 0.0;
+				var battutaYs = new List<double>();
 				foreach (var battuta in _battute)
 				{
 					var adorner = new BattutaAdorner(_layoutRoot, battuta);
 					_adorners.Add(adorner);
 					Canvas.SetTop(adorner.GetLayoutRoot(), height);
+					battutaYs.Add(height);
 					height += adorner.GetHeight();
+					width = Math.Max(adorner.GetWidth(), width);
+				}
+
+				foreach (var battutaY in battutaYs)
+				{
+					var lineYs = GetLineYs();
+					foreach (var lineY in lineYs)
+					{
+						var line = new Line() { X1 = 0.0, X2 = width, Y1 = lineY + battutaY, Y2 = lineY + battutaY, Stroke = _lineStroke, StrokeThickness = _lineStrokeThickness };
+						_layoutRoot.Children.Add(line);
+						//var lineH = new Line() { X1 = 0.0, X2 = width, Y1 = lineY + battutaY, Y2 = lineY + battutaY - 150, Stroke = _lineStrokeRed, StrokeThickness = _lineStrokeThickness };
+						//_layoutRoot.Children.Add(lineH);
+						//var lineL = new Line() { X1 = 0.0, X2 = width, Y1 = lineY + battutaY, Y2 = lineY + battutaY + 150, Stroke = _lineStrokeBlue, StrokeThickness = _lineStrokeThickness };
+						//_layoutRoot.Children.Add(lineL);
+					}
+					var vBarLeft = new Line() { X1 = 0.0, X2 = 0.0, Y1 = lineYs.First() + battutaY, Y2 = lineYs.Last() + battutaY, Stroke = _lineStroke, StrokeThickness = _lineStrokeThickness };
+					_layoutRoot.Children.Add(vBarLeft);
+					var vBarRight = new Line() { X1 = width, X2 = width, Y1 = lineYs.First() + battutaY, Y2 = lineYs.Last() + battutaY, Stroke = _lineStroke, StrokeThickness = _lineStrokeThickness };
+					_layoutRoot.Children.Add(vBarRight);
 				}
 			});
 		}
-		#endregion draw
 
 		public override double GetHeight()
 		{
@@ -112,6 +137,17 @@ namespace Pentagram.Adorners
 			{
 				result = Math.Max(adorner.GetWidth(), result);
 			}
+			return result;
+		}
+
+		private List<double> GetLineYs()
+		{
+			var result = new List<double>();
+			result.Add(GetLineY(new Tone(4, NoteBianche.fa, Accidenti.Nil)));
+			result.Add(GetLineY(new Tone(4, NoteBianche.re, Accidenti.Nil)));
+			result.Add(GetLineY(new Tone(3, NoteBianche.si, Accidenti.Nil)));
+			result.Add(GetLineY(new Tone(3, NoteBianche.sol, Accidenti.Nil)));
+			result.Add(GetLineY(new Tone(3, NoteBianche.mi, Accidenti.Nil)));
 			return result;
 		}
 	}
