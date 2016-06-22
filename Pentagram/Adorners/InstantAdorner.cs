@@ -81,10 +81,12 @@ namespace Pentagram.Adorners
 		#endregion ctor and dispose
 
 		#region draw
-		private void Draw()
+		protected override void Draw()
 		{
+			if (_layoutRoot == null) return;
 			Task upd = RunInUiThreadAsync(() =>
 			{
+				if (_layoutRoot == null) return;
 				foreach (var child in _adorners)
 				{
 					child?.Dispose();
@@ -102,7 +104,6 @@ namespace Pentagram.Adorners
 					else if (soundOrTab is Tab) adorner = new TabAdorner(_layoutRoot, soundOrTab as Tab, _chiave, _misura);
 					if (adorner != null) _adorners.Add(adorner);
 				}
-
 			});
 		}
 		#endregion draw
@@ -114,12 +115,27 @@ namespace Pentagram.Adorners
 
 		public override double GetWidth()
 		{
-			if (_adorners == null) throw new ArgumentNullException("InstantAdorner.GetWidth() needs an instant");
+			//double result = 0.0;
+			//foreach (var adorner in _adorners)
+			//{
+			//	result = Math.Max(result, adorner.GetWidth());
+			//}
+			//return result;
+
+
+			if (_instant?.SoundsOrTabs == null) throw new ArgumentNullException("InstantAdorner.GetWidth() needs an instant with sounds or tabs");
+
 			double result = 0.0;
-			foreach (var adorner in _adorners)
+
+			foreach (var soundOrTab in _instant.SoundsOrTabs)
 			{
-				result = Math.Max(result, adorner.GetWidth());
+				Adorner adornerWoutCanvas = null;
+				if (soundOrTab is Pause) adornerWoutCanvas = new PauseAdorner(null, _chiave, soundOrTab as Pause);
+				else if (soundOrTab is Chord) adornerWoutCanvas = new ChordAdorner(null, _chiave, soundOrTab as Chord);
+				else if (soundOrTab is Tab) adornerWoutCanvas = new TabAdorner(null, soundOrTab as Tab, _chiave, _misura);
+				if (adornerWoutCanvas != null) result = Math.Max(adornerWoutCanvas.GetWidth(), result);
 			}
+
 			return result;
 		}
 	}

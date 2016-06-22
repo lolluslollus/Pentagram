@@ -42,6 +42,7 @@ namespace Pentagram.Adorners
 		}
 		public Adorner(Canvas parentLayoutRoot)
 		{
+			if (parentLayoutRoot == null) return;
 			_layoutRoot = new Canvas() { Name = GetType().Name + "LayoutRoot" };
 			parentLayoutRoot.Children.Add(_layoutRoot);
 		}
@@ -61,6 +62,7 @@ namespace Pentagram.Adorners
 
 		public abstract double GetHeight();
 		public abstract double GetWidth();
+		protected abstract void Draw();
 
 		protected static double GetLineY(Tone tone)
 		{

@@ -27,8 +27,11 @@ namespace Pentagram.Adorners
 		private static readonly SolidColorBrush _lineStrokeBlue = new SolidColorBrush(Colors.Blue);
 		private static readonly double _lineStrokeThickness = 1.0;
 		// 1 battuta each voice
-		private SwitchableObservableCollection<Battuta> _battute = new SwitchableObservableCollection<Battuta>();
-		public SwitchableObservableCollection<Battuta> Battute
+		//private SwitchableObservableCollection<Battuta> _battute = new SwitchableObservableCollection<Battuta>();
+		//public SwitchableObservableCollection<Battuta> Battute
+		private List<Battuta> _battute = new List<Battuta>();
+		public List<Battuta> Battute
+
 		{
 			get { return _battute; }
 			private set
@@ -36,15 +39,15 @@ namespace Pentagram.Adorners
 				bool isChanged = value != _battute;
 				if (isChanged)
 				{
-					if (_battute != null)
-					{
-						_battute.CollectionChanged -= OnBattute_CollectionChanged;
-					}
+					//if (_battute != null)
+					//{
+					//	_battute.CollectionChanged -= OnBattute_CollectionChanged;
+					//}
 					_battute = value;
-					if (_battute != null)
-					{
-						_battute.CollectionChanged += OnBattute_CollectionChanged;
-					}
+					//if (_battute != null)
+					//{
+					//	_battute.CollectionChanged += OnBattute_CollectionChanged;
+					//}
 				}
 			}
 		}
@@ -56,17 +59,18 @@ namespace Pentagram.Adorners
 		private readonly List<Adorner> _adorners = new List<Adorner>();
 
 		#region ctor and dispose
-		public BattutaVStackAdorner(Canvas parentLayoutRoot, SwitchableObservableCollection<Battuta> battute) : base(parentLayoutRoot)
+		//public BattutaVStackAdorner(Canvas parentLayoutRoot, SwitchableObservableCollection<Battuta> battute) : base(parentLayoutRoot)
+		public BattutaVStackAdorner(Canvas parentLayoutRoot, List<Battuta> battute) : base(parentLayoutRoot)
 		{
 			Battute = battute;
 			Draw();
 		}
 		protected override void Dispose(bool isDisposing)
 		{
-			if (_battute != null)
-			{
-				_battute.CollectionChanged -= OnBattute_CollectionChanged;
-			}
+			//if (_battute != null)
+			//{
+			//	_battute.CollectionChanged -= OnBattute_CollectionChanged;
+			//}
 			foreach (var adorner in _adorners)
 			{
 				adorner?.Dispose();
@@ -74,10 +78,12 @@ namespace Pentagram.Adorners
 		}
 		#endregion ctor and dispose
 
-		private void Draw()
+		protected override void Draw()
 		{
+			if (_layoutRoot == null) return;
 			Task upd = RunInUiThreadAsync(() =>
 			{
+				if (_layoutRoot == null) return;
 				foreach (var adorner in _adorners)
 				{
 					adorner?.Dispose();
@@ -122,21 +128,45 @@ namespace Pentagram.Adorners
 
 		public override double GetHeight()
 		{
+			//double result = 0.0;
+			//foreach (var adorner in _adorners)
+			//{
+			//	result += adorner.GetHeight();
+			//}
+			//return result;
+
+			if (_battute == null) throw new ArgumentNullException("BattutaVStackAdorner.GetHeight() needs battute");
+
 			double result = 0.0;
-			foreach (var adorner in _adorners)
+
+			foreach (var battuta in _battute)
 			{
+				var adorner = new BattutaAdorner(null, battuta);
 				result += adorner.GetHeight();
 			}
+
 			return result;
 		}
 
 		public override double GetWidth()
 		{
+			//double result = 0.0;
+			//foreach (var adorner in _adorners)
+			//{
+			//	result = Math.Max(adorner.GetWidth(), result);
+			//}
+			//return result;
+
+			if (_battute == null) throw new ArgumentNullException("BattutaVStackAdorner.GetWidth() needs battute");
+
 			double result = 0.0;
-			foreach (var adorner in _adorners)
+
+			foreach (var battuta in _battute)
 			{
+				var adorner = new BattutaAdorner(null, battuta);
 				result = Math.Max(adorner.GetWidth(), result);
 			}
+
 			return result;
 		}
 

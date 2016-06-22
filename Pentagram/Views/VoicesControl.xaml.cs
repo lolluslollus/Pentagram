@@ -59,8 +59,9 @@ namespace Pentagram.Views
 
 		private void OnVoicesControl_SizeChanged(object sender, SizeChangedEventArgs e)
 		{
-			if (e.NewSize.Width == e.PreviousSize.Width) return;
-			var bhwa = _bhwa; if (bhwa != null) bhwa.MaxWidth = e.NewSize.Width;
+			if (e.NewSize.Width == e.PreviousSize.Width && e.NewSize.Height == e.PreviousSize.Height) return;
+			var bhwa = _bhwa;
+			if (bhwa != null) bhwa.MaxSize = e.NewSize;
 		}
 
 		protected override Task CloseMayOverrideAsync()
@@ -91,7 +92,7 @@ namespace Pentagram.Views
 				}
 				else
 				{
-					_bhwa = new BattutaHWrapAdorner(LayoutRoot, voices, ActualWidth);
+					_bhwa = new BattutaHWrapAdorner(LayoutRoot, voices, new Size(ActualWidth, ActualHeight));
 					VM = new VoicesVM(voices);
 				}
 			});

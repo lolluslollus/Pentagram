@@ -54,10 +54,12 @@ namespace Pentagram.Adorners
 		}
 		#endregion ctor and dispose
 
-		private void Draw()
+		protected override void Draw()
 		{
+			if (_layoutRoot == null) return;
 			Task upd = RunInUiThreadAsync(() =>
 			{
+				if (_layoutRoot == null) return;
 				_layoutRoot.Children.Clear();
 				if (_pause == null) return;
 

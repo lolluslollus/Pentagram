@@ -76,42 +76,40 @@ namespace Pentagram.Adorners
 		}
 		#endregion ctor and dispose
 
-		private double _width = 0.0;
-		private void Draw()
+		//private double _width = 0.0;
+		protected override void Draw()
 		{
+			if (_layoutRoot == null) return;
 			Task upd = RunInUiThreadAsync(() =>
 			{
+				if (_layoutRoot == null) return;
 				_layoutRoot.Children.Clear();
-				_width = 0.0;
+
 				if (_tab == null) return;
 
 				switch (_tab.TabSymbol)
 				{
 					case TabSymbols.Nil:
-						_width = NOTE_BALL_WIDTH;
 						return;
 					case TabSymbols.Chiave:
-						_width = CHIAVE_WIDTH;
 						if (_chiave == Chiavi.Violino)
 						{
-							var symbolImage = new Image() { Source = _chiaveDiViolino, Width = _width };
+							var symbolImage = new Image() { Source = _chiaveDiViolino, Width = CHIAVE_WIDTH };
 							_layoutRoot.Children.Add(symbolImage);
 							double lineY = GetLineY(new Tone(3, NoteBianche.sol, Accidenti.Nil));
-							Canvas.SetTop(symbolImage, lineY - _width / 160 * 185); // the numbers here comes from the image size
+							Canvas.SetTop(symbolImage, lineY - CHIAVE_WIDTH / 160 * 185); // the numbers here comes from the image size
 						}
 						else if (_chiave == Chiavi.Basso)
 						{
-							var symbolImage = new Image() { Source = _chiaveDiBasso, Width = _width };
+							var symbolImage = new Image() { Source = _chiaveDiBasso, Width = CHIAVE_WIDTH };
 							_layoutRoot.Children.Add(symbolImage);
 							double lineY = GetLineY(new Tone(4, NoteBianche.re, Accidenti.Nil));
-							Canvas.SetTop(symbolImage, lineY - _width / 160 * 122); // the numbers here comes from the image size
+							Canvas.SetTop(symbolImage, lineY - CHIAVE_WIDTH / 160 * 122); // the numbers here comes from the image size
 						}
 						return;
 					case TabSymbols.Armatura:
-						_width = ARMATURA_WIDTH;
 						return;
 					case TabSymbols.Misura:
-						_width = MISURA_WIDTH;
 						var numTB = new TextBlock() { Text = _misura.Num.ToString(), FontSize = 72, FontFamily = new FontFamily("Snap ITC"), Padding = MARGIN_THICKNESS_0, Margin = MARGIN_THICKNESS_0 };
 						var denTB = new TextBlock() { Text = _misura.Den.ToString(), FontSize = 72, FontFamily = new FontFamily("Snap ITC"), Padding = MARGIN_THICKNESS_0, Margin = MARGIN_THICKNESS_0 };
 						var numVB = new Viewbox() { Child = numTB, Height = 2 * LINE_GAP, Margin = MARGIN_THICKNESS_0 };
@@ -124,13 +122,10 @@ namespace Pentagram.Adorners
 						Canvas.SetTop(denVB, denY);
 						return;
 					case TabSymbols.TwoVerticalBars:
-						_width = VERTICAL_BAR_WIDTH;
 						return;
 					case TabSymbols.Refrain:
-						_width = REFRAIN_WIDTH;
 						return;
 					default:
-						_width = NOTE_BALL_WIDTH;
 						return;
 				}
 			});
@@ -143,7 +138,24 @@ namespace Pentagram.Adorners
 
 		public override double GetWidth()
 		{
-			return _width;
+			if (_tab == null) throw new ArgumentNullException("TabAdorner.GetWidth() needs a tab");
+			switch (_tab.TabSymbol)
+			{
+				case TabSymbols.Nil:
+					return NOTE_BALL_WIDTH;
+				case TabSymbols.Chiave:
+					return CHIAVE_WIDTH;
+				case TabSymbols.Armatura:
+					return ARMATURA_WIDTH;
+				case TabSymbols.Misura:
+					return MISURA_WIDTH;
+				case TabSymbols.TwoVerticalBars:
+					return VERTICAL_BAR_WIDTH;
+				case TabSymbols.Refrain:
+					return REFRAIN_WIDTH;
+				default:
+					return NOTE_BALL_WIDTH;
+			}
 		}
 	}
 }

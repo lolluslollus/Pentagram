@@ -75,10 +75,12 @@ namespace Pentagram.Adorners
 		}
 		#endregion ctor and dispose
 
-		private void Draw()
+		protected override void Draw()
 		{
+			if (_layoutRoot == null) return;
 			Task upd = RunInUiThreadAsync(() =>
 			{
+				if (_layoutRoot == null) return;
 				foreach (var child in _adorners)
 				{
 					child?.Dispose();
@@ -96,7 +98,6 @@ namespace Pentagram.Adorners
 					Canvas.SetLeft(adorner.GetLayoutRoot(), width);
 					width += adorner.GetWidth();
 				}
-
 			});
 		}
 
@@ -106,11 +107,24 @@ namespace Pentagram.Adorners
 		}
 		public override double GetWidth()
 		{
+			//double result = 0.0;
+			//foreach (var adorner in _adorners)
+			//{
+			//	result += adorner.GetWidth();
+			//}
+			//return result;
+
+
+			if (_battuta?.Instants == null) throw new ArgumentNullException("BattutaAdorner.GetWidth() needs a battuta with instants");
+
 			double result = 0.0;
-			foreach (var adorner in _adorners)
+
+			foreach (var instant in _battuta.Instants)
 			{
+				var adorner = new InstantAdorner(null, _battuta.Chiave, _battuta.Misura, instant);
 				result += adorner.GetWidth();
 			}
+
 			return result;
 		}
 	}
