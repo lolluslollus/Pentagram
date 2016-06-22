@@ -28,6 +28,9 @@ namespace Pentagram.Adorners
 		//private double _maxWidth = 0.0;
 		//public double MaxWidth { get { return _maxWidth; } set { if (_maxWidth == value) return; _maxWidth = value; Draw(); } }
 
+		private int _startBattutaIndex = 0;
+		public int StartBattutaIndex { get { return _startBattutaIndex; } set { if (_startBattutaIndex == value) return; _startBattutaIndex = value; Draw(); } }
+
 		private Size _maxSize = Size.Empty;
 		public Size MaxSize { get { return _maxSize; } set { if (_maxSize == value) return; _maxSize = value; Draw(); } }
 
@@ -60,11 +63,12 @@ namespace Pentagram.Adorners
 		private readonly List<Adorner> _adorners = new List<Adorner>();
 
 		#region ctor and dispose
-		public BattutaHWrapAdorner(Canvas parentLayoutRoot, SwitchableObservableCollection<Voice> voices, Size maxSize) : base(parentLayoutRoot)
+		public BattutaHWrapAdorner(Canvas parentLayoutRoot, SwitchableObservableCollection<Voice> voices, Size maxSize, int startBattutaIndex) : base(parentLayoutRoot)
 		{
 			Voices = voices;
-			MaxSize = maxSize;
-			// Draw();
+			_maxSize = maxSize;
+			_startBattutaIndex = startBattutaIndex;
+			Draw();
 		}
 		protected override void Dispose(bool isDisposing)
 		{
@@ -101,10 +105,10 @@ namespace Pentagram.Adorners
 				{
 					maxBattute = Math.Max(voice.Battute.Count, maxBattute);
 				}
-				
+
 				double nextY = 0.0;
 				double lastWidth = 0.0;
-				for (int i = 0; i < maxBattute; i++)
+				for (int i = _startBattutaIndex; i < maxBattute; i++)
 				{
 					// var battute = new SwitchableObservableCollection<Battuta>();
 					var battute = new List<Battuta>();
@@ -118,8 +122,8 @@ namespace Pentagram.Adorners
 					double nextObjHeight = adorner.GetHeight();
 					double nextObjWidth = adorner.GetWidth();
 
-					if (nextObjWidth >= _maxSize.Height) throw new ArgumentException("BattutaHWrapAdorner.Draw(): MaxHeight too small");
-					if (nextObjHeight >= _maxSize.Width) throw new ArgumentException("BattutaHWrapAdorner.Draw(): MaxWidth too small");
+					if (nextObjWidth >= _maxSize.Height) break; // throw new ArgumentException("BattutaHWrapAdorner.Draw(): MaxHeight too small");
+					if (nextObjHeight >= _maxSize.Width) break; // throw new ArgumentException("BattutaHWrapAdorner.Draw(): MaxWidth too small");
 					if (lastWidth + nextObjWidth <= _maxSize.Width)
 					{ // append to current line
 						Canvas.SetLeft(adorner.GetLayoutRoot(), lastWidth);
@@ -141,17 +145,18 @@ namespace Pentagram.Adorners
 
 		public override double GetHeight()
 		{
-			return GetSize().Height;
+			return GetBattuteInPage().Size.Height;
 		}
 
 		public override double GetWidth()
 		{
-			return GetSize().Width;
+			return GetBattuteInPage().Size.Width;
 		}
 
-		public Size GetSize()
+		public BattuteInPage GetBattuteInPage()
 		{
-			var result = Size.Empty;
+			// var result = Size.Empty;
+			var result = new BattuteInPage() { FirstBattutaNo = _startBattutaIndex };
 
 
 			if (_voices == null) throw new ArgumentNullException("BattutaHWrapAdorner needs voices");
@@ -161,10 +166,11 @@ namespace Pentagram.Adorners
 			{
 				maxBattute = Math.Max(voice.Battute.Count, maxBattute);
 			}
+			result.LastTotalBattutaNo = maxBattute - 1;
 
 			double nextY = 0.0;
 			double lastWidth = 0.0;
-			for (int i = 0; i < maxBattute; i++)
+			for (int i = _startBattutaIndex; i < maxBattute; i++)
 			{
 				// var battute = new SwitchableObservableCollection<Battuta>();
 				var battute = new List<Battuta>();
@@ -178,23 +184,33 @@ namespace Pentagram.Adorners
 				double nextObjHeight = adorner.GetHeight();
 				double nextObjWidth = adorner.GetWidth();
 
-				if (nextObjWidth >= _maxSize.Height) throw new ArgumentException("BattutaHWrapAdorner.Draw(): MaxHeight too small");
-				if (nextObjHeight >= _maxSize.Width) throw new ArgumentException("BattutaHWrapAdorner.Draw(): MaxWidth too small");
+				if (nextObjWidth >= _maxSize.Width) break; // throw new ArgumentException("BattutaHWrapAdorner.GetBattuteInPage(): MaxHeight too small");
+				if (nextObjHeight >= _maxSize.Height) break; // throw new ArgumentException("BattutaHWrapAdorner.GetBattuteInPage(): MaxWidth too small");
 				if (lastWidth + nextObjWidth <= _maxSize.Width)
 				{ // append to current line
 					lastWidth += nextObjWidth;
+					result.LastDrawnBattutaNo = i;
 				}
 				else
 				{ // wrap into next line
 					nextY += nextObjHeight; // LOLLO TODO I assume here that all vertical stacks of battute have the same height
 					if (nextY + nextObjHeight > _maxSize.Height) break; // no more space in page: get out
 					lastWidth = nextObjWidth;
+					result.LastDrawnBattutaNo = i;
 				}
-				result.Width = Math.Max(result.Width, lastWidth);
-				result.Height = nextY + adorner.GetHeight(); // LOLLO TODO I assume here that all vertical stacks of battute have the same height
+				result.Size.Width = Math.Max(result.Size.Width, lastWidth);
+				result.Size.Height = nextY + adorner.GetHeight(); // LOLLO TODO I assume here that all vertical stacks of battute have the same height
 			}
 
 			return result;
+		}
+
+		public struct BattuteInPage
+		{
+			public Size Size;
+			public int FirstBattutaNo;
+			public int LastDrawnBattutaNo;
+			public int LastTotalBattutaNo;
 		}
 	}
 }

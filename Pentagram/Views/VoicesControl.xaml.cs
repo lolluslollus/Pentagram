@@ -40,6 +40,9 @@ namespace Pentagram.Views
 			instance.UpdateAfterVoicesChangedAsync();
 		}
 
+		private Stack<int> _prevStartBattutaIndexes = new Stack<int>();
+		//private int _prevStartBattutaIndex = 0;
+
 		private VoicesVM _vm = null;
 		public VoicesVM VM { get { return _vm; } private set { _vm = value; RaisePropertyChanged_UI(); } }
 
@@ -92,7 +95,7 @@ namespace Pentagram.Views
 				}
 				else
 				{
-					_bhwa = new BattutaHWrapAdorner(LayoutRoot, voices, new Size(ActualWidth, ActualHeight));
+					_bhwa = new BattutaHWrapAdorner(LayoutRoot, voices, new Size(ActualWidth, ActualHeight), _prevStartBattutaIndexes.Count > 0 ? _prevStartBattutaIndexes.Peek() : 0);
 					VM = new VoicesVM(voices);
 				}
 			});
@@ -107,6 +110,23 @@ namespace Pentagram.Views
 					_vm.AddNote(Voices[0], Chiavi.Violino, new Misura(), DurateCanoniche.Croma, PuntiDiValore.Nil, SegniSuNote.Nil, false, 3, NoteBianche.@do, Accidenti.Diesis);
 				});
 			});
+		}
+
+		// LOLLO TODO the stack technique is good if one does not resize between flipping pages.
+		// otherwise, we need an estimator on how deep we can go back. 
+		// Best would be an array that associates a width and a page to every battuta.
+		private void OnPrevious_Click(object sender, RoutedEventArgs e)
+		{
+			if (_prevStartBattutaIndexes.Count == 0) return;
+			_bhwa.StartBattutaIndex = _prevStartBattutaIndexes.Pop();
+		}
+
+		private void OnNext_Click(object sender, RoutedEventArgs e)
+		{
+			var bip = _bhwa.GetBattuteInPage();
+			if (bip.LastTotalBattutaNo == bip.LastDrawnBattutaNo) return;
+			_prevStartBattutaIndexes.Push(_bhwa.StartBattutaIndex);
+			_bhwa.StartBattutaIndex = bip.LastDrawnBattutaNo + 1;
 		}
 	}
 }
