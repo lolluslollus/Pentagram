@@ -115,6 +115,12 @@ namespace Pentagram.Views
 		// LOLLO TODO the stack technique is good if one does not resize between flipping pages.
 		// otherwise, we need an estimator on how deep we can go back. 
 		// Best would be an array that associates a width and a page to every battuta.
+		// However, that array would become inaccurate as soon as I resize.
+		// We need euristic, for example:
+		// how many battuta have I got on the current page? 
+		// Go back by the same amount. Is there enough space? If yes, try going one battuta further back. If not, try going one battuta forward. Keep trying until you got it.
+		// If you resized so small that you cannot change the view, stop trying.
+		// If you go back before the beginning of the battute, stop trying and start from the first.
 		private void OnPrevious_Click(object sender, RoutedEventArgs e)
 		{
 			if (_prevStartBattutaIndexes.Count == 0) return;

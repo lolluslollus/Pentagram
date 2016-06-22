@@ -122,7 +122,7 @@ namespace Pentagram.Adorners
 					double nextObjHeight = adorner.GetHeight();
 					double nextObjWidth = adorner.GetWidth();
 
-					if (nextObjWidth >= _maxSize.Height) break; // throw new ArgumentException("BattutaHWrapAdorner.Draw(): MaxHeight too small");
+					if (nextObjWidth >= _maxSize.Height) break; // throw new ArgumentException("BattutaHWrapAdorner.Draw(): MaxHeight too small"); // LOLLO TODO when you break here, try reducing LINE_GAP temporarily.
 					if (nextObjHeight >= _maxSize.Width) break; // throw new ArgumentException("BattutaHWrapAdorner.Draw(): MaxWidth too small");
 					if (lastWidth + nextObjWidth <= _maxSize.Width)
 					{ // append to current line
@@ -184,7 +184,7 @@ namespace Pentagram.Adorners
 				double nextObjHeight = adorner.GetHeight();
 				double nextObjWidth = adorner.GetWidth();
 
-				if (nextObjWidth >= _maxSize.Width) break; // throw new ArgumentException("BattutaHWrapAdorner.GetBattuteInPage(): MaxHeight too small");
+				if (nextObjWidth >= _maxSize.Width) break; // throw new ArgumentException("BattutaHWrapAdorner.GetBattuteInPage(): MaxHeight too small"); // LOLLO TODO when you break here, try reducing LINE_GAP temporarily.
 				if (nextObjHeight >= _maxSize.Height) break; // throw new ArgumentException("BattutaHWrapAdorner.GetBattuteInPage(): MaxWidth too small");
 				if (lastWidth + nextObjWidth <= _maxSize.Width)
 				{ // append to current line
