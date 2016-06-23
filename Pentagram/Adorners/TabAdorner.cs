@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace Pentagram.Adorners
 {
-	public sealed class TabAdorner : Adorner
+	public sealed class TabAdorner : CanvasAdorner
 	{
 		public readonly static double ARMATURA_WIDTH;
 		public readonly static double CHIAVE_WIDTH;
@@ -130,6 +130,50 @@ namespace Pentagram.Adorners
 				}
 			});
 		}
+
+		public override double GetHeight()
+		{
+			var estimator = new TabAdornerEstimator(_tab, _chiave, _misura);
+			return estimator.GetHeight();
+		}
+
+		public override double GetWidth()
+		{
+			var estimator = new TabAdornerEstimator(_tab, _chiave, _misura);
+			return estimator.GetWidth();
+		}
+	}
+
+	public sealed class TabAdornerEstimator : CanvasAdornerBase
+	{
+		public readonly static double ARMATURA_WIDTH;
+		public readonly static double CHIAVE_WIDTH;
+		public readonly static double REFRAIN_WIDTH;
+		public readonly static double MISURA_WIDTH;
+		public readonly static double VERTICAL_BAR_WIDTH;
+		public readonly static Thickness MARGIN_THICKNESS_0;
+
+		private readonly Chiavi _chiave;
+		private readonly Misura _misura;
+		private Tab _tab = null;
+
+		#region ctor and dispose
+		static TabAdornerEstimator()
+		{
+			ARMATURA_WIDTH = (double)App.Current.Resources["ArmaturaWidth"];
+			CHIAVE_WIDTH = (double)App.Current.Resources["ChiaveWidth"];
+			REFRAIN_WIDTH = (double)App.Current.Resources["RefrainWidth"];
+			MISURA_WIDTH = (double)App.Current.Resources["RitmoWidth"];
+			VERTICAL_BAR_WIDTH = (double)App.Current.Resources["VerticalBarWidth"];
+			MARGIN_THICKNESS_0 = new Thickness(0.0);
+		}
+		public TabAdornerEstimator(Tab tab, Chiavi chiave, Misura misura)
+		{
+			_chiave = chiave;
+			_misura = misura;
+			_tab = tab;
+		}
+		#endregion ctor and dispose
 
 		public override double GetHeight()
 		{

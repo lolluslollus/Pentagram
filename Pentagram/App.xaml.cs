@@ -105,6 +105,7 @@ namespace Pentagram
 		{
 			var deferral = e.SuspendingOperation.GetDeferral();
 			//TODO: Save application state and stop any background activity
+			var openSettings = Settings.GetInstance(); if (openSettings != null) await openSettings.CloseAsync().ConfigureAwait(false);
 			var openSong = Song.GetInstance(); if (openSong != null) await openSong.CloseAsync().ConfigureAwait(false);
 			var all = All.GetCreateInstance(); if (all != null) await all.CloseAsync().ConfigureAwait(false);
 			deferral.Complete();

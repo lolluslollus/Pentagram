@@ -19,6 +19,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using WinRTXamlToolkit.Controls;
 using System.Threading.Tasks;
+using System.Diagnostics;
+
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -40,9 +42,6 @@ namespace Pentagram.Views
 			instance.UpdateAfterVoicesChangedAsync();
 		}
 
-		private Stack<int> _prevStartBattutaIndexes = new Stack<int>();
-		//private int _prevStartBattutaIndex = 0;
-
 		private VoicesVM _vm = null;
 		public VoicesVM VM { get { return _vm; } private set { _vm = value; RaisePropertyChanged_UI(); } }
 
@@ -54,22 +53,16 @@ namespace Pentagram.Views
 		{
 			InitializeComponent();
 		}
-		protected override Task OpenMayOverrideAsync(object args = null)
+		protected override async Task OpenMayOverrideAsync(object args = null)
 		{
-			SizeChanged += OnVoicesControl_SizeChanged;
-			return UpdateAfterVoicesChanged2Async();
-		}
-
-		private void OnVoicesControl_SizeChanged(object sender, SizeChangedEventArgs e)
-		{
-			if (e.NewSize.Width == e.PreviousSize.Width && e.NewSize.Height == e.PreviousSize.Height) return;
-			var bhwa = _bhwa;
-			if (bhwa != null) bhwa.MaxSize = e.NewSize;
+			await Settings.GetCreateInstance().OpenAsync();
+			SizeChanged += OnSizeChanged;
+			await UpdateAfterVoicesChanged2Async();
 		}
 
 		protected override Task CloseMayOverrideAsync()
 		{
-			SizeChanged -= OnVoicesControl_SizeChanged;
+			SizeChanged -= OnSizeChanged;
 			_bhwa?.Dispose();
 			_bhwa = null;
 			return Task.CompletedTask;
@@ -95,9 +88,80 @@ namespace Pentagram.Views
 				}
 				else
 				{
-					_bhwa = new BattutaHWrapAdorner(LayoutRoot, voices, new Size(ActualWidth, ActualHeight), _prevStartBattutaIndexes.Count > 0 ? _prevStartBattutaIndexes.Peek() : 0);
+					_bhwa = new BattutaHWrapAdorner(LayoutRoot, voices, new Size(ActualWidth, ActualHeight), Settings.GetCreateInstance().FirstBattutaIndex);
 					VM = new VoicesVM(voices);
 				}
+			});
+		}
+
+		public void OnPrevious_Click(object sender, RoutedEventArgs e)
+		{
+			Task goBack = RunFunctionIfOpenAsyncA(() =>
+			{
+				var bhwa = _bhwa;
+				if (bhwa == null || bhwa.FirstBattutaIndex <= 0) return;
+
+				var currentBIP = new BattutaHWrapAdornerEstimator(Voices, new Size(ActualWidth, ActualHeight), Settings.GetCreateInstance().FirstBattutaIndex);
+				var currentBIP_bp = currentBIP.GetBattuteInPage();
+				int tryStartBattutaIndex = Math.Max(0, bhwa.FirstBattutaIndex - currentBIP_bp.LastDrawnBattutaIndex);
+
+				while (tryStartBattutaIndex <= currentBIP_bp.LastTotalBattutaIndex && tryStartBattutaIndex >= 0)
+				{
+					var tryBhwa = new BattutaHWrapAdornerEstimator(Voices, new Size(ActualWidth, ActualHeight), tryStartBattutaIndex);
+					var tryBIP = tryBhwa.GetBattuteInPage();
+
+					if (tryBIP.FirstBattutaIndex <= 0)
+					{
+						bhwa.FirstBattutaIndex = 0;
+						Settings.GetCreateInstance().FirstBattutaIndex = 0;
+						return;
+					}
+
+					if (tryBIP.LastDrawnBattutaIndex + 1 < currentBIP_bp.FirstBattutaIndex)
+					{
+						tryStartBattutaIndex++;
+					}
+					else if (tryBIP.LastDrawnBattutaIndex + 1 > currentBIP_bp.FirstBattutaIndex)
+					{
+						tryStartBattutaIndex--;
+					}
+					else
+					{
+						bhwa.FirstBattutaIndex = tryStartBattutaIndex;
+						Settings.GetCreateInstance().FirstBattutaIndex = tryStartBattutaIndex;
+						return;
+					}
+				}
+			});
+		}
+
+		public void OnNext_Click(object sender, RoutedEventArgs e)
+		{
+			Task goForward = RunFunctionIfOpenAsyncA(() =>
+			{
+				var bhwa = _bhwa;
+				if (bhwa == null) return;
+
+				var currentBhwa = new BattutaHWrapAdornerEstimator(Voices, new Size(ActualWidth, ActualHeight), Settings.GetCreateInstance().FirstBattutaIndex);
+				var currentBIP = currentBhwa.GetBattuteInPage();
+
+				if (currentBIP.LastTotalBattutaIndex <= currentBIP.LastDrawnBattutaIndex) return;
+
+				bhwa.FirstBattutaIndex = currentBIP.LastDrawnBattutaIndex + 1;
+				Settings.GetCreateInstance().FirstBattutaIndex = bhwa.FirstBattutaIndex;
+			});
+		}
+
+		private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			if (e.NewSize.Width == e.PreviousSize.Width && e.NewSize.Height == e.PreviousSize.Height) return;
+			//Debug.WriteLine("newSize: Width=" + e.NewSize.Width + " Height=" + e.NewSize.Height);
+			//Debug.WriteLine("ActualWidth=" + ActualWidth + " ActualHeight=" + ActualHeight);
+			Task resize = RunFunctionIfOpenAsyncA(() =>
+			{
+				var bhwa = _bhwa;
+				if (bhwa == null) return;
+				bhwa.MaxSize = e.NewSize;
 			});
 		}
 
@@ -110,29 +174,6 @@ namespace Pentagram.Views
 					_vm.AddNote(Voices[0], Chiavi.Violino, new Misura(), DurateCanoniche.Croma, PuntiDiValore.Nil, SegniSuNote.Nil, false, 3, NoteBianche.@do, Accidenti.Diesis);
 				});
 			});
-		}
-
-		// LOLLO TODO the stack technique is good if one does not resize between flipping pages.
-		// otherwise, we need an estimator on how deep we can go back. 
-		// Best would be an array that associates a width and a page to every battuta.
-		// However, that array would become inaccurate as soon as I resize.
-		// We need euristic, for example:
-		// how many battuta have I got on the current page? 
-		// Go back by the same amount. Is there enough space? If yes, try going one battuta further back. If not, try going one battuta forward. Keep trying until you got it.
-		// If you resized so small that you cannot change the view, stop trying.
-		// If you go back before the beginning of the battute, stop trying and start from the first.
-		private void OnPrevious_Click(object sender, RoutedEventArgs e)
-		{
-			if (_prevStartBattutaIndexes.Count == 0) return;
-			_bhwa.StartBattutaIndex = _prevStartBattutaIndexes.Pop();
-		}
-
-		private void OnNext_Click(object sender, RoutedEventArgs e)
-		{
-			var bip = _bhwa.GetBattuteInPage();
-			if (bip.LastTotalBattutaNo == bip.LastDrawnBattutaNo) return;
-			_prevStartBattutaIndexes.Push(_bhwa.StartBattutaIndex);
-			_bhwa.StartBattutaIndex = bip.LastDrawnBattutaNo + 1;
 		}
 	}
 }

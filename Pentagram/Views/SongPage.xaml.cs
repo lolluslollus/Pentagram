@@ -56,5 +56,15 @@ namespace Pentagram.Views
 		{
 			Frame.Navigate(typeof(MainPage));
 		}
+
+		public void OnPrevious_Click(object sender, RoutedEventArgs e)
+		{
+			VoicesControl?.OnPrevious_Click(sender, e);
+		}
+
+		public void OnNext_Click(object sender, RoutedEventArgs e)
+		{
+			VoicesControl?.OnNext_Click(sender, e);
+		}
 	}
 }

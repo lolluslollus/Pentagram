@@ -13,9 +13,10 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
+// LOLLO TODO draw the balls shifted if you have a chord such as do re mi
 namespace Pentagram.Adorners
 {
-	public sealed class ChordAdorner : Adorner
+	public sealed class ChordAdorner : CanvasAdorner
 	{
 		public readonly static double FLAG_GAP;
 		public readonly static double FLAG_WIDTH;
@@ -92,6 +93,7 @@ namespace Pentagram.Adorners
 		}
 		#endregion ctor and dispose
 
+		#region draw
 		protected override void Draw()
 		{
 			if (_layoutRoot == null) return;
@@ -211,24 +213,19 @@ namespace Pentagram.Adorners
 			Canvas.SetLeft(newPDV, ballsX + NOTE_BALL_WIDTH);
 			Canvas.SetTop(newPDV, ballYs[idx]);
 		}
+		#endregion draw
+
 		public override double GetHeight()
 		{
-			return PENTAGRAM_HEIGHT;
+			var estimator = new ChordAdornerEstimator(_chiave, _chord);
+			return estimator.GetHeight();
 		}
 
 		public override double GetWidth()
 		{
-			if (_chord == null) throw new ArgumentNullException("ChordAdorner.GetWidth() needs a chord");
-			double result = NOTE_BALL_WIDTH + FLAG_WIDTH;
-			// if (_chord.Duration.PuntiDiValore != PuntiDiValore.Nil) result += NOTE_BALL_WIDTH;
-			if (_chord.Tones.Any(tone => tone.Accidente != Accidenti.Nil)) result += NOTE_BALL_WIDTH;
-			return result;
+			var estimator = new ChordAdornerEstimator(_chiave, _chord);
+			return estimator.GetWidth();
 		}
-
-		//private double GetBallsX0()
-		//{
-		//	return _chord.Tones.Any(tone => tone.Accidente != Accidenti.Nil) ? NOTE_BALL_WIDTH : 0.0;
-		//}
 		#region utils
 		internal abstract class LinkedChromasHelper
 		{
@@ -590,5 +587,45 @@ namespace Pentagram.Adorners
 			}
 		}
 		#endregion utils
+	}
+
+	public sealed class ChordAdornerEstimator : CanvasAdornerBase
+	{
+		public readonly static double FLAG_GAP;
+		public readonly static double FLAG_WIDTH;
+		public readonly static double FLAG_THICKNESS;
+		public readonly static double MIN_MAST_HEIGHT;
+
+		private Chiavi _chiave;
+		private Chord _chord = null;
+
+		#region ctor and dispose
+		static ChordAdornerEstimator()
+		{
+			FLAG_GAP = NOTE_BALL_WIDTH * (double)App.Current.Resources["NoteFlagGapFactor"];
+			FLAG_THICKNESS = NOTE_BALL_WIDTH * (double)App.Current.Resources["NoteFlagThicknessFactor"];
+			FLAG_WIDTH = NOTE_BALL_WIDTH + 1; // (double)App.Current.Resources["NoteFlagWidth"];
+			MIN_MAST_HEIGHT = NOTE_BALL_WIDTH * (double)App.Current.Resources["NoteMinMastHeightFactor"];
+		}
+		public ChordAdornerEstimator(Chiavi chiave, Chord chord)
+		{
+			_chiave = chiave;
+			_chord = chord;
+		}
+		#endregion ctor and dispose
+
+		public override double GetHeight()
+		{
+			return PENTAGRAM_HEIGHT;
+		}
+
+		public override double GetWidth()
+		{
+			if (_chord == null) throw new ArgumentNullException("ChordAdorner.GetWidth() needs a chord");
+			double result = NOTE_BALL_WIDTH + FLAG_WIDTH;
+			// if (_chord.Duration.PuntiDiValore != PuntiDiValore.Nil) result += NOTE_BALL_WIDTH;
+			if (_chord.Tones.Any(tone => tone.Accidente != Accidenti.Nil)) result += NOTE_BALL_WIDTH;
+			return result;
+		}
 	}
 }

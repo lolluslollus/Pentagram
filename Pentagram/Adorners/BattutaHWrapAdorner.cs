@@ -2,34 +2,27 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Utilz;
-using Utilz.Controlz;
-using Utilz.Data;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
+// LOLLO TODO make test adorner classes that take no canvas, register no events and are not disposable
 
 namespace Pentagram.Adorners
 {
-	public sealed class BattutaHWrapAdorner : Adorner
+	public sealed class BattutaHWrapAdorner : CanvasAdorner
 	{
-		//private double _maxHeight = 0.0;
-		//public double MaxHeight { get { return _maxHeight; } set { if (_maxHeight == value) return; _maxHeight = value; Draw(); } }
+		private int _firstBattutaIndex = 0;
+		public int FirstBattutaIndex { get { return _firstBattutaIndex; } set { if (_firstBattutaIndex == value) return; _firstBattutaIndex = value; Draw(); } }
 
-		//private double _maxWidth = 0.0;
-		//public double MaxWidth { get { return _maxWidth; } set { if (_maxWidth == value) return; _maxWidth = value; Draw(); } }
-
-		private int _startBattutaIndex = 0;
-		public int StartBattutaIndex { get { return _startBattutaIndex; } set { if (_startBattutaIndex == value) return; _startBattutaIndex = value; Draw(); } }
+		//private int _lastBattutaIndex = 0;
+		//public int LastDrawnBattutaIndex { get { return _lastBattutaIndex; } }
 
 		private Size _maxSize = Size.Empty;
 		public Size MaxSize { get { return _maxSize; } set { if (_maxSize == value) return; _maxSize = value; Draw(); } }
@@ -60,14 +53,14 @@ namespace Pentagram.Adorners
 			Draw();
 		}
 
-		private readonly List<Adorner> _adorners = new List<Adorner>();
+		private readonly List<CanvasAdorner> _adorners = new List<CanvasAdorner>();
 
 		#region ctor and dispose
 		public BattutaHWrapAdorner(Canvas parentLayoutRoot, SwitchableObservableCollection<Voice> voices, Size maxSize, int startBattutaIndex) : base(parentLayoutRoot)
 		{
 			Voices = voices;
 			_maxSize = maxSize;
-			_startBattutaIndex = startBattutaIndex;
+			_firstBattutaIndex = startBattutaIndex;
 			Draw();
 		}
 		protected override void Dispose(bool isDisposing)
@@ -106,9 +99,10 @@ namespace Pentagram.Adorners
 					maxBattute = Math.Max(voice.Battute.Count, maxBattute);
 				}
 
-				double nextY = 0.0;
-				double lastWidth = 0.0;
-				for (int i = _startBattutaIndex; i < maxBattute; i++)
+				double lastX1 = 0.0;
+				double lastY0 = 0.0;
+				double lastY1 = 0.0;
+				for (int i = _firstBattutaIndex; i < maxBattute; i++)
 				{
 					// var battute = new SwitchableObservableCollection<Battuta>();
 					var battute = new List<Battuta>();
@@ -117,27 +111,30 @@ namespace Pentagram.Adorners
 						if (voice.Battute.Count > i) battute.Add(voice.Battute[i]);
 						else battute.Add(new Battuta(Chiavi.Violino, new Misura()));
 					}
-					var adorner = new BattutaVStackAdorner(_layoutRoot, battute);
 
-					double nextObjHeight = adorner.GetHeight();
-					double nextObjWidth = adorner.GetWidth();
+					var nextObjProps = Helper.GetNextObjectProperties(battute, i == _firstBattutaIndex, lastX1, lastY1, _maxSize);
+					if (!nextObjProps.IsFits) break;
 
-					if (nextObjWidth >= _maxSize.Height) break; // throw new ArgumentException("BattutaHWrapAdorner.Draw(): MaxHeight too small"); // LOLLO TODO when you break here, try reducing LINE_GAP temporarily.
-					if (nextObjHeight >= _maxSize.Width) break; // throw new ArgumentException("BattutaHWrapAdorner.Draw(): MaxWidth too small");
-					if (lastWidth + nextObjWidth <= _maxSize.Width)
+					if (!nextObjProps.IsStartsNewRow)
 					{ // append to current line
-						Canvas.SetLeft(adorner.GetLayoutRoot(), lastWidth);
-						Canvas.SetTop(adorner.GetLayoutRoot(), nextY);
-						lastWidth += nextObjWidth;
+						var adorner = new BattutaVStackAdorner(_layoutRoot, battute, nextObjProps.IsFirstInRow);
+						Canvas.SetLeft(adorner.GetLayoutRoot(), lastX1);
+						Canvas.SetTop(adorner.GetLayoutRoot(), lastY0);
+						lastX1 += nextObjProps.Width;
+						lastY1 = Math.Max(lastY1, nextObjProps.Height);
+						_adorners.Add(adorner);
 					}
 					else
 					{ // wrap into next line
-						nextY += nextObjHeight; // LOLLO TODO I assume here that all vertical stacks of battute have the same height
-						if (nextY + nextObjHeight > _maxSize.Height) break; // no more space in page: get out
+						var adorner = new BattutaVStackAdorner(_layoutRoot, battute, true);
 						Canvas.SetLeft(adorner.GetLayoutRoot(), 0.0);
-						Canvas.SetTop(adorner.GetLayoutRoot(), nextY);
-						lastWidth = nextObjWidth;
+						Canvas.SetTop(adorner.GetLayoutRoot(), lastY1);
+						lastX1 = nextObjProps.Width;
+						lastY0 += lastY1;
+						lastY1 += nextObjProps.Height;
+						_adorners.Add(adorner);
 					}
+					//_lastBattutaIndex = i;
 				}
 			});
 		}
@@ -145,32 +142,67 @@ namespace Pentagram.Adorners
 
 		public override double GetHeight()
 		{
-			return GetBattuteInPage().Size.Height;
+			// return GetBattuteInPage().Size.Height;
+			throw new NotImplementedException("BattutaHWrapAdorner.GetHeight() should not be called");
 		}
 
 		public override double GetWidth()
 		{
-			return GetBattuteInPage().Size.Width;
+			// return GetBattuteInPage().Size.Width;
+			throw new NotImplementedException("BattutaHWrapAdorner.GetWidth() should not be called");
+		}
+
+		public static BattuteInPage GetBattuteInPage(SwitchableObservableCollection<Voice> _voices, int _firstBattutaIndex, Size _maxSize)
+		{
+			var estimator = new BattutaHWrapAdornerEstimator(_voices, _maxSize, _firstBattutaIndex);
+			return estimator.GetBattuteInPage();
+		}
+	}
+
+	public sealed class BattutaHWrapAdornerEstimator : CanvasAdornerBase
+	{
+		private readonly int _firstBattutaIndex = 0;
+		private readonly Size _maxSize = Size.Empty;
+		private readonly SwitchableObservableCollection<Voice> _voices = new SwitchableObservableCollection<Voice>();
+
+		#region ctor and dispose
+		public BattutaHWrapAdornerEstimator(SwitchableObservableCollection<Voice> voices, Size maxSize, int firstBattutaIndex)
+		{
+			_voices = voices;
+			_maxSize = maxSize;
+			_firstBattutaIndex = firstBattutaIndex;
+		}
+		#endregion ctor and dispose
+
+		public override double GetHeight()
+		{
+			// return GetBattuteInPage().Size.Height;
+			throw new NotImplementedException("BattutaHWrapAdorner.GetHeight() should not be called");
+		}
+
+		public override double GetWidth()
+		{
+			// return GetBattuteInPage().Size.Width;
+			throw new NotImplementedException("BattutaHWrapAdorner.GetWidth() should not be called");
 		}
 
 		public BattuteInPage GetBattuteInPage()
 		{
-			// var result = Size.Empty;
-			var result = new BattuteInPage() { FirstBattutaNo = _startBattutaIndex };
+			if (_voices == null) throw new ArgumentNullException("BattutaHWrapAdorner.GetBattuteInPage() needs voices");
 
-
-			if (_voices == null) throw new ArgumentNullException("BattutaHWrapAdorner needs voices");
+			var result = new BattuteInPage() { FirstBattutaIndex = _firstBattutaIndex };
 
 			int maxBattute = 0;
 			foreach (var voice in _voices)
 			{
 				maxBattute = Math.Max(voice.Battute.Count, maxBattute);
 			}
-			result.LastTotalBattutaNo = maxBattute - 1;
+			result.LastTotalBattutaIndex = maxBattute - 1;
 
-			double nextY = 0.0;
-			double lastWidth = 0.0;
-			for (int i = _startBattutaIndex; i < maxBattute; i++)
+			double lastX1 = 0.0;
+			double lastY0 = 0.0;
+			double lastY1 = 0.0;
+			for (int i = _firstBattutaIndex; i < maxBattute; i++)
 			{
 				// var battute = new SwitchableObservableCollection<Battuta>();
 				var battute = new List<Battuta>();
@@ -179,38 +211,136 @@ namespace Pentagram.Adorners
 					if (voice.Battute.Count > i) battute.Add(voice.Battute[i]);
 					else battute.Add(new Battuta(Chiavi.Violino, new Misura()));
 				}
-				var adorner = new BattutaVStackAdorner(null, battute);
 
-				double nextObjHeight = adorner.GetHeight();
-				double nextObjWidth = adorner.GetWidth();
+				var nextObjProps = Helper.GetNextObjectProperties(battute, i == _firstBattutaIndex, lastX1, lastY1, _maxSize);
+				if (!nextObjProps.IsFits) break;
 
-				if (nextObjWidth >= _maxSize.Width) break; // throw new ArgumentException("BattutaHWrapAdorner.GetBattuteInPage(): MaxHeight too small"); // LOLLO TODO when you break here, try reducing LINE_GAP temporarily.
-				if (nextObjHeight >= _maxSize.Height) break; // throw new ArgumentException("BattutaHWrapAdorner.GetBattuteInPage(): MaxWidth too small");
-				if (lastWidth + nextObjWidth <= _maxSize.Width)
+				if (!nextObjProps.IsStartsNewRow)
 				{ // append to current line
-					lastWidth += nextObjWidth;
-					result.LastDrawnBattutaNo = i;
+					lastX1 += nextObjProps.Width;
+					lastY1 = Math.Max(lastY1, nextObjProps.Height);
 				}
 				else
 				{ // wrap into next line
-					nextY += nextObjHeight; // LOLLO TODO I assume here that all vertical stacks of battute have the same height
-					if (nextY + nextObjHeight > _maxSize.Height) break; // no more space in page: get out
-					lastWidth = nextObjWidth;
-					result.LastDrawnBattutaNo = i;
+					lastX1 = nextObjProps.Width;
+					lastY0 += lastY1;
+					lastY1 += nextObjProps.Height;
 				}
-				result.Size.Width = Math.Max(result.Size.Width, lastWidth);
-				result.Size.Height = nextY + adorner.GetHeight(); // LOLLO TODO I assume here that all vertical stacks of battute have the same height
+				result.LastDrawnBattutaIndex = i;
+				result.Size.Width = Math.Max(result.Size.Width, lastX1);
+				result.Size.Height = lastY1;
+			}
+
+			return result;
+		}
+	}
+
+	public struct BattuteInPage
+	{
+		public Size Size;
+		public int FirstBattutaIndex;
+		public int LastDrawnBattutaIndex;
+		public int LastTotalBattutaIndex;
+	}
+
+	internal class Helper
+	{
+		public static BattuteInPage GetBattuteInPage(SwitchableObservableCollection<Voice> _voices, int _firstBattutaIndex, Size _maxSize)
+		{
+			if (_voices == null) throw new ArgumentNullException("BattutaHWrapAdorner.GetBattuteInPage() needs voices");
+
+			var result = new BattuteInPage() { FirstBattutaIndex = _firstBattutaIndex };
+
+			int maxBattute = 0;
+			foreach (var voice in _voices)
+			{
+				maxBattute = Math.Max(voice.Battute.Count, maxBattute);
+			}
+			result.LastTotalBattutaIndex = maxBattute - 1;
+
+			double lastX1 = 0.0;
+			double lastY0 = 0.0;
+			double lastY1 = 0.0;
+			for (int i = _firstBattutaIndex; i < maxBattute; i++)
+			{
+				// var battute = new SwitchableObservableCollection<Battuta>();
+				var battute = new List<Battuta>();
+				foreach (var voice in _voices)
+				{
+					if (voice.Battute.Count > i) battute.Add(voice.Battute[i]);
+					else battute.Add(new Battuta(Chiavi.Violino, new Misura()));
+				}
+
+				var nextObjProps = GetNextObjectProperties(battute, i == _firstBattutaIndex, lastX1, lastY1, _maxSize);
+				if (!nextObjProps.IsFits) break;
+
+				if (!nextObjProps.IsStartsNewRow)
+				{ // append to current line
+					lastX1 += nextObjProps.Width;
+					lastY1 = Math.Max(lastY1, nextObjProps.Height);
+				}
+				else
+				{ // wrap into next line
+					lastX1 = nextObjProps.Width;
+					lastY0 += lastY1;
+					lastY1 += nextObjProps.Height;
+				}
+				result.LastDrawnBattutaIndex = i;
+				result.Size.Width = Math.Max(result.Size.Width, lastX1);
+				result.Size.Height = lastY1;
 			}
 
 			return result;
 		}
 
-		public struct BattuteInPage
+		public static NextObjectProperties GetNextObjectProperties(List<Battuta> battute, bool isFirstBattuta, double lastX1, double lastY1, Size maxSize)
 		{
-			public Size Size;
-			public int FirstBattutaNo;
-			public int LastDrawnBattutaNo;
-			public int LastTotalBattutaNo;
+			var result = new NextObjectProperties { Width = 0.0, Height = 0.0, IsFits = false, IsFirstInRow = false, IsStartsNewRow = false };
+
+			var tryAdorner = new BattutaVStackAdornerEstimator(battute, isFirstBattuta);
+			result.Height = tryAdorner.GetHeight();
+			result.Width = tryAdorner.GetWidth();
+			// LOLLO TODO when you break here, try reducing LINE_GAP temporarily.
+			// Alternatively, display a symbol telling there is a piece missing, right or down.
+			// Scrolling is probably not a good idea.
+			//Debug.WriteLine("next object height=" + nextObjHeight);
+			//Debug.WriteLine("_maxSize.Height=" + _maxSize.Height);
+			if (result.Width > maxSize.Width || result.Height > maxSize.Height) return result;
+
+			// no point wrapping the first: OK
+			if (isFirstBattuta)
+			{
+				result.IsFits = true;
+				result.IsFirstInRow = true;
+				return result;
+			}
+			// fits in current row: OK
+			if (lastX1 + result.Width <= maxSize.Width)
+			{
+				result.IsFits = true;
+				return result;
+			}
+			// try again with isFirstBattuta = true, ie wrap into next line
+			tryAdorner = new BattutaVStackAdornerEstimator(battute, true);
+			result.Height = tryAdorner.GetHeight();
+			result.Width = tryAdorner.GetWidth();
+			if (result.Width > maxSize.Width || result.Height > maxSize.Height) return result;
+			// no space for a new line
+			if (result.Height + lastY1 > maxSize.Height) return result;
+
+			result.IsFits = true;
+			result.IsFirstInRow = true;
+			result.IsStartsNewRow = true;
+			return result;
 		}
+		public struct NextObjectProperties
+		{
+			public double Width;
+			public double Height;
+			public bool IsFits;
+			public bool IsFirstInRow;
+			public bool IsStartsNewRow;
+		}
+
 	}
 }

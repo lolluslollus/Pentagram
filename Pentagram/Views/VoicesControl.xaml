@@ -10,17 +10,5 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-	<!--Tapped="OnPentagram_Tapped"-->
-	<Grid>
-		<StackPanel Orientation="Horizontal" VerticalAlignment="Top">
-			<Button Width="200" Click="OnPrevious_Click">
-				<SymbolIcon Symbol="Previous"/>
-			</Button>
-			<Button Width="200" Click="OnNext_Click">
-				<SymbolIcon Symbol="Next"/>
-			</Button>
-		</StackPanel>
-
-		<Canvas x:Name="LayoutRoot" Tapped="OnPentagram_Tapped"/>
-	</Grid>
+	<Canvas x:Name="LayoutRoot" Tapped="OnPentagram_Tapped"/>
 </uctl:OpenableObservableControl>

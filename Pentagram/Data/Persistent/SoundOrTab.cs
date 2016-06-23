@@ -8,25 +8,6 @@ using System.Threading.Tasks;
 
 namespace Pentagram.PersistentData
 {
-	//[DataContract(IsReference=true)]
-	//public sealed class Note : Sound
-	//{
-	//	private SegniSuNote _segno = SegniSuNote.Nil;
-	//	[DataMember]
-	//	public SegniSuNote Segno { get { return _segno; } private set { _segno = value; RaisePropertyChanged(); } }
-
-	//	private Tone _tone = null;
-	//	[DataMember]
-	//	public Tone Tone { get { return _tone; } private set { _tone = value; RaisePropertyChanged(); } }
-
-	//	public Note(Duration duration, SegniSuNote segno, Tone tone) : base(duration)
-	//	{
-	//		if (tone == null) throw new ArgumentOutOfRangeException("Note ctor wants a tone");
-	//		Segno = segno;
-	//		Tone = tone;
-	//	}
-	//}
-
 	[DataContract(IsReference = true)]
 	// [DataContract]
 	public sealed class Pause : Sound

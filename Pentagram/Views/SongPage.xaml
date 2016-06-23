@@ -1,6 +1,7 @@
 ﻿<uctl:ObservablePage
     x:Class="Pentagram.Views.SongPage"
 	x:Name="me"
+	xmlns:toolkitCtlz="using:WinRTXamlToolkit.Controls"
 	xmlns:uctl="using:Utilz.Controlz"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -18,99 +19,23 @@
 
 		<TextBlock Text="{x:Bind VM.SongHeader.Name, Mode=OneWay}" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold"/>
 
-		<uctl:UniversalWrapPanel Grid.Row="1" Orientation="Horizontal">
-			<AppBarButton Click="OnAddVoice_Click" Icon="Add"/>
-			<AppBarButton Click="OnGotoMain_Click" Icon="Back"/>
-		</uctl:UniversalWrapPanel>
+		<toolkitCtlz:WrapPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Top">
+			<StackPanel Orientation="Horizontal">
+				<AppBarButton Width="200" Click="OnAddVoice_Click" Icon="Add"/>
+				<AppBarButton Width="200" Click="OnGotoMain_Click" Icon="Back"/>
+			</StackPanel>
+			<StackPanel Orientation="Horizontal">
+				<AppBarButton Width="200" Click="OnPrevious_Click">
+					<SymbolIcon Symbol="Previous"/>
+				</AppBarButton>
+				<AppBarButton Width="200" Click="OnNext_Click">
+					<SymbolIcon Symbol="Next"/>
+				</AppBarButton>
+			</StackPanel>
+		</toolkitCtlz:WrapPanel>
 
 		<local:VoicesControl
 			x:Name="VoicesControl"
 			Grid.Row="2"/>
-		<!--Voices="{Binding ElementName=me, Path=VM.Song.Voices, Mode=OneWay}"/>-->
-		
-		<!--<ItemsControl x:Name="VoicesIC"
-			Grid.Row="2"
-			ItemsSource="{x:Bind VM.Song.Voices, Mode=OneWay}">
-			<ItemsControl.ItemsPanel>
-				<ItemsPanelTemplate>
-					<ItemsStackPanel Orientation="Vertical"/>
-				</ItemsPanelTemplate>
-			</ItemsControl.ItemsPanel>
-			<ItemsControl.ItemTemplate>
-				<DataTemplate>
-					<local:VoiceControl
-						Voice="{Binding}">
-					</local:VoiceControl>
-				</DataTemplate>
-			</ItemsControl.ItemTemplate>
-		</ItemsControl>-->
-
-		<!--<Canvas Grid.Row="2" Width="800">
-			<local:VoiceControl			
-				Voice="{Binding ElementName=me, Path=VM.Song.Voices[0], Mode=OneWay}"
-				VoicesCount="{Binding ElementName=me, Path=VM.Song.Voices.Count, Mode=OneWay}">
-			</local:VoiceControl>
-			<local:VoiceControl
-				Canvas.Top="{StaticResource PentagramHeight}"
-				Voice="{Binding ElementName=me, Path=VM.Song.Voices[1], Mode=OneWay}"
-				VoicesCount="{Binding ElementName=me, Path=VM.Song.Voices.Count, Mode=OneWay}">
-			</local:VoiceControl>
-		</Canvas>-->
-
-		<!--<uctl:UniversalWrapPanel Orientation="Horizontal">
-			<Button>
-				<Viewbox Height="80" Width="80">
-					<Border Background="White">
-						<SymbolIcon Symbol="Add"/>
-					</Border>
-				</Viewbox>
-			</Button>
-			<Button>
-				<Image Source="ms-appx:///Assets/Symbols/semibreve_g.bmp" Stretch="None"/>
-			</Button>
-			<Button>
-				<Image Source="ms-appx:///Assets/Symbols/minima_g.bmp" Stretch="None"/>
-			</Button>
-			<Button>
-				<Image Source="ms-appx:///Assets/Symbols/semiminima_g.bmp" Stretch="None"/>
-			</Button>
-			<Button>
-				<Image Source="ms-appx:///Assets/Symbols/croma_g.bmp" Stretch="None"/>
-			</Button>
-			<Button>
-				<Image Source="ms-appx:///Assets/Symbols/semicroma_g.bmp" Stretch="None"/>
-			</Button>
-			<Button>
-				<Image Source="ms-appx:///Assets/Symbols/biscroma_g.bmp" Stretch="None"/>
-			</Button>
-			<Button>
-				<Image Source="ms-appx:///Assets/Symbols/semibiscroma_g.bmp" Stretch="None"/>
-			</Button>
-			<Button>
-				<Viewbox Height="80" Width="80" Stretch="Uniform">
-					<Image Source="ms-appx:///Assets/Symbols/semibreve_p.bmp" Stretch="None"/>
-				</Viewbox>
-			</Button>
-			<Button>
-				<Viewbox Height="80" Width="80" Stretch="Uniform">
-					<Image Source="ms-appx:///Assets/Symbols/minima_p.bmp" Stretch="None"/>
-				</Viewbox>
-			</Button>
-			<Button>
-				<Image Source="ms-appx:///Assets/Symbols/semiminima_p.bmp" Stretch="None"/>
-			</Button>
-			<Button>
-				<Image Source="ms-appx:///Assets/Symbols/croma_p.bmp" Stretch="None"/>
-			</Button>
-			<Button>
-				<Image Source="ms-appx:///Assets/Symbols/semicroma_p.bmp" Stretch="None"/>
-			</Button>
-			<Button>
-				<Image Source="ms-appx:///Assets/Symbols/biscroma_p.bmp" Stretch="None"/>
-			</Button>
-			<Button>
-				<Image Source="ms-appx:///Assets/Symbols/semibiscroma_p.bmp" Stretch="None"/>
-			</Button>
-		</uctl:UniversalWrapPanel>-->
 	</Grid>
 </uctl:ObservablePage>

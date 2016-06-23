@@ -97,16 +97,20 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\Converters.cs" />
+    <Compile Include="Data\Persistent\Battuta.cs" />
     <Compile Include="Data\Persistent\Enums.cs" />
+    <Compile Include="Data\Persistent\InstantWithTouches.cs" />
+    <Compile Include="Data\Persistent\Misura.cs" />
+    <Compile Include="Data\Persistent\Settings.cs" />
     <Compile Include="Data\Persistent\Song.cs" />
     <Compile Include="Data\Persistent\Chord.cs" />
-    <Compile Include="Data\Persistent\Sound.cs" />
+    <Compile Include="Data\Persistent\SoundOrTab.cs" />
     <Compile Include="Data\Persistent\Voice.cs" />
     <Compile Include="Utilz\ObservableDataCycl.cs" />
     <Compile Include="ViewModels\AllVM.cs" />
     <Compile Include="ViewModels\SongVM.cs" />
     <Compile Include="ViewModels\VoicesVM.cs" />
-    <Compile Include="Adorners\Adorner.cs" />
+    <Compile Include="Adorners\CanvasAdorner.cs" />
     <Compile Include="Adorners\BattutaVStackAdorner.cs" />
     <Compile Include="Adorners\BattutaAdorner.cs" />
     <Compile Include="Adorners\InstantAdorner.cs" />

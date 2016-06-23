@@ -19,7 +19,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace Pentagram.Adorners
 {
-	public sealed class InstantAdorner : Adorner
+	public sealed class InstantAdorner : CanvasAdorner
 	{
 		private readonly Chiavi _chiave;
 		private readonly Misura _misura;
@@ -56,7 +56,7 @@ namespace Pentagram.Adorners
 			Draw();
 		}
 
-		private readonly List<Adorner> _adorners = new List<Adorner>();
+		private readonly List<CanvasAdorner> _adorners = new List<CanvasAdorner>();
 
 		#region ctor and dispose
 		public InstantAdorner(Canvas parentLayoutRoot, Chiavi chiave, Misura misura, InstantWithTouches instant) : base(parentLayoutRoot)
@@ -98,7 +98,7 @@ namespace Pentagram.Adorners
 
 				foreach (var soundOrTab in _instant.SoundsOrTabs)
 				{
-					Adorner adorner = null;
+					CanvasAdorner adorner = null;
 					if (soundOrTab is Pause) adorner = new PauseAdorner(_layoutRoot, _chiave, soundOrTab as Pause);
 					else if (soundOrTab is Chord) adorner = new ChordAdorner(_layoutRoot, _chiave, soundOrTab as Chord);
 					else if (soundOrTab is Tab) adorner = new TabAdorner(_layoutRoot, soundOrTab as Tab, _chiave, _misura);
@@ -110,29 +110,51 @@ namespace Pentagram.Adorners
 
 		public override double GetHeight()
 		{
+			var estimator = new InstantAdornerEstimator(_chiave, _misura, _instant);
+			return estimator.GetHeight();
+		}
+
+		public override double GetWidth()
+		{
+			var estimator = new InstantAdornerEstimator(_chiave, _misura, _instant);
+			return estimator.GetWidth();
+		}
+	}
+
+	public sealed class InstantAdornerEstimator : CanvasAdornerBase
+	{
+		private readonly Chiavi _chiave;
+		private readonly Misura _misura;
+		private InstantWithTouches _instant = null;
+
+		private readonly List<CanvasAdorner> _adorners = new List<CanvasAdorner>();
+
+		#region ctor and dispose
+		public InstantAdornerEstimator(Chiavi chiave, Misura misura, InstantWithTouches instant)
+		{
+			_chiave = chiave;
+			_misura = misura;
+			_instant = instant;
+		}
+		#endregion ctor and dispose
+
+		public override double GetHeight()
+		{
 			return PENTAGRAM_HEIGHT;
 		}
 
 		public override double GetWidth()
 		{
-			//double result = 0.0;
-			//foreach (var adorner in _adorners)
-			//{
-			//	result = Math.Max(result, adorner.GetWidth());
-			//}
-			//return result;
-
-
 			if (_instant?.SoundsOrTabs == null) throw new ArgumentNullException("InstantAdorner.GetWidth() needs an instant with sounds or tabs");
 
 			double result = 0.0;
 
 			foreach (var soundOrTab in _instant.SoundsOrTabs)
 			{
-				Adorner adornerWoutCanvas = null;
-				if (soundOrTab is Pause) adornerWoutCanvas = new PauseAdorner(null, _chiave, soundOrTab as Pause);
-				else if (soundOrTab is Chord) adornerWoutCanvas = new ChordAdorner(null, _chiave, soundOrTab as Chord);
-				else if (soundOrTab is Tab) adornerWoutCanvas = new TabAdorner(null, soundOrTab as Tab, _chiave, _misura);
+				CanvasAdornerBase adornerWoutCanvas = null;
+				if (soundOrTab is Pause) adornerWoutCanvas = new PauseAdornerEstimator(_chiave, soundOrTab as Pause);
+				else if (soundOrTab is Chord) adornerWoutCanvas = new ChordAdornerEstimator(_chiave, soundOrTab as Chord);
+				else if (soundOrTab is Tab) adornerWoutCanvas = new TabAdornerEstimator(soundOrTab as Tab, _chiave, _misura);
 				if (adornerWoutCanvas != null) result = Math.Max(adornerWoutCanvas.GetWidth(), result);
 			}
 

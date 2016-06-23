@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace Pentagram.Adorners
 {
-	public sealed class PauseAdorner : Adorner
+	public sealed class PauseAdorner : CanvasAdorner
 	{
 		private static readonly BitmapImage _minimaImage = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/minima_p_100.png", UriKind.Absolute) };
 
@@ -81,6 +81,33 @@ namespace Pentagram.Adorners
 				// Data = "M24,12.5 V-80 H50 V-78 H24 V-70 H50 V-68 H24 V-60" /> -->
 			});
 		}
+
+		public override double GetHeight()
+		{
+			var estimator = new PauseAdornerEstimator(_chiave, _pause);
+			return estimator.GetHeight();
+		}
+
+		public override double GetWidth()
+		{
+			var estimator = new PauseAdornerEstimator(_chiave, _pause);
+			return estimator.GetWidth();
+		}
+	}
+
+	public sealed class PauseAdornerEstimator : CanvasAdornerBase
+	{
+		private Chiavi _chiave;
+
+		private Pause _pause = null;
+
+		#region ctor and dispose
+		public PauseAdornerEstimator(Chiavi chiave, Pause pause)
+		{
+			_chiave = chiave;
+			_pause = pause;
+		}
+		#endregion ctor and dispose
 
 		public override double GetHeight()
 		{
