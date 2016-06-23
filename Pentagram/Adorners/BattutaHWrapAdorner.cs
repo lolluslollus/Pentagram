@@ -12,7 +12,6 @@ using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-// LOLLO TODO make test adorner classes that take no canvas, register no events and are not disposable
 
 namespace Pentagram.Adorners
 {
