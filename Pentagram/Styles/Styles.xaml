@@ -5,16 +5,12 @@
     xmlns:uctl="using:Utilz.Controlz"
     xmlns:media="using:Windows.UI.Xaml.Media">
 
-	<!--<x:Double x:Key="NoteBallWidth">25</x:Double>-->
-	<!--<x:Double x:Key="NoteFlagWidth">26</x:Double>-->
-	<!--<x:Double x:Key="NoteFlagGap">10</x:Double>-->
-	
-	<!-- change LineGap to change the size of everything -->
-	<x:Double x:Key="LineGap">15</x:Double>
+	<!-- LOLLO NOTE change LineGap to change the size of everything.  -->
+	<x:Double x:Key="LineGap">13</x:Double>
+	<x:Double x:Key="PentagramHeight">300</x:Double>
 	<x:Double x:Key="NoteFlagThicknessFactor">.25</x:Double>
 	<x:Double x:Key="NoteFlagGapFactor">.4</x:Double>
 	<x:Double x:Key="NoteMinMastHeightFactor">2.5</x:Double>
-	<x:Double x:Key="PentagramHeight">400</x:Double>
 	<x:Double x:Key="ArmaturaWidth">20</x:Double>
 	<x:Double x:Key="ChiaveWidth">100</x:Double>
 	<x:Double x:Key="RitmoWidth">80</x:Double>
