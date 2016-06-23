@@ -147,12 +147,6 @@ namespace Pentagram.Adorners
 			// return GetBattuteInPage().Size.Width;
 			throw new NotImplementedException("BattutaHWrapAdorner.GetWidth() should not be called");
 		}
-
-		public static BattuteInPage GetBattuteInPage(SwitchableObservableCollection<Voice> _voices, int _firstBattutaIndex, Size _maxSize)
-		{
-			var estimator = new BattutaHWrapAdornerEstimator(_voices, _maxSize, _firstBattutaIndex);
-			return estimator.GetBattuteInPage();
-		}
 	}
 
 	public sealed class BattutaHWrapAdornerEstimator : CanvasAdornerBase
@@ -241,54 +235,6 @@ namespace Pentagram.Adorners
 
 	internal class Helper
 	{
-		public static BattuteInPage GetBattuteInPage(SwitchableObservableCollection<Voice> _voices, int _firstBattutaIndex, Size _maxSize)
-		{
-			if (_voices == null) throw new ArgumentNullException("BattutaHWrapAdorner.GetBattuteInPage() needs voices");
-
-			var result = new BattuteInPage() { FirstBattutaIndex = _firstBattutaIndex };
-
-			int maxBattute = 0;
-			foreach (var voice in _voices)
-			{
-				maxBattute = Math.Max(voice.Battute.Count, maxBattute);
-			}
-			result.LastTotalBattutaIndex = maxBattute - 1;
-
-			double lastX1 = 0.0;
-			double lastY0 = 0.0;
-			double lastY1 = 0.0;
-			for (int i = _firstBattutaIndex; i < maxBattute; i++)
-			{
-				// var battute = new SwitchableObservableCollection<Battuta>();
-				var battute = new List<Battuta>();
-				foreach (var voice in _voices)
-				{
-					if (voice.Battute.Count > i) battute.Add(voice.Battute[i]);
-					else battute.Add(new Battuta(Chiavi.Violino, new Misura()));
-				}
-
-				var nextObjProps = GetNextObjectProperties(battute, i == _firstBattutaIndex, lastX1, lastY1, _maxSize);
-				if (!nextObjProps.IsFits) break;
-
-				if (!nextObjProps.IsStartsNewRow)
-				{ // append to current line
-					lastX1 += nextObjProps.Width;
-					lastY1 = Math.Max(lastY1, nextObjProps.Height);
-				}
-				else
-				{ // wrap into next line
-					lastX1 = nextObjProps.Width;
-					lastY0 += lastY1;
-					lastY1 += nextObjProps.Height;
-				}
-				result.LastDrawnBattutaIndex = i;
-				result.Size.Width = Math.Max(result.Size.Width, lastX1);
-				result.Size.Height = lastY1;
-			}
-
-			return result;
-		}
-
 		public static NextObjectProperties GetNextObjectProperties(List<Battuta> battute, bool isFirstBattuta, double lastX1, double lastY1, Size maxSize)
 		{
 			var result = new NextObjectProperties { Width = 0.0, Height = 0.0, IsFits = false, IsFirstInRow = false, IsStartsNewRow = false };

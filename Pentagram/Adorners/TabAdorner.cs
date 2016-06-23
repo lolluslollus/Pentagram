@@ -17,13 +17,6 @@ namespace Pentagram.Adorners
 {
 	public sealed class TabAdorner : CanvasAdorner
 	{
-		public readonly static double ARMATURA_WIDTH;
-		public readonly static double CHIAVE_WIDTH;
-		public readonly static double REFRAIN_WIDTH;
-		public readonly static double MISURA_WIDTH;
-		public readonly static double VERTICAL_BAR_WIDTH;
-		public readonly static Thickness MARGIN_THICKNESS_0;
-
 		private static readonly BitmapImage _chiaveDiViolino = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/chiaveDiViolino_160x370.png", UriKind.Absolute) };
 		private static readonly BitmapImage _chiaveDiBasso = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/chiaveDiBasso_160x244.png", UriKind.Absolute) };
 		private static readonly BitmapImage _ritmoQQ = new BitmapImage() { UriSource = new Uri("ms-appx:///Assets/Symbols/ritmo_qq_186x266.png", UriKind.Absolute) };
@@ -54,15 +47,6 @@ namespace Pentagram.Adorners
 		}
 
 		#region ctor and dispose
-		static TabAdorner()
-		{
-			ARMATURA_WIDTH = (double)App.Current.Resources["ArmaturaWidth"];
-			CHIAVE_WIDTH = (double)App.Current.Resources["ChiaveWidth"];
-			REFRAIN_WIDTH = (double)App.Current.Resources["RefrainWidth"];
-			MISURA_WIDTH = (double)App.Current.Resources["RitmoWidth"];
-			VERTICAL_BAR_WIDTH = (double)App.Current.Resources["VerticalBarWidth"];
-			MARGIN_THICKNESS_0 = new Thickness(0.0);
-		}
 		public TabAdorner(Canvas parentLayoutRoot, Tab tab, Chiavi chiave, Misura misura) : base(parentLayoutRoot)
 		{
 			_chiave = chiave;
@@ -145,27 +129,11 @@ namespace Pentagram.Adorners
 
 	public sealed class TabAdornerEstimator : CanvasAdornerBase
 	{
-		public readonly static double ARMATURA_WIDTH;
-		public readonly static double CHIAVE_WIDTH;
-		public readonly static double REFRAIN_WIDTH;
-		public readonly static double MISURA_WIDTH;
-		public readonly static double VERTICAL_BAR_WIDTH;
-		public readonly static Thickness MARGIN_THICKNESS_0;
-
 		private readonly Chiavi _chiave;
 		private readonly Misura _misura;
 		private Tab _tab = null;
 
 		#region ctor and dispose
-		static TabAdornerEstimator()
-		{
-			ARMATURA_WIDTH = (double)App.Current.Resources["ArmaturaWidth"];
-			CHIAVE_WIDTH = (double)App.Current.Resources["ChiaveWidth"];
-			REFRAIN_WIDTH = (double)App.Current.Resources["RefrainWidth"];
-			MISURA_WIDTH = (double)App.Current.Resources["RitmoWidth"];
-			VERTICAL_BAR_WIDTH = (double)App.Current.Resources["VerticalBarWidth"];
-			MARGIN_THICKNESS_0 = new Thickness(0.0);
-		}
 		public TabAdornerEstimator(Tab tab, Chiavi chiave, Misura misura)
 		{
 			_chiave = chiave;

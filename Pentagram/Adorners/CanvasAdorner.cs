@@ -51,6 +51,12 @@ namespace Pentagram.Adorners
 		public readonly static double PENTAGRAM_HEIGHT_HALF;
 		public readonly static double LINE_GAP_HALF;
 		public readonly static double NOTE_BALL_WIDTH;
+		public readonly static double ARMATURA_WIDTH;
+		public readonly static double CHIAVE_WIDTH;
+		public readonly static double REFRAIN_WIDTH;
+		public readonly static double MISURA_WIDTH;
+		public readonly static double VERTICAL_BAR_WIDTH;
+		public readonly static Thickness MARGIN_THICKNESS_0;
 
 		#region ctor and dispose
 		static CanvasAdornerBase()
@@ -61,6 +67,12 @@ namespace Pentagram.Adorners
 			LINE_GAP = (double)App.Current.Resources["LineGap"];
 			LINE_GAP_HALF = LINE_GAP * .5;
 			NOTE_BALL_WIDTH = LINE_GAP;
+			ARMATURA_WIDTH = (double)App.Current.Resources["ArmaturaWidth"];
+			CHIAVE_WIDTH = (double)App.Current.Resources["ChiaveWidth"];
+			REFRAIN_WIDTH = (double)App.Current.Resources["RefrainWidth"];
+			MISURA_WIDTH = (double)App.Current.Resources["RitmoWidth"];
+			VERTICAL_BAR_WIDTH = (double)App.Current.Resources["VerticalBarWidth"];
+			MARGIN_THICKNESS_0 = new Thickness(0.0);
 		}
 		public CanvasAdornerBase() { }
 		#endregion ctor and dispose
