@@ -176,11 +176,11 @@ namespace Pentagram.Adorners
 			throw new NotImplementedException("BattutaHWrapAdorner.GetWidth() should not be called");
 		}
 
-		public BattuteInPage GetBattuteInPage()
+		public Helper.BattuteInPage GetBattuteInPage()
 		{
 			if (_voices == null) throw new ArgumentNullException("BattutaHWrapAdorner.GetBattuteInPage() needs voices");
 
-			var result = new BattuteInPage() { FirstBattutaIndex = _firstBattutaIndex };
+			var result = new Helper.BattuteInPage() { FirstBattutaIndex = _firstBattutaIndex };
 
 			int maxBattute = 0;
 			foreach (var voice in _voices)
@@ -225,15 +225,7 @@ namespace Pentagram.Adorners
 		}
 	}
 
-	public struct BattuteInPage
-	{
-		public Size Size;
-		public int FirstBattutaIndex;
-		public int LastDrawnBattutaIndex;
-		public int LastTotalBattutaIndex;
-	}
-
-	internal class Helper
+	public class Helper
 	{
 		public static NextObjectProperties GetNextObjectProperties(List<Battuta> battute, bool isFirstBattuta, double lastX1, double lastY1, Size maxSize)
 		{
@@ -283,6 +275,12 @@ namespace Pentagram.Adorners
 			public bool IsFirstInRow;
 			public bool IsStartsNewRow;
 		}
-
+		public struct BattuteInPage
+		{
+			public Size Size;
+			public int FirstBattutaIndex;
+			public int LastDrawnBattutaIndex;
+			public int LastTotalBattutaIndex;
+		}
 	}
 }
