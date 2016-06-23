@@ -20,9 +20,6 @@ namespace Pentagram.Adorners
 		private int _firstBattutaIndex = 0;
 		public int FirstBattutaIndex { get { return _firstBattutaIndex; } set { if (_firstBattutaIndex == value) return; _firstBattutaIndex = value; Draw(); } }
 
-		//private int _lastBattutaIndex = 0;
-		//public int LastDrawnBattutaIndex { get { return _lastBattutaIndex; } }
-
 		private Size _maxSize = Size.Empty;
 		public Size MaxSize { get { return _maxSize; } set { if (_maxSize == value) return; _maxSize = value; Draw(); } }
 

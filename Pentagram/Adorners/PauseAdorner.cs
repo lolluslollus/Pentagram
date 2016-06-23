@@ -98,7 +98,6 @@ namespace Pentagram.Adorners
 	public sealed class PauseAdornerEstimator : CanvasAdornerBase
 	{
 		private Chiavi _chiave;
-
 		private Pause _pause = null;
 
 		#region ctor and dispose

@@ -68,12 +68,15 @@ namespace Pentagram.Adorners
 		}
 		protected override void Dispose(bool isDisposing)
 		{
-			if (_instant != null)
+			var instant = _instant;
+			if (instant != null)
 			{
-				_instant.PropertyChanged -= OnInstant_PropertyChanged;
-				_instant.SoundsOrTabs.CollectionChanged -= OnSoundsOrTabs_CollectionChanged;
+				instant.PropertyChanged -= OnInstant_PropertyChanged;
+				instant.SoundsOrTabs.CollectionChanged -= OnSoundsOrTabs_CollectionChanged;
 			}
-			foreach (var item in _adorners)
+			var adorners = _adorners;
+			if (adorners == null) return;
+			foreach (var item in adorners)
 			{
 				item?.Dispose();
 			}

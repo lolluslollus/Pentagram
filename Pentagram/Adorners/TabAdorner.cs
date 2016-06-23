@@ -76,7 +76,6 @@ namespace Pentagram.Adorners
 		}
 		#endregion ctor and dispose
 
-		//private double _width = 0.0;
 		protected override void Draw()
 		{
 			if (_layoutRoot == null) return;
