@@ -152,6 +152,33 @@ namespace Pentagram.Adorners
 
 		public override double GetHeight()
 		{
+			var estimator = new BattutaAdornerEstimator(_battuta, _isFirstInRow);
+			return estimator.GetHeight();
+		}
+		public override double GetWidth()
+		{
+			var estimator = new BattutaAdornerEstimator(_battuta, _isFirstInRow);
+			return estimator.GetWidth();
+		}
+	}
+
+	public sealed class BattutaAdornerEstimator : CanvasAdornerBase
+	{
+		private Battuta _battuta = null;
+		private bool _isFirstInRow = false;
+
+		private readonly List<CanvasAdorner> _adorners = new List<CanvasAdorner>();
+
+		#region ctor and dispose
+		public BattutaAdornerEstimator(Battuta battuta, bool isFirstInRow)
+		{
+			_battuta = battuta;
+			_isFirstInRow = isFirstInRow;
+		}
+		#endregion ctor and dispose
+
+		public override double GetHeight()
+		{
 			return PENTAGRAM_HEIGHT;
 		}
 		public override double GetWidth()
@@ -193,33 +220,6 @@ namespace Pentagram.Adorners
 			}
 
 			return result;
-		}
-	}
-
-	public sealed class BattutaAdornerEstimator : CanvasAdornerBase
-	{
-		private Battuta _battuta = null;
-		private bool _isFirstInRow = false;
-
-		private readonly List<CanvasAdorner> _adorners = new List<CanvasAdorner>();
-
-		#region ctor and dispose
-		public BattutaAdornerEstimator(Battuta battuta, bool isFirstInRow)
-		{
-			_battuta = battuta;
-			_isFirstInRow = isFirstInRow;
-		}
-		#endregion ctor and dispose
-
-		public override double GetHeight()
-		{
-			var estimator = new BattutaAdornerEstimator(_battuta, _isFirstInRow);
-			return estimator.GetHeight();
-		}
-		public override double GetWidth()
-		{
-			var estimator = new BattutaAdornerEstimator(_battuta, _isFirstInRow);
-			return estimator.GetWidth();
 		}
 	}
 }
