@@ -17,7 +17,8 @@ namespace Pentagram.Utilz
 		public SortedSwitchableObservableCollection(bool isObserving) : base(isObserving) { }
 		public SortedSwitchableObservableCollection(bool isObserving, IEnumerable<T> collection) : base(isObserving, collection) { }
 		public SortedSwitchableObservableCollection(bool isObserving, int capacity) : base(isObserving, capacity) { }
-		// LOLLO NOTE the serialiser calls this
+		// LOLLO TODO the serialiser calls this: check this and the other apps that use SwitchableObservableCollection.
+		// there could be a performance gain available
 		new public void Add(T item)
 		{
 			// get out if no new items
