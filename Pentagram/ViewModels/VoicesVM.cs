@@ -15,15 +15,16 @@ namespace Pentagram.ViewModels
 		private static Tone _defaultTone1 = new Tone(3, NoteBianche.mi, Accidenti.Diesis);
 		private static Tone _defaultTone2 = new Tone(3, NoteBianche.sol, Accidenti.Bemolle);
 		private static Tone _defaultTone3 = new Tone(4, NoteBianche.@do, Accidenti.Bequadro);
+		private static Tone _defaultTone4 = new Tone(3, NoteBianche.re, Accidenti.Bequadro);
 
 		private static Tone _defaultTone0b = new Tone(2, NoteBianche.@do, Accidenti.Bequadro);
 		private static Tone _defaultTone1b = new Tone(2, NoteBianche.mi, Accidenti.Diesis);
 		private static Tone _defaultTone2b = new Tone(2, NoteBianche.sol, Accidenti.Bemolle);
 		private static Tone _defaultTone3b = new Tone(3, NoteBianche.@do, Accidenti.Nil);
 
-		private static Chord _defaultChord0 = new Chord(new Duration(DurateCanoniche.Semibiscroma, PuntiDiValore.Three), SegniSuNote.Nil, _defaultTone0, _defaultTone1, _defaultTone2, _defaultTone3);
+		private static Chord _defaultChord0 = new Chord(new Duration(DurateCanoniche.Semibiscroma, PuntiDiValore.Three), SegniSuNote.Nil, _defaultTone1, _defaultTone0, _defaultTone2, _defaultTone3);
 		private static Chord _defaultChord1 = new Chord(new Duration(DurateCanoniche.Croma), SegniSuNote.Nil, _defaultTone0, _defaultTone2);
-		private static Chord _defaultChord2 = new Chord(new Duration(DurateCanoniche.Semibiscroma), SegniSuNote.Nil, _defaultTone0, _defaultTone1, _defaultTone2, _defaultTone3);
+		private static Chord _defaultChord2 = new Chord(new Duration(DurateCanoniche.Semibiscroma), SegniSuNote.Nil, _defaultTone2, _defaultTone1, _defaultTone0, _defaultTone3);
 		private static Chord _defaultChord3 = new Chord(new Duration(DurateCanoniche.Semicroma), SegniSuNote.Nil, _defaultTone0, _defaultTone2);
 		private static Chord _defaultChord4 = new Chord(new Duration(DurateCanoniche.Semicroma), SegniSuNote.Nil, _defaultTone0, _defaultTone1, _defaultTone2, _defaultTone3);
 		private static Chord _defaultChord5 = new Chord(new Duration(DurateCanoniche.Biscroma), SegniSuNote.Nil, _defaultTone0, _defaultTone2);
@@ -35,7 +36,7 @@ namespace Pentagram.ViewModels
 		private static Chord _defaultChord4b = new Chord(new Duration(DurateCanoniche.Semicroma), SegniSuNote.Nil, true, _defaultTone0, _defaultTone1, _defaultTone2, _defaultTone3);
 		private static Chord _defaultChord5b = new Chord(new Duration(DurateCanoniche.Biscroma), SegniSuNote.Nil, true, _defaultTone0, _defaultTone2);
 
-		private static Chord _defaultChord6 = new Chord(new Duration(DurateCanoniche.Semicroma, PuntiDiValore.Two), SegniSuNote.Nil, _defaultTone0, _defaultTone2);
+		private static Chord _defaultChord6 = new Chord(new Duration(DurateCanoniche.Semicroma, PuntiDiValore.Two), SegniSuNote.Nil, _defaultTone2, _defaultTone0, _defaultTone4);
 		private static Chord _defaultChord7 = new Chord(new Duration(DurateCanoniche.Semicroma), SegniSuNote.Nil, _defaultTone1, _defaultTone2);
 		private static Chord _defaultChord8 = new Chord(new Duration(DurateCanoniche.Biscroma), SegniSuNote.Nil, _defaultTone2, _defaultTone3);
 

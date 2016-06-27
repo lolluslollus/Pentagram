@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pentagram.Utilz;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -23,9 +24,9 @@ namespace Pentagram.PersistentData
 		public SegniSuNote Segno { get { return _segno; } private set { if (_segno == value) return; _segno = value; RaisePropertyChanged(); } }
 
 		// we cannot make this readonly because it is serialised. we only use the setter for serialising.
-		private SwitchableObservableCollection<Tone> _tones = new SwitchableObservableCollection<Tone>();
+		private SortedSwitchableObservableCollection<Tone> _tones = new SortedSwitchableObservableCollection<Tone>();
 		[DataMember]
-		public SwitchableObservableCollection<Tone> Tones { get { return _tones; } private set { _tones = value; } }
+		public SortedSwitchableObservableCollection<Tone> Tones { get { return _tones; } private set { _tones = value; } }
 
 		private Chord _prevJoinedChord = null;
 		[DataMember]
@@ -39,7 +40,7 @@ namespace Pentagram.PersistentData
 		{
 			if (tones == null) throw new ArgumentOutOfRangeException("Chord ctor wants some notes");
 			Segno = segno;
-			_tones.AddRange(tones.OrderBy(tone => tone));
+			_tones.AddRange(tones);
 		}
 		public Chord(Duration duration, SegniSuNote segno, bool isChromaFlagsBelow, params Tone[] tones) : this(duration, segno, tones)
 		{

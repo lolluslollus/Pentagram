@@ -106,7 +106,7 @@ namespace Pentagram.Adorners
 
 				var ballImageSource = _chord.Duration.DurataCanonica == DurateCanoniche.Breve || _chord.Duration.DurataCanonica == DurateCanoniche.Semibreve || _chord.Duration.DurataCanonica == DurateCanoniche.Minima ? _emptyBallImage : _blackBallImage;
 				var pdvImageSource = _chord.Duration.PuntiDiValore == PuntiDiValore.One ? _pdv1Image : _chord.Duration.PuntiDiValore == PuntiDiValore.Two ? _pdv2Image : _chord.Duration.PuntiDiValore == PuntiDiValore.Three ? _pdv3Image : null;
-				//double ballsX0 = _chord.Tones.Any(tone => tone.Accidente != Accidenti.Nil) ? NOTE_BALL_WIDTH : 0.0;
+
 				var ballXsTuple = ChordAdornerHelper.GetBallXs(_chord);
 				bool hasShiftedBalls = ballXsTuple.Item1;
 				var ballXs = ballXsTuple.Item2;
@@ -290,7 +290,7 @@ namespace Pentagram.Adorners
 				if ((chord.Tones[i].Ottava == chord.Tones[i - 1].Ottava && chord.Tones[i].NotaBianca == chord.Tones[i - 1].NotaBianca + 1)
 					|| (chord.Tones[i].Ottava == chord.Tones[i - 1].Ottava + 1 && chord.Tones[i].NotaBianca == NoteBianche.@do && chord.Tones[i - 1].NotaBianca == NoteBianche.si))
 				{
-					ballXs[i] += CanvasAdornerBase.NOTE_BALL_WIDTH;
+					ballXs[i] += (CanvasAdornerBase.NOTE_BALL_WIDTH - 2.0);
 					hasShiftedNotes = true;
 				}
 			}

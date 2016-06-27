@@ -107,6 +107,7 @@
     <Compile Include="Data\Persistent\SoundOrTab.cs" />
     <Compile Include="Data\Persistent\Voice.cs" />
     <Compile Include="Utilz\ObservableDataCycl.cs" />
+    <Compile Include="Utilz\SortedSwitchableObservableCollection.cs" />
     <Compile Include="ViewModels\AllVM.cs" />
     <Compile Include="ViewModels\SongVM.cs" />
     <Compile Include="ViewModels\VoicesVM.cs" />
