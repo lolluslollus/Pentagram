@@ -12,8 +12,10 @@ namespace Pentagram.PersistentData
 	public sealed class Misura : ObservableData, IComparable
 	{
 		private uint _num = 4;
+		[DataMember]
 		public uint Num { get { return _num; } set { if (_num == value) return; _num = value; RaisePropertyChanged(); } }
 		private uint _den = 4;
+		[DataMember]
 		public uint Den { get { return _den; } set { if (_den == value) return; _den = value; RaisePropertyChanged(); } }
 
 		public Misura(uint num = 4, uint den = 4)

@@ -108,7 +108,7 @@ namespace Pentagram.Adorners
 						else battute.Add(new Battuta(Chiavi.Violino, new Misura()));
 					}
 
-					var nextObjProps = Helper.GetNextObjectProperties(battute, i == _firstBattutaIndex, lastX1, lastY1, _maxSize);
+					var nextObjProps = BattutaHWrapAdornerHelper.GetNextObjectProperties(battute, i == _firstBattutaIndex, lastX1, lastY1, _maxSize);
 					if (!nextObjProps.IsFits) break;
 
 					if (!nextObjProps.IsStartsNewRow)
@@ -176,11 +176,11 @@ namespace Pentagram.Adorners
 			throw new NotImplementedException("BattutaHWrapAdorner.GetWidth() should not be called");
 		}
 
-		public Helper.BattuteInPage GetBattuteInPage()
+		public BattutaHWrapAdornerHelper.BattuteInPage GetBattuteInPage()
 		{
 			if (_voices == null) throw new ArgumentNullException("BattutaHWrapAdorner.GetBattuteInPage() needs voices");
 
-			var result = new Helper.BattuteInPage() { FirstBattutaIndex = _firstBattutaIndex };
+			var result = new BattutaHWrapAdornerHelper.BattuteInPage() { FirstBattutaIndex = _firstBattutaIndex };
 
 			int maxBattute = 0;
 			foreach (var voice in _voices)
@@ -202,7 +202,7 @@ namespace Pentagram.Adorners
 					else battute.Add(new Battuta(Chiavi.Violino, new Misura()));
 				}
 
-				var nextObjProps = Helper.GetNextObjectProperties(battute, i == _firstBattutaIndex, lastX1, lastY1, _maxSize);
+				var nextObjProps = BattutaHWrapAdornerHelper.GetNextObjectProperties(battute, i == _firstBattutaIndex, lastX1, lastY1, _maxSize);
 				if (!nextObjProps.IsFits) break;
 
 				if (!nextObjProps.IsStartsNewRow)
@@ -225,7 +225,7 @@ namespace Pentagram.Adorners
 		}
 	}
 
-	public class Helper
+	public class BattutaHWrapAdornerHelper
 	{
 		public static NextObjectProperties GetNextObjectProperties(List<Battuta> battute, bool isFirstBattuta, double lastX1, double lastY1, Size maxSize)
 		{

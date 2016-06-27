@@ -80,11 +80,11 @@ namespace Pentagram.Adorners
 		public abstract double GetHeight();
 		public abstract double GetWidth();
 
-		protected static double GetLineY(Tone tone)
+		internal static double GetLineY(Tone tone)
 		{
 			return ((3.0 - Convert.ToDouble(tone.Ottava)) * HOW_MANY_WHITE_NOTES + ((int)NoteBianche.si - (int)tone.NotaBianca)) * LINE_GAP_HALF + PENTAGRAM_HEIGHT_HALF;
 		}
-		protected static double GetLineY(Chiavi chiave, Tone tone)
+		internal static double GetLineY(Chiavi chiave, Tone tone)
 		{
 			double lineY = GetLineY(tone);
 			if (chiave == Chiavi.Violino) lineY -= LINE_GAP_HALF;
